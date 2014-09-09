@@ -4,6 +4,10 @@ This is where I store my (small) 3d printing projects.
 
 I have tested them all on my own 3d printer, a Prusa I3 Hephestos. Unless otherwise noted, I have made all models from scratch.
 
+## Formats
+
+Fcstd files can be read and edited with [FreeCAD](http://freecadweb.org/) , scad files are [OpenSCAD](http://www.openscad.org/) files, and blend files are, of course, files from the  [Blender](http://www.blender.org/) application.
+
 ## License
 
 Unless otherwise noted, all are under "CC Attribution-NonCommercial-ShareAlike 4.0 International"
