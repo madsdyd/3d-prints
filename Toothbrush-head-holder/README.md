@@ -14,4 +14,6 @@ The models (dual and single) are somewhat tricky to print nice. They do not have
 
 I am quite interessted in feedback from people that tries to print this model, as I might try to redesign it to be easier to print.
 
+# Thingiverse
 
+Available from [Thingiverse](http://www.thingiverse.com/thing:457543).
