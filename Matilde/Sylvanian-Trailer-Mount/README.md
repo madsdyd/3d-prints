@@ -15,3 +15,7 @@ have to test print the ball bearing a few times, and fiddle a bit with
 the various material widths.
 
 Designed in FreeCAD, September 2014.
+
+# Thingiverse
+
+Available at [Thingiverse](http://www.thingiverse.com/thing:454004).
