@@ -4,5 +4,5 @@
 $fn = 50;
 difference() {
   cylinder( h = 100, r = 12 );
-  cylinder( h = 100, r = 10.25 );
+  cylinder( h = 100, r = 10.50 );
 }
