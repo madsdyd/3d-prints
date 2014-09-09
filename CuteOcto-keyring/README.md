@@ -12,3 +12,7 @@ They tend to show it to their friends, and parents, thereby spreading the happy 
 
 I recommend scaling this to Z height of 25 mm (1") in your slicer, then print very fine to get a smooth finish.
 I had to edit this in blender, and I could not figure out how to set the z size to 25 mm. Perhaps I will try freecad next time.
+
+# Thingiverse
+
+This is [available on Thingiverse](http://www.thingiverse.com/thing:455061).
