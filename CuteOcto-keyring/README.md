@@ -1,4 +1,4 @@
-# Description
+# Cute Octo Says Hello Keyring
 
 This is the Cute Octo Says Hello, with a torus on top, to print and put in a keyring. (Remixed from http://www.thingiverse.com/thing:27053)
 
