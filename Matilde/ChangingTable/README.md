@@ -10,4 +10,4 @@ If you should happen to make one, my daughter would love to hear about it :-).
 
 # Thingiverse
 
-Available at [Thingiverse](http://www.thingiverse.com/thing:452015)
+Available at [Thingiverse](http://www.thingiverse.com/thing:452015).
