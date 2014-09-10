@@ -12,7 +12,7 @@ rotate([0,-90,0] ){
 			// Arm to hold the cup
 			translate([91.5,3.5,0]) {
 				rotate( [0,0,-45] ) {
-				   square([100, 12] );
+				   square([70, 12] );
 				}
 			}
 		}
@@ -20,7 +20,7 @@ rotate([0,-90,0] ){
 }
 
 // Cup placement
-translate([0,-74,175] ) {
+translate([0,-54,152] ) {
 	rotate( [-45, 0, 0 ] ) {
 		// Actual cup.
 		difference() {
