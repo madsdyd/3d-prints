@@ -5,8 +5,11 @@ rotate([0,-90,0] ){
 	linear_extrude( height=10, center = true ) {	
 		union () {
 			// Thingy to go on the top of the printer
-			polygon(points=[[0,7],[40,7], [40,0], 
-								 [0,0], [0,-3], [40,-4], [50,-5], 
+			polygon(points=[[0,8], [5,6], [5,7], [45.5,7], 
+                               [45.5,0], 
+                               [5,0],[5,1],[0,-1],
+//								 [0,0], 
+                        [0,-3], [40,-4], [50,-5], 
 			                [80,0],[100,0], [100,12], [0,12]]);
 				
 			// Arm to hold the cup
