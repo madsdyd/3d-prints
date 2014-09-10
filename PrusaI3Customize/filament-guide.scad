@@ -24,14 +24,14 @@ translate([0,-54,152] ) {
 	rotate( [-45, 0, 0 ] ) {
 		// Actual cup.
 		difference() {
-			cube( size=30, center = true );
+			cube( size=[10,30,30], center = true );
 		   // Hollow.
 			translate ([0,0,1] ){ 
-				cube( size=[26, 26, 28 ], center = true );
+				cube( size=[6, 26, 28 ], center = true );
 			}
 			// Hole for filament
 	      translate ([0,0,-14]) {
-				cylinder( h=2, r=1, center = true );
+				cylinder( h=2, r=1, center = true, $fn=100 );
        	}
 		}
 	}
