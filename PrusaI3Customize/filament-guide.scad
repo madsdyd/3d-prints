@@ -69,6 +69,9 @@ module arm_shape() {
 }
 
 
+// The width of the slit in the bottom of the cup. Something like filament diameter +.75
+slit_width = 1.75+0.75;
+
 // Cup placement
 module cup () {
 	translate([-57,110,0] ) {
@@ -83,7 +86,7 @@ module cup () {
 				// Hole for filament
 				// This needs to be completely changed.
 		      translate ([0,0,-14]) {
-					cylinder( h=2, r=1, center = true, $fn=100 );
+					cube( [6,slit_width,2], center = true );
 	       	}
 			}
 		}
