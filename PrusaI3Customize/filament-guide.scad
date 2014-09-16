@@ -71,8 +71,8 @@ module arm_shape() {
 
 // Cup placement
 module cup () {
-	translate([0,-54,152] ) {
-		rotate( [-45, 0, 0 ] ) {
+	translate([-57,110,0] ) {
+		rotate( [0, -90, -135 ] ) {
 			// Actual cup.
 			difference() {
 				cube( size=[10,30,30], center = true );
@@ -95,8 +95,7 @@ module cup () {
 //               union () {
 
 
-
-arm_shape();
-
-// org_arm();
-// cup();
+linear_extrude( height=10, center = true ) {    
+	arm_shape();
+}
+cup();
