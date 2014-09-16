@@ -2,24 +2,26 @@
 
 // Arm with 10 mm width, centered on z, and rotated such that z is up, and x and y matches the bed. I hope.
 
-module arm_shape() {
-    // The bar is the thing we mount on.
-    bar_width = 6.5;
-    bar_height = 40.5;
-    bar_height_slack = 1.0;
-    bar_width_slack = 0.0;
-    gap = 10.0;
-    // The lower arm is the thing that connets to the bar
-    upper_arm_height = 50.0;
-    // The width of the front "stoppers"
-    front_width_stopper = 4.0;
-    // Bottom thickness
-    bottom_thickness = 5.0;
-    // Top thickness
-    top_thickness = 5.0;
-    // Backside thickness
-    backside_thickness = 5.0;
 
+// The bar is the thing we mount on.
+bar_width = 6.5;
+bar_height = 40.5;
+bar_height_slack = 1.0;
+bar_width_slack = 0.0;
+gap = 10.0;
+// The lower arm is the thing that connets to the bar
+upper_arm_height = 50.0;
+// The width of the front "stoppers"
+front_width_stopper = 4.0;
+// Bottom thickness
+bottom_thickness = 5.0;
+// Top thickness
+top_thickness = 5.0;
+// Backside thickness
+backside_thickness = 5.0;
+
+
+module arm_shape() {
 
     // 0,0 is the top of the bar, front
     // x is towards the back, y is up.
@@ -33,7 +35,7 @@ module arm_shape() {
 		[0.0, 0-bar_height-bar_height_slack-gap], 
 		// Up, and out, this is 40% of the gap
 		[0.0, 0-bar_height-bar_height_slack-gap+0.4*gap],
-		// Down, and out to make "kile" form
+		// Down, and out to make wedge shape
 		[0-front_width_stopper, 0-bar_height-bar_height_slack-gap+0.3*gap], 
 		// Further down, while out, to the bottom of the arm
 		[0-front_width_stopper, 0-bar_height-bar_height_slack-gap-bottom_thickness], 
@@ -69,6 +71,35 @@ module arm_shape() {
 }
 
 
+// Now, for the wedge.
+// TODO: Put the wedge at the underside, and shape the arm to match the angle of the wedge...
+// Pretty awesome.
+// TODO: Round as many corners as possible.
+
+module wedge() {
+    linear_extrude( height=50, center = true ) {
+        translate([-front_width_stopper,-bar_height+5.0,0]) {
+            color([1,0,0]){
+	        polygon( points=[
+                        // This is from the top, leftmost point
+                        [0.0,0.0], [front_width_stopper, 0.0],
+                        // Down 5 mm
+                        [front_width_stopper, -5.0],
+                        // Going under the arm - this is where the wedge shape will be added.
+                        [front_width_stopper+bar_width, -5.0],
+                        // Going all the way down
+                        [front_width_stopper+bar_width, -5.0-gap],
+                        // Now, back
+                        [front_width_stopper, -5.0-gap],
+                        // And, up
+                        [front_width_stopper, -5.0-gap+0.4*gap], 
+                        [0.0, -5.0-gap+0.3*gap]
+                    ]);
+            }
+        }
+    }
+}
+
 // The width of the slit in the bottom of the cup. Something like filament diameter +.75
 slit_width = 1.75+0.75;
 
@@ -98,7 +129,9 @@ module cup () {
 //               union () {
 
 
+////////////////////////////////////////////////////////////////////////////////
 linear_extrude( height=10, center = true ) {    
     arm_shape();
 }
 cup();
+wedge();
