@@ -167,10 +167,6 @@ module cup () {
     }
 }
 
-// rotate([0,-90,0] ){
-//        linear_extrude( height=10, center = true ) {    
-//               union () {
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // I need the arm, then cutting a bit of the wedge from the arm, then
@@ -195,7 +191,9 @@ union() {
 }
 
 
-// And, a new wedge.
+// And, a new wedge, which needs to have its thick end down.
 translate([-20,20,20]){
+    rotate([0,180,0]) {
     wedge();
+}
 }
