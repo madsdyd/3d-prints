@@ -70,18 +70,25 @@ module arm_shape() {
     }
 }
 
+// The actual arm.
+module arm() {
+    linear_extrude( height=10, center = true ) {    
+        arm_shape();
+    }
+};
+
 
 // Now, for the wedge.
 // TODO: Put the wedge at the underside, and shape the arm to match the angle of the wedge...
 // Pretty awesome.
 // TODO: Round as many corners as possible.
 
-module wedge() {
+module wedge_box() {
     linear_extrude( height=50, center = true ) {
         translate([-front_width_stopper,-bar_height+5.0,0]) {
-            color([1,0,0]){
+            color("red"){
 	        polygon( points=[
-                        // This is from the top, leftmost point
+                        // This is from the top, leftmost point, to the top, rightmost point
                         [0.0,0.0], [front_width_stopper, 0.0],
                         // Down 5 mm
                         [front_width_stopper, -5.0],
@@ -98,6 +105,41 @@ module wedge() {
             }
         }
     }
+}
+
+// This is the actual wedge. Its extruded and then rotated
+module wedge_wedge() {
+    color("green"){
+
+        // Translate to match the wedge_box
+        translate([bar_width/2, -bar_height-gap, 0]) {
+            // rotate to match the wedge_box
+            rotate([0,180+90,0]) {
+                // Extrude
+                linear_extrude( height=bar_width, center = true ) {
+                    // Translate to match center
+                    translate([-25.0,0.0,0.0]) {
+	                polygon( points=[
+                                // This is a very simple wedge: first to right, then up, then back
+                                [0.0,0.0], [50.0,0],
+                                // down 3 mm, then back to 1 below
+                                [50.0, -3.0], [0.0, -1.0]
+                            ]);
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+// This is the actual wedge
+module wedge() {
+    union() {
+        wedge_box();
+        wedge_wedge();
+    }
+    
 }
 
 // The width of the slit in the bottom of the cup. Something like filament diameter +.75
@@ -130,8 +172,7 @@ module cup () {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-linear_extrude( height=10, center = true ) {    
-    arm_shape();
-}
+color("cyan", 0.7 ) arm();
+
 cup();
-wedge();
+color("red", 0.7) wedge();
