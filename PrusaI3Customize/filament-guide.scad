@@ -135,11 +135,12 @@ module wedge_wedge() {
 
 // This is the actual wedge
 module wedge() {
-    union() {
-        wedge_box();
-        wedge_wedge();
+    color("green" ){
+        union() {
+            wedge_box();
+            wedge_wedge();
+        }
     }
-    
 }
 
 // The width of the slit in the bottom of the cup. Something like filament diameter +.75
@@ -172,7 +173,29 @@ module cup () {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-color("cyan", 0.7 ) arm();
+// I need the arm, then cutting a bit of the wedge from the arm, then
+// a wedge in the same level as the arm.
 
-cup();
-color("red", 0.7) wedge();
+// Arm with wedge shape cut into it
+union() {
+    difference() {
+        // This is the arm
+        //        color("cyan", 0.7 )
+        arm();
+
+        // The first edge, used to difference with
+        translate([0,0,10]) {
+
+            //color("red", 0.7)
+            wedge();
+        }
+    }
+    // Union with the cup
+    cup();
+}
+
+
+// And, a new wedge.
+translate([-20,20,20]){
+    wedge();
+}
