@@ -208,5 +208,5 @@ module final_wedge() {
 }
 
 // Main
-// final_arm();
+final_arm();
 final_wedge();
