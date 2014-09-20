@@ -78,9 +78,7 @@ module arm() {
 };
 
 
-// Now, for the wedge.
-// TODO: Put the wedge at the underside, and shape the arm to match the angle of the wedge...
-// Pretty awesome.
+// Now, for the wedge. Its made of two parts.
 // TODO: Round as many corners as possible.
 
 module wedge_box() {
@@ -173,27 +171,42 @@ module cup () {
 // a wedge in the same level as the arm.
 
 // Arm with wedge shape cut into it
-union() {
-    difference() {
-        // This is the arm
-        //        color("cyan", 0.7 )
-        arm();
+module final_arm() {
+    union() {
+        difference() {
+            // This is the arm
+            //        color("cyan", 0.7 )
+            arm();
 
-        // The first edge, used to difference with
-        translate([0,0,10]) {
+            // The first edge, used to difference with
+            translate([0,0,10]) {
 
-            //color("red", 0.7)
-            wedge();
+                //color("red", 0.7)
+                wedge();
+            }
         }
+        // Union with the cup
+        cup();
     }
-    // Union with the cup
-    cup();
 }
-
 
 // And, a new wedge, which needs to have its thick end down.
-translate([-20,20,20]){
-    rotate([0,180,0]) {
-    wedge();
+// And, because everything expands, cut a part of the size to allow it to fit in the slot
+
+module final_wedge() {
+    translate([-20,20,20]){
+        rotate([0,180,0]) {
+            
+            difference() {
+                wedge();
+                translate([5+bar_width-1.5,-45,0]) {
+                    cube([10,20,52], center = true);
+                }
+            }
+        }
+    }
 }
-}
+
+// Main
+// final_arm();
+final_wedge();
