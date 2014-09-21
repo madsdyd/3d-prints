@@ -23,6 +23,8 @@ backside_thickness = 5.0;
 
 module arm_shape() {
 
+    // TODO: The z height must be about 20 mm lower to allow the spool to turn.
+    
     // 0,0 is the top of the bar, front
     // x is towards the back, y is up.
     color([1,0,0]){
@@ -143,6 +145,8 @@ module wedge() {
 
 // The width of the slit in the bottom of the cup. Something like filament diameter +.75
 slit_width = 1.75+0.75;
+
+// TODO: This need to be changed to something like a wedge, and be much bigger!
 
 // Cup placement
 module cup () {
