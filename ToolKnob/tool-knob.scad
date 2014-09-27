@@ -53,8 +53,9 @@ module knob() {
 				}
 				internal_supports();
 			}
-			D_shaft_hole();
-		}
+//			D_shaft_hole();
+                        double_D_shaft_hole();
+                    }
 		internal_clearance();
 	}
 }
@@ -84,6 +85,16 @@ module D_shaft_hole() {
 		translate([0,0,(height-shaft_length)]) difference() {
 			cylinder(h=(shaft_length+plunge_depth+2), r=(shaft_diameter+clearance)/2);
 			translate([-shaft_diameter/2,((D_width+clearance)-shaft_diameter/2),-1]) cube(size=[shaft_diameter+clearance,shaft_diameter+clearance,shaft_length+plunge_depth+4]);
+		}
+	}
+}
+
+module double_D_shaft_hole() {
+	rotate([0,0,-90-point_angle]) {
+		translate([0,0,(height-shaft_length)]) difference() {
+			cylinder(h=(shaft_length+plunge_depth+2), r=(shaft_diameter+clearance)/2);
+			translate([-shaft_diameter/2,((D_width+clearance)-shaft_diameter/2),-1]) cube(size=[shaft_diameter+clearance,shaft_diameter+clearance,shaft_length+plunge_depth+4]);
+			translate([-shaft_diameter/2,0-(shaft_diameter+clearance)-(((D_width+clearance)-shaft_diameter/2)),-1]) cube(size=[shaft_diameter+clearance,shaft_diameter+clearance,shaft_length+plunge_depth+4]);
 		}
 	}
 }
