@@ -2,7 +2,7 @@
 
 /* [Design Variables] */
 //in mm
-height = 22;
+height = 16;
 //in mm (set to measured value, clearance is added)
 shaft_diameter =  13.0;
 //in mm (set to measured value, clearance is added)
@@ -14,7 +14,7 @@ wall_thickness = 4;
 //in mm
 inner_diameter = 21;
 //in mm
-shaft_length = 11;
+shaft_length = 4.5;
 //in mm
 plunge_depth = 6;
 //in mm
@@ -57,7 +57,10 @@ module knob() {
                         double_D_shaft_hole();
                     }
 		internal_clearance();
-	}
+                // Substract two cylinders, to make it pass through
+                cylinder(h=height*2, r=3, center=true);
+                cylinder(h=18, r=5.75, center=true);
+            }
 }
 
 module overall_knob() {
