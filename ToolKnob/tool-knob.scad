@@ -2,23 +2,23 @@
 
 /* [Design Variables] */
 //in mm
-height = 20;
+height = 22;
 //in mm (set to measured value, clearance is added)
-shaft_diameter =  6.1;
+shaft_diameter =  13.0;
 //in mm (set to measured value, clearance is added)
-D_width = 4.7;
+D_width = 12;
 //in mm
-outer_diameter = 36;
+outer_diameter = 40;
 //in mm
-wall_thickness = 3;
+wall_thickness = 4;
 //in mm
-inner_diameter = 14;
+inner_diameter = 21;
 //in mm
 shaft_length = 11;
 //in mm
-plunge_depth = 3;
+plunge_depth = 6;
 //in mm
-clearance_height = 8;
+clearance_height = 0;
 
 /* [Cosmetic Settings] */
 no_sides =9;
@@ -26,17 +26,17 @@ no_sides =9;
 top_chamfer=1.5;
 
 /* [Zero Pointer] */
-with_pointer = "yes"; // [yes,no]
+with_pointer = "no"; // [yes,no]
 //in mm
 point_size = 5;
 //degrees clockwise from the flat side
 point_angle = 90; 
 
 /* [Additional Features] */
-extra_feature="scollops"; // [none,scollops,taps,cutaway]
+extra_feature="taps"; // [none,scollops,taps,cutaway]
 number_of_features=3;
 //degrees
-offset_angle=-30;
+offset_angle=-40;
 
 tap_height=3*1;
 clearance = 0.1*1;
