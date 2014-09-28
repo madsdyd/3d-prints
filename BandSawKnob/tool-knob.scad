@@ -58,6 +58,7 @@ module knob() {
                     }
 		internal_clearance();
                 // Substract two cylinders, to make it pass through
+                // TODO: These may be slightly too small when extruding in e.g. 0.3
                 cylinder(h=height*2, r=3, center=true);
                 cylinder(h=18, r=5.75, center=true);
             }
