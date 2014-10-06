@@ -78,7 +78,6 @@ module fillet(r, h) {
 module base( height, bottom_r, top_r ) {
     difference() {
         cylinder( h = height, r1 = bottom_r, r2 = top_r );
-        
         translate([0,0,height+0.05]) {
             rotate([0,180,0]) {
                 fillet_round_45_degree( outer_radius = top_r+0.05, fillet_radius = 3);
@@ -90,18 +89,19 @@ module base( height, bottom_r, top_r ) {
 module hollower() {
     translate([0,0,-0.05]) {
         intersection() {
-            base( base_height, bottom_inner_diameter / 2.0 - wall_thickness, top_inner_diameter / 2.0 - wall_thickness);
+            base( base_height, bottom_inner_diameter / 2.0, top_inner_diameter / 2.0 );
             // Just make the cylinder "large enough"
             cylinder( r = bottom_inner_diameter, h = knob_height );
         }
     }
 }
     
-
+// The door stop is the base with a sphere on top, then the hollower is removed from it.
 module doorstop ( ) {
+    // The base with sphere on top, then hollowed
     difference() {
         union() {
-            base( base_height, bottom_inner_diameter / 2.0, top_inner_diameter / 2.0 );
+            base( base_height, bottom_inner_diameter / 2.0  + wall_thickness, top_inner_diameter / 2.0  + wall_thickness );
             translate( [0,0,base_height]) {
                 sphere( r = stop_height );
             }
