@@ -88,12 +88,25 @@ module base( height, bottom_r, top_r ) {
     };
 }
 
+
+// The hollower must make room for the knob the door stop sits on, but
+// also provide a cone to allow print without supports.
 module hollower() {
+    cut = bottom_inner_diameter / 2.0 + knob_height * ( ( bottom_inner_diameter - top_inner_diameter ) / 2.0 ) / base_height;
     translate([0,0,-0.05]) {
         intersection() {
             base( base_height, bottom_inner_diameter / 2.0, top_inner_diameter / 2.0 );
-            // Just make the cylinder "large enough"
-            cylinder( r = bottom_inner_diameter, h = knob_height, $fn = global_smooth  );
+            // TODO: This cylinder must be no less than 60 degrees
+            // Its top is height - wall_thickness
+            // And, it should hit the base at knob_height.
+            union() {
+                translate([0,0,knob_height]) {
+                    cylinder( r1 = cut, h = base_height - wall_thickness - knob_height , r2 = 0, $fn = global_smooth );
+                }
+
+                // Just make the cylinder "large enough"
+                cylinder( r = bottom_inner_diameter, h = knob_height, $fn = global_smooth  );
+            }
         }
     }
 }
