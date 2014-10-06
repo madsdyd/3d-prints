@@ -7,19 +7,29 @@ base_height = 64;
 top_inner_diameter = 23;
 
 // The inner diameter of the botton. Outer diameter is this + 2 * wall_thickness
-bottom_inner_diameter = 25.3;
+bottom_inner_diameter = 25.4;
+
+// Hole print diameter adjustment - to compensate for the printer making smaller holes
+hole_print_diameter_adjustment = 1.0;
 
 // The height of the thing that the stop goes over
 knob_height = 30;
 
 // Thickness of the walls
-wall_thickness = 2.0;
+wall_thickness = 1.5;
 
 // Stop height. A ball with this radius is constructed on the top.
 stop_height = 6.5;
 
 // Global smooth
 global_smooth = 120;
+
+////////////////////////////////////////////////////////////////////////////////
+// Adjusted variables
+
+final_top_inner_diameter = top_inner_diameter + hole_print_diameter_adjustment;
+final_bottom_inner_diameter = bottom_inner_diameter + hole_print_diameter_adjustment;
+
 
 //// CODE
 
@@ -92,10 +102,10 @@ module base( height, bottom_r, top_r ) {
 // The hollower must make room for the knob the door stop sits on, but
 // also provide a cone to allow print without supports.
 module hollower() {
-    cut = bottom_inner_diameter / 2.0 + knob_height * ( ( bottom_inner_diameter - top_inner_diameter ) / 2.0 ) / base_height;
+    cut = final_bottom_inner_diameter / 2.0 + knob_height * ( ( final_bottom_inner_diameter - final_top_inner_diameter ) / 2.0 ) / base_height;
     translate([0,0,-0.05]) {
         intersection() {
-            base( base_height, bottom_inner_diameter / 2.0, top_inner_diameter / 2.0 );
+            base( base_height, final_bottom_inner_diameter / 2.0, final_top_inner_diameter / 2.0 );
             // TODO: This cylinder must be no less than 60 degrees
             // Its top is height - wall_thickness
             // And, it should hit the base at knob_height.
@@ -105,7 +115,7 @@ module hollower() {
                 }
 
                 // Just make the cylinder "large enough"
-                cylinder( r = bottom_inner_diameter, h = knob_height, $fn = global_smooth  );
+                cylinder( r = final_bottom_inner_diameter, h = knob_height, $fn = global_smooth  );
             }
         }
     }
@@ -116,7 +126,7 @@ module doorstop ( ) {
     // The base with sphere on top, then hollowed
     difference() {
         union() {
-            base( base_height, bottom_inner_diameter / 2.0  + wall_thickness, top_inner_diameter / 2.0  + wall_thickness );
+            base( base_height, final_bottom_inner_diameter / 2.0  + wall_thickness, final_top_inner_diameter / 2.0  + wall_thickness );
             translate( [0,0,base_height]) {
                 sphere( r = stop_height, $fn = global_smooth  );
             }
