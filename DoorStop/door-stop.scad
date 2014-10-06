@@ -13,11 +13,13 @@ bottom_inner_diameter = 25.3;
 knob_height = 30;
 
 // Thickness of the walls
-wall_thickness = 2.5;
+wall_thickness = 2.0;
 
 // Stop height. A ball with this radius is constructed on the top.
 stop_height = 6.5;
 
+// Global smooth
+global_smooth = 120;
 
 //// CODE
 
@@ -32,7 +34,7 @@ stop_height = 6.5;
  * @param fillet_radius The radius of actual fillet (in the fillet).
  * @param smoot How smoot to make the resulting fillet.
 */
-module fillet_round_45_degree( outer_radius = 10, fillet_radius = 1.5, smooth = 90 ) {
+module fillet_round_45_degree( outer_radius = 10, fillet_radius = 1.5, smooth = global_smooth ) {
     // Based on stuff from http://www.iheartrobotics.com/2011/02/openscad-tip-round-2-of-3.html
     
     // Padding to maintain manifold - set to 0.0 for now.
@@ -77,7 +79,7 @@ module fillet(r, h) {
 // Base is sort of solid, will difference later
 module base( height, bottom_r, top_r ) {
     difference() {
-        cylinder( h = height, r1 = bottom_r, r2 = top_r );
+        cylinder( h = height, r1 = bottom_r, r2 = top_r, $fn = global_smooth );
         translate([0,0,height+0.05]) {
             rotate([0,180,0]) {
                 fillet_round_45_degree( outer_radius = top_r+0.05, fillet_radius = 3);
@@ -91,7 +93,7 @@ module hollower() {
         intersection() {
             base( base_height, bottom_inner_diameter / 2.0, top_inner_diameter / 2.0 );
             // Just make the cylinder "large enough"
-            cylinder( r = bottom_inner_diameter, h = knob_height );
+            cylinder( r = bottom_inner_diameter, h = knob_height, $fn = global_smooth  );
         }
     }
 }
@@ -103,7 +105,7 @@ module doorstop ( ) {
         union() {
             base( base_height, bottom_inner_diameter / 2.0  + wall_thickness, top_inner_diameter / 2.0  + wall_thickness );
             translate( [0,0,base_height]) {
-                sphere( r = stop_height );
+                sphere( r = stop_height, $fn = global_smooth  );
             }
         }
         // Substract another base. Kind of cheating.
