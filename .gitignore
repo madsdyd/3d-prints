@@ -1,1 +1,4 @@
 *.gcode
+*.fcstd1
+*~
+ideer.txt
