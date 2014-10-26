@@ -1,5 +1,6 @@
 // Ski vise
 
+use <threads.scad>;
 
 // The vise is basically very simple, and is a cube that is hollowed out.
 // These are the basic dimensions for this cube
@@ -49,9 +50,16 @@ module slot_hollower() {
 }
 
 // For now, main.
-difference() {
-    base();
-    # clamp_hollower();
-    # slot_hollower();
+module vise() {
+    difference() {
+        base();
+        # clamp_hollower();
+        # slot_hollower();
+    }
 }
-    
+
+
+// Can't make this work...
+// metric_thread( 34, 2, 10, internal=true, n_starts=6);
+// english_thread(1/4, 20, 1);
+vise();
