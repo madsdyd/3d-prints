@@ -17,31 +17,41 @@ clamp_height = 20;
 clamp_width = 30;
 clamp_depth = 60; // This could be a percent?
 
-
-
-
-
-// This is for the slot to place the ski, when 
-
+// This is for the slot to place the ski, when you need to work the edges
+// This is always centered, but do have a depth and height
+slot_height = 50;
+slot_depth = 25;
 
 // This is to avoid breaking the manifold
 pad = 0.1;
 
-
+// The major part, everything else is cut from this
 module base() {
     // Place centered in x,y
-    translate( [0,0,vise_height / 2.0]) cube([vise_width, vise_depth, vise_height], center = true);
+    translate( [0,0,vise_height / 2.0]) {
+        cube([vise_width, vise_depth, vise_height], center = true);
+    };
 }
 
+// The place to clamp the vise to the table
 module clamp_hollower() {
     // Translate to match front of main/base, and offset
-    translate( [0, -vise_depth/2.0 + clamp_depth / 2.0 - pad, clamp_offset + clamp_height / 2.0] ) cube([clamp_width, clamp_depth+pad, clamp_height], center = true);
-    
+    translate( [-clamp_width/2.0, -vise_depth/2.0 - pad, clamp_offset] ) {
+        cube([clamp_width, clamp_depth+pad, clamp_height]);
+    };
 }
-    
+
+// The slot to place the ski in when working on the edge
+module slot_hollower() {
+    translate( [-vise_width/2.0 - pad, -slot_depth/2.0, vise_height - slot_height ] ) {
+        cube([vise_width + 2*pad, slot_depth, slot_height + pad] );
+    }
+}
+
 // For now, main.
 difference() {
     base();
     # clamp_hollower();
+    # slot_hollower();
 }
     
