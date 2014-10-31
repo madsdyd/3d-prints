@@ -5,17 +5,17 @@ use <threads.scad>;
 // The vise is basically very simple, and is a cube that is hollowed out.
 // These are the basic dimensions for this cube
 vise_height = 180;
-vise_width = 40;
+vise_width = 30;
 // This should/could be adjusted to accommodate wider skis
 // 140 is very wide. You should probably not go lower than 80
-vise_depth = 140;
+vise_depth = 120;
 
 // We need a cutout to allow for a clamp, for clamping to a table.
 // This should match the clamp available for you
 // Offset from the table you mount to
 clamp_offset = 20;
 clamp_height = 20;
-clamp_width = 30;
+clamp_width = 25;
 clamp_depth = 60; // This could be a percent?
 
 // This is for the slot to place the ski, when you need to work the edges
@@ -25,6 +25,16 @@ slot_depth = 25;
 
 // This is to avoid breaking the manifold
 pad = 0.1;
+
+// This is parameters that reduce the amount of plastic used
+backremover_bottom_offset = 10;
+top_plate_thickness = 8;
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 // The major part, everything else is cut from this
 module base() {
@@ -49,6 +59,19 @@ module slot_hollower() {
     }
 }
 
+// Back remover
+module back_remover() {
+       // Hmmm. how to do this.
+       
+}
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 // For now, main.
 module vise() {
     difference() {
