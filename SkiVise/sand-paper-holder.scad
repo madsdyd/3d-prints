@@ -81,13 +81,43 @@ module baseholder() {
 // Stuff to put on top of things
 module edge( pad = 0.0 ) {
     rotate([0,45,0]) {
-        cube([1.4142*edge_height + pad, HOLDER_DEPTH, 1.4142*edge_height + pad], center = true );
+        cube([1.4142*edge_height + pad, HOLDER_DEPTH + 2*pad, 1.4142*edge_height + pad], center = true );
     }
 }
 
 module stud( local_pad = 0.0 ) {
     translate([0,0,THICKNESS/2.0]) {
-        cylinder(h = THICKNESS + 2* pad, r = stud_diameter/2.0, center = true);
+        cylinder(h = THICKNESS + 2* pad, r = stud_diameter/2.0 + pad, center = true);
+    }
+}
+
+// total stuf
+module grib( pad = 0 ) {
+    // Edges
+    translate([HOLDER_WIDTH/2.0-edge_offset, 0, 0]) edge( pad );
+    translate([-HOLDER_WIDTH/2.0+edge_offset, 0, 0]) edge( pad );
+    
+    // Studs
+    translate([stud_offset, 0, 0]) stud( pad );
+    translate([-stud_offset, 0, 0]) stud( pad );
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// The holder
+
+module holder() {
+    translate([-HOLDER_WIDTH/2.0,-HOLDER_DEPTH/2.0,-HOLDER_HEIGHT]) baseholder();
+
+    grib ( 0.0 );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// The lid
+module lid() {
+    difference() {
+        translate([0,0,THICKNESS/2.0]) cube([HOLDER_WIDTH, HOLDER_DEPTH, THICKNESS], center=true );
+        grib( 0.2 );
     }
 }
 
@@ -95,14 +125,9 @@ module stud( local_pad = 0.0 ) {
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 
-translate([-HOLDER_WIDTH/2.0,-HOLDER_DEPTH/2.0,-HOLDER_HEIGHT]) baseholder();
+holder();
 
-// Edges
-translate([HOLDER_WIDTH/2.0-edge_offset, 0, 0]) edge();
-translate([-HOLDER_WIDTH/2.0+edge_offset, 0, 0]) edge();
+translate([0,0,4*THICKNESS]) lid();
 
-// Studs
-translate([stud_offset, 0, 0]) stud();
-translate([-stud_offset, 0, 0]) stud();
 
 
