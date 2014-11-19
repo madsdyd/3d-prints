@@ -22,6 +22,16 @@ holder_height_support = 40;
 // General thickness
 holder_thickness = 4;
 
+// Edge height is the approximage height of the edges that keeps the paper in place
+edge_height = 2.0;
+// Edge offset is the offset from each end of the edges
+edge_offset = 8;
+
+// Size of studs
+stud_diameter = 6;
+
+// Offset from center for studs
+stud_offset = 8;
 
 // For ease
 THICKNESS=holder_thickness * 1.0;
@@ -67,8 +77,32 @@ module baseholder() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Stuff to put on top of things
+module edge( pad = 0.0 ) {
+    rotate([0,45,0]) {
+        cube([1.4142*edge_height + pad, HOLDER_DEPTH, 1.4142*edge_height + pad], center = true );
+    }
+}
+
+module stud( local_pad = 0.0 ) {
+    translate([0,0,THICKNESS/2.0]) {
+        cylinder(h = THICKNESS + 2* pad, r = stud_diameter/2.0, center = true);
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 
 translate([-HOLDER_WIDTH/2.0,-HOLDER_DEPTH/2.0,-HOLDER_HEIGHT]) baseholder();
+
+// Edges
+translate([HOLDER_WIDTH/2.0-edge_offset, 0, 0]) edge();
+translate([-HOLDER_WIDTH/2.0+edge_offset, 0, 0]) edge();
+
+// Studs
+translate([stud_offset, 0, 0]) stud();
+translate([-stud_offset, 0, 0]) stud();
+
+
