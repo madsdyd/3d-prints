@@ -236,9 +236,9 @@ module lid() {
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 
-// holder();
+holder();
 
-// translate([0,0,1*THICKNESS]) lid();
+translate([0,0,1*THICKNESS]) lid();
 translate([0,0,8*THICKNESS]) butterfly_nut();
 
 
