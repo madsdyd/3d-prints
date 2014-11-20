@@ -1,21 +1,6 @@
 // Holder for sandpaper.
 
-
-
-
-// TODO: Change to use the other thread library
-// TODO: Bolts and flangenuts for putting the things together
-// TODO: Slightly thicker top and deeper cuttings
-// TODO: Much larger holes to put bolts through
-// TODO: Perhaps single screw
-// TODO: Wider overhang
-// TODO: Measure official tool, match it
-// TODO: Better handle
-// TODO: Infill 20 percent
-// TODO: Move paper the other direction?
-// TODO: Round corners, if possible
-// TODO: Ergonomics
-
+// TODO: Slightly thicker handle?
 use <Thread_Library.scad>;
 
 
@@ -200,8 +185,12 @@ module butterfly_nut() {
     center_nut();
 
     difference() {
-        scale([1.5,0.6,1]) translate([0,0,1]) cylinder(h = nut_height - 2, r = nut_radius);
-        cylinder(r = thread_pitch_radius + 1.5, h = 100, center = true );
+        scale([1.5,0.6,1]) {
+            translate([0,0,1]) {
+                cylinder(h = nut_height - 2, r = nut_radius);
+            }
+        }
+        # cylinder(r = thread_pitch_radius + 1.5, h = 100, center = true );
     }
     
 }
@@ -247,9 +236,9 @@ module lid() {
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 
-holder();
+// holder();
 
-translate([0,0,1*THICKNESS]) lid();
+// translate([0,0,1*THICKNESS]) lid();
 translate([0,0,8*THICKNESS]) butterfly_nut();
 
 
