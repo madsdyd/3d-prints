@@ -46,7 +46,7 @@ thread_pitch = 2;
 thread_pitch_radius = 6;
 
 nut_height = 6;
-nut_radius = thread_pitch_radius + 3;
+nut_radius = thread_pitch_radius + 4;
 
 // For ease
 THICKNESS=holder_thickness * 1.0;
@@ -144,8 +144,8 @@ module center_nut( length = nut_height, pitch=thread_pitch, pitchRadius = thread
         threadAngle=20,                 // angle between the two faces of the thread 
                                                 // std value for Acme is 29 or for metric lead screw is 30
         RH=true,                                // true/false the thread winds clockwise looking along shaft, i.e.follows the Right Hand Rule
-        clearance=0.1,                  // radial clearance, normalized to thread height
-        backlash=0.1,                   // axial clearance, normalized to pitch
+        clearance=0.3,                  // radial clearance, normalized to thread height
+        backlash=0.3,                   // axial clearance, normalized to pitch
         stepsPerTurn=24,                        // number of slices to create per turn,
         showVertices=false,
         radius=radius
@@ -186,11 +186,11 @@ module butterfly_nut() {
 
     difference() {
         scale([1.5,0.6,1]) {
-            translate([0,0,1]) {
+            translate([0,0,2]) {
                 cylinder(h = nut_height - 2, r = nut_radius);
             }
         }
-        # cylinder(r = thread_pitch_radius + 1.5, h = 100, center = true );
+        cylinder(r = thread_pitch_radius + 1.5, h = 100, center = true );
     }
     
 }
