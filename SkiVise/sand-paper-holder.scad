@@ -25,7 +25,7 @@ paper_width = 19;
 paper_thickness = 1;
 // Allow some padding or it gets very hard
 paper_padding_slot = 1;
-paper_padding_tie = 0.5;
+paper_padding_grib = 1.4142;
 
 
 // Holder width, as seen when mounted on ski
@@ -133,7 +133,7 @@ module holder() {
 module lid() {
     difference() {
         translate([0,0,THICKNESS/2.0]) cube([HOLDER_WIDTH, HOLDER_DEPTH, THICKNESS], center=true );
-        grib( 0.2 );
+        grib( paper_padding_grib );
     }
 }
 
