@@ -1,6 +1,21 @@
 // Holder for sandpaper.
 
-// Not sure I am going to need this
+
+
+
+// TODO: Change to use the other thread library
+// TODO: Bolts and flangenuts for putting the things together
+// TODO: Slightly thicker top and deeper cuttings
+// TODO: Much larger holes to put bolts through
+// TODO: Perhaps single screw
+// TODO: Wider overhang
+// TODO: Measure official tool, match it
+// TODO: Better handle
+// TODO: Infill 20 percent
+// TODO: Move paper the other direction?
+// TODO: Round corners, if possible
+// TODO: Ergonomics
+
 use <threads.scad>;
 
 
@@ -29,6 +44,7 @@ edge_offset = 8;
 
 // Size of studs
 stud_diameter = 6;
+
 
 // Offset from center for studs
 stud_offset = 8;
