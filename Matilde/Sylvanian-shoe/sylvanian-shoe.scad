@@ -28,5 +28,5 @@ module blank() {
 
 
 blank();
-rotate([45,0,0]) cylinder( r=1, h=1 );
+
 

@@ -10,17 +10,17 @@ screw_length = 44.5 + screw_offset;
 thread_distance = 1.0;
 
 // Radius of threaded part
-screw_radius = 5.5/2.0;
+screw_radius = 5.4/2.0;
 
 // mount thing
 mount_outer_radius = 6.0;
-mount_inner_radius = 3.5;
+mount_inner_radius = 4.0;
 mount_width = 5.4;
 
 // decoration
 dec_radius = 13.4/2.0;
 dec_thickness = 3.0;
-dec_transition_thickness = 2;
+dec_transition_thickness = 1.5;
 dec_transition_radius = 3.5;
 
 
