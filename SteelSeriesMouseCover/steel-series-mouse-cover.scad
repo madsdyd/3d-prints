@@ -2,6 +2,13 @@
 
 
 mouse_length = 126;
+// Smallest waist
+mouse_waist = 58;
+// Smallest place at, measured from front.
+mouse_waist_at = 55;
+
+// thickness whereever it is used
+snap_thickness = 2.0;
 
 // Padding manifolds
 pad = 0.1;
@@ -21,8 +28,8 @@ module front_snap( x_offset, width, inner_height, thickness, overlap, overlap_an
 }
 
 module front_snaps() {
-    front_snap( 5, 10, 14, 2, 5, 60 );
-    front_snap( -15, 10, 14, 2, 5, 60 );
+    front_snap( 5, 10, 14, snap_thickness, 5, 60 );
+    front_snap( -15, 10, 14, snap_thickness, 5, 60 );
 }
 
 
@@ -42,24 +49,41 @@ module back_snap( x_offset, width, inner_height, thickness, overlap, overlap_ang
     }
 }
 
-
-
-
 module back_snaps() {
-    translate([0, -mouse_length-2, 0] ) {
-        back_snap( 5, 10, 7, 2, 4, -40 );
-        back_snap( -15, 10, 7, 2, 4, -40 );
+    translate([0, -mouse_length-snap_thickness, 0] ) {
+        back_snap( 5, 10, 7, snap_thickness, 4, -40 );
+        back_snap( -15, 10, 7, snap_thickness, 4, -40 );
     }
 }
 
 
+// Side snaps, not really snaps
+module side_snap( x_offset, y_offset, width, height, thickness ) {
+    translate( [x_offset, y_offset, height / 2.0] ) {
+        cube([thickness, width, height], center = true);
+    }
+}
+
+module side_snaps() {
+    side_snap( mouse_waist / 2.0, -mouse_waist_at, 8, 8, snap_thickness );
+    side_snap( -mouse_waist / 2.0, -mouse_waist_at, 8, 8, snap_thickness );
+}
 
 
 module snaps() {
     front_snaps();
     back_snaps();
+    side_snaps();
 }
 
-snaps();
+// Bottom, just something to place it on
+module snap_bottom() {
+    translate( [-( mouse_waist + snap_thickness ) / 2.0, -mouse_length-snap_thickness, -snap_thickness+pad]) {
+        cube([mouse_waist + snap_thickness, mouse_length + 2* snap_thickness, snap_thickness]);
+    }
+}
 
+
+snaps();
+snap_bottom();
 
