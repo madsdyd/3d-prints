@@ -3,7 +3,7 @@
 
 mouse_length = 126;
 // Smallest waist
-mouse_waist = 58;
+mouse_waist = 58 + 3.0;
 // Smallest place at, measured from front.
 mouse_waist_at = 55;
 
@@ -18,7 +18,7 @@ module front_snap( x_offset, width, inner_height, thickness, overlap, overlap_an
     translate( [x_offset + width / 2.0, thickness / 2.0, (inner_height + thickness) / 2.0] ) {
         cube([width, thickness, inner_height + thickness], center = true);
         // TODO: the 4.2 can be calculated, if I cared...
-        translate( [ -width/2.0, 0, ( overlap + inner_height + thickness ) / 2.0 - 4.2 ] ) {
+        translate( [ -width/2.0, 0, ( overlap + inner_height + thickness ) / 2.0 - 3.7 ] ) {
             rotate( [overlap_angle, 0, 0] ) {
                 cube([width, thickness, overlap], center = false );
             }
@@ -28,8 +28,8 @@ module front_snap( x_offset, width, inner_height, thickness, overlap, overlap_an
 }
 
 module front_snaps() {
-    front_snap( 5, 10, 14, snap_thickness, 5, 60 );
-    front_snap( -15, 10, 14, snap_thickness, 5, 60 );
+    front_snap( 5, 10, 11, snap_thickness, 4, 60 );
+    front_snap( -15, 10, 11, snap_thickness, 4, 60 );
 }
 
 
@@ -40,7 +40,7 @@ module back_snap( x_offset, width, inner_height, thickness, overlap, overlap_ang
         cube([width, thickness, inner_height + thickness], center = true);
         // TODO: the 2.1 can be calculated, if I cared...
         // y also, very broken now.
-        translate( [ -width/2.0, -thickness+1, ( overlap + inner_height + thickness ) / 2.0 - 2 ] ) {
+        translate( [ -width/2.0, -thickness+1, ( overlap + inner_height + thickness ) / 2.0 - 1.5 ] ) {
             rotate( [overlap_angle, 0, 0] ) {
                 cube([width, thickness, overlap], center = false );
             }
@@ -51,8 +51,8 @@ module back_snap( x_offset, width, inner_height, thickness, overlap, overlap_ang
 
 module back_snaps() {
     translate([0, -mouse_length-snap_thickness, 0] ) {
-        back_snap( 5, 10, 7, snap_thickness, 4, -40 );
-        back_snap( -15, 10, 7, snap_thickness, 4, -40 );
+        back_snap( 5, 10, 6, snap_thickness, 3, -40 );
+        back_snap( -15, 10, 6, snap_thickness, 3, -40 );
     }
 }
 
@@ -65,8 +65,8 @@ module side_snap( x_offset, y_offset, width, height, thickness ) {
 }
 
 module side_snaps() {
-    side_snap( mouse_waist / 2.0, -mouse_waist_at, 8, 8, snap_thickness );
-    side_snap( -mouse_waist / 2.0, -mouse_waist_at, 8, 8, snap_thickness );
+    side_snap( mouse_waist / 2.0, -mouse_waist_at, 8, 4, snap_thickness );
+    side_snap( -mouse_waist / 2.0, -mouse_waist_at, 8, 4, snap_thickness );
 }
 
 
