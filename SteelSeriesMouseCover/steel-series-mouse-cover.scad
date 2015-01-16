@@ -19,6 +19,7 @@ case_corner_radius = 5;
 
 // thickness whereever it is used
 snap_thickness = 2.0;
+case_thickness = 2.0;
 
 // Padding manifolds
 pad = 0.1;
@@ -95,22 +96,45 @@ module snap_bottom() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // The enclosure/case
-module case() {
+module rounded_box(x, y, z, r) {
     # minkowski() {
-        cube([case_width-case_corner_radius * 2, case_length-case_corner_radius*2, case_height-case_corner_radius*2], center = true);
-        sphere(r=case_corner_radius);
+        cube([x-case_corner_radius * 2, y-case_corner_radius*2, z-case_corner_radius*2], center = true);
+        sphere(r=r);
     }
 }
+
+module hollow_box(x, y, z, r) {
+    difference() {
+        rounded_box(x, y, z, r);
+        rounded_box(x-case_thickness*2, y-case_thickness*2, z-case_thickness*2, r-0.1);
+    }
+}
+
+
+difference() {
+    hollow_box(case_width, case_length, case_height, case_corner_radius);
+    translate([0,0,50]) {
+        cube( [100,100,100], center = true);
+    }
+    
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Just testing
 // Snaps are z == 0. No padding.
 // This centers it on x,y.
-translate([0, ( mouse_length + 2 * snap_thickness ) / 2.0, 0]) {
-    translate([0,-snap_thickness,0]) {
-        snaps();
-        snap_bottom();
+module all_snaps() {
+    translate([0, ( mouse_length + 2 * snap_thickness ) / 2.0, 0]) {
+        translate([0,-snap_thickness,0]) {
+            snaps();
+            snap_bottom();
+        }
     }
 }
-// case();
+
+// all_snaps();
+
+
+    
