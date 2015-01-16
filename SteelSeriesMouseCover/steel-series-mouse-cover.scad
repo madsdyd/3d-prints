@@ -16,13 +16,15 @@ case_width = mouse_waist + case_padding;
 case_length = mouse_length + case_padding;
 case_height = mouse_height + case_padding; // Leave room for wire.
 case_corner_radius = 5;
+case_thickness = 2.0;
 
 // thickness whereever it is used
 snap_thickness = 2.0;
-case_thickness = 2.0;
 
 // Padding manifolds
 pad = 0.1;
+
+////////////////////////////////////////////////////////////////////////////////
 
 // This is a snap holder in the front. Two are used, one on each side of the wire.
 module front_snap( x_offset, width, inner_height, thickness, overlap, overlap_angle ) {
@@ -97,26 +99,30 @@ module snap_bottom() {
 ////////////////////////////////////////////////////////////////////////////////
 // The enclosure/case
 module rounded_box(x, y, z, r) {
-    # minkowski() {
-        cube([x-case_corner_radius * 2, y-case_corner_radius*2, z-case_corner_radius*2], center = true);
+    minkowski() {
+        cube([x-r * 2, y-r*2, z-r*2], center = true);
         sphere(r=r);
     }
 }
 
 module hollow_box(x, y, z, r) {
     difference() {
+        rounded_box(x+case_thickness*2, y+case_thickness*2, z+case_thickness*2, r+0.1);
         rounded_box(x, y, z, r);
-        rounded_box(x-case_thickness*2, y-case_thickness*2, z-case_thickness*2, r-0.1);
     }
 }
 
 
-difference() {
-    hollow_box(case_width, case_length, case_height, case_corner_radius);
-    translate([0,0,50]) {
-        cube( [100,100,100], center = true);
+module bottom() {
+    // Translate up to snaps + pad
+    translate([0,0,case_height/2.0+pad]) {
+        difference() {
+            hollow_box(case_width, case_length, case_height, case_corner_radius);
+            translate([0,0,50]) {
+                cube( [100,100,100], center = true);
+            }
+        }
     }
-    
 }
 
 
@@ -134,7 +140,7 @@ module all_snaps() {
     }
 }
 
-// all_snaps();
-
+all_snaps();
+bottom();
 
     
