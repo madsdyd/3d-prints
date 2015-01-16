@@ -6,6 +6,16 @@ mouse_length = 126;
 mouse_waist = 58 + 3.0;
 // Smallest place at, measured from front.
 mouse_waist_at = 55;
+// Height is used by case
+mouse_height = 42;
+
+// Case offset to mouse stuff
+// These are inside measurements.
+case_padding = 20;
+case_width = mouse_waist + case_padding;
+case_length = mouse_length + case_padding;
+case_height = mouse_height + case_padding; // Leave room for wire.
+case_corner_radius = 5;
 
 // thickness whereever it is used
 snap_thickness = 2.0;
@@ -83,7 +93,24 @@ module snap_bottom() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// The enclosure/case
+module case() {
+    # minkowski() {
+        cube([case_width-case_corner_radius * 2, case_length-case_corner_radius*2, case_height-case_corner_radius*2], center = true);
+        sphere(r=case_corner_radius);
+    }
+}
 
-snaps();
-snap_bottom();
 
+////////////////////////////////////////////////////////////////////////////////
+// Just testing
+// Snaps are z == 0. No padding.
+// This centers it on x,y.
+translate([0, ( mouse_length + 2 * snap_thickness ) / 2.0, 0]) {
+    translate([0,-snap_thickness,0]) {
+        snaps();
+        snap_bottom();
+    }
+}
+// case();
