@@ -11,7 +11,7 @@ mouse_height = 42;
 
 // Case offset to mouse stuff
 // These are inside measurements.
-case_padding = 20;
+case_padding = 30;
 case_width = mouse_waist + case_padding;
 case_length = mouse_length + case_padding;
 case_height = mouse_height + case_padding; // Leave room for wire.
@@ -118,8 +118,9 @@ module bottom() {
     translate([0,0,case_height/2.0+pad]) {
         difference() {
             hollow_box(case_width, case_length, case_height, case_corner_radius);
-            translate([0,0,50]) {
-                cube( [100,100,100], center = true);
+            // Cut at mouse height for now
+            translate([0,0,mouse_height]) {
+                cube( [200,200,case_height + case_thickness*2], center = true);
             }
         }
     }
@@ -135,7 +136,7 @@ module all_snaps() {
     translate([0, ( mouse_length + 2 * snap_thickness ) / 2.0, 0]) {
         translate([0,-snap_thickness,0]) {
             snaps();
-            snap_bottom();
+            // snap_bottom();
         }
     }
 }
