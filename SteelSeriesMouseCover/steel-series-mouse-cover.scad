@@ -7,17 +7,20 @@ mouse_waist = 58 + 3.0;
 // Smallest place at, measured from front.
 mouse_waist_at = 55;
 // Height is used by case
-mouse_height = 42;
+mouse_height = 34; // was 42, but really is 34
 
 // Case offset to mouse stuff
 // These are inside measurements.
-case_padding = 30;
+case_padding = 14;
 case_width = mouse_waist + case_padding;
 case_length = mouse_length + case_padding;
 case_height = mouse_height + case_padding; // Leave room for wire.
 case_corner_radius = 5;
-case_thickness = 1.2;
+case_thickness = 2.0;
 case_snap_height = 15;
+
+strenght_thickness = 3;
+strenght_width = 20;
 
 // thickness whereever it is used
 snap_thickness = 2.0;
@@ -115,40 +118,67 @@ module outer_box() {
     hollow_box(case_width, case_length, case_height, case_corner_radius);
 }
 
+// The snaps between the two parts.
+// Centered at mouse_height, match bottom
+module bottom_lid_snap() {
+    translate([0,0,mouse_height-case_snap_height/2.0]) {
+        difference() {
+            hollow_box(case_width-2*case_thickness, case_length-2*case_thickness, case_height, case_corner_radius);
+            translate([0,0,-case_height/2.0-case_snap_height/2.0]) {
+                cube( [200,200,case_height + case_thickness*2], center = true);
+            }
+            translate([0,0,case_height/2.0+case_snap_height/2.0]) {
+                cube( [200,200,case_height + case_thickness*2], center = true);
+            }
+        }
+    }
+}
+
 // This is the bottom of the case, inclusive snaps.
-// It is cut at mouse height
+// It is cut at mouse height, substracted half the snap for the lid
 module bottom_case() {
     // Translate up to snaps + pad
     translate([0,0,case_height/2.0+pad]) {
         difference() {
             outer_box();
-            // Cut at mouse height for now
-            translate([0,0,mouse_height]) {
+            // Cut at mouse height "inside", substracted half case snap height
+            translate([0,0,mouse_height+case_thickness-case_snap_height/2.0]) {
                 cube( [200,200,case_height + case_thickness*2], center = true);
             }
         }
     }
     bottom_snaps();
+    bottom_lid_snap();
 }
 
-// The snaps between the two parts.
-// Centered at mouse_height, match bottom
-module bottom_lid_snap() {
-    translate([0,0,mouse_height]) {
+
+module stronger_bottom_case() {
+    bottom_case();
+    translate([pad,0,-pad]) {
         difference() {
-            hollow_box(case_width-2*case_thickness, case_length-2*case_thickness, case_height, case_corner_radius);
-            translate([0,0,-case_height/2-case_snap_height/2]) {
-                cube( [200,200,case_height + case_thickness*2], center = true);
+            translate([case_width/2.0 -case_thickness - strenght_thickness/2.0, 0, mouse_height/2.0-case_thickness]) {
+                # cube([strenght_thickness, strenght_width,mouse_height-1], center = true);
+                
             }
-            translate([0,0,case_height/2+case_snap_height/2]) {
-                cube( [200,200,case_height + case_thickness*2], center = true);
+            bottom_case();
+        }
+    }
+    translate([+pad,0,-pad]) {
+        difference() {
+            translate([-(case_width/2.0 -case_thickness - strenght_thickness/2.0), 0, mouse_height/2.0-case_thickness]) {
+                # cube([strenght_thickness, strenght_width,mouse_height-1], center = true);
+                
             }
+            bottom_case();
         }
     }
 }
 
+stronger_bottom_case();
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // The actual parts.
 
-bottom_lid_snap();
-bottom_case();
+// bottom_lid_snap();
+// bottom_case();
