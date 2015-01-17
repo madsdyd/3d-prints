@@ -16,7 +16,8 @@ case_width = mouse_waist + case_padding;
 case_length = mouse_length + case_padding;
 case_height = mouse_height + case_padding; // Leave room for wire.
 case_corner_radius = 5;
-case_thickness = 2.0;
+case_thickness = 1.2;
+case_snap_height = 15;
 
 // thickness whereever it is used
 snap_thickness = 2.0;
@@ -83,16 +84,13 @@ module side_snaps() {
 }
 
 
-module snaps() {
-    front_snaps();
-    back_snaps();
-    side_snaps();
-}
-
-// Bottom, just something to place it on
-module snap_bottom() {
-    translate( [-( mouse_waist + snap_thickness ) / 2.0, -mouse_length-snap_thickness, -snap_thickness+pad]) {
-        cube([mouse_waist + snap_thickness, mouse_length + 2* snap_thickness, snap_thickness]);
+module bottom_snaps() {
+    translate([0, ( mouse_length + 2 * snap_thickness ) / 2.0, 0]) {
+        translate([0,-snap_thickness,0]) {
+            front_snaps();
+            back_snaps();
+            side_snaps();
+        }
     }
 }
 
@@ -112,36 +110,45 @@ module hollow_box(x, y, z, r) {
     }
 }
 
+// This is the outer box - we make two of these, and split them to get lid and bottom.
+module outer_box() {
+    hollow_box(case_width, case_length, case_height, case_corner_radius);
+}
 
-module bottom() {
+// This is the bottom of the case, inclusive snaps.
+// It is cut at mouse height
+module bottom_case() {
     // Translate up to snaps + pad
     translate([0,0,case_height/2.0+pad]) {
         difference() {
-            hollow_box(case_width, case_length, case_height, case_corner_radius);
+            outer_box();
             // Cut at mouse height for now
             translate([0,0,mouse_height]) {
                 cube( [200,200,case_height + case_thickness*2], center = true);
             }
         }
     }
+    bottom_snaps();
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Just testing
-// Snaps are z == 0. No padding.
-// This centers it on x,y.
-module all_snaps() {
-    translate([0, ( mouse_length + 2 * snap_thickness ) / 2.0, 0]) {
-        translate([0,-snap_thickness,0]) {
-            snaps();
-            // snap_bottom();
+// The snaps between the two parts.
+// Centered at mouse_height, match bottom
+module bottom_lid_snap() {
+    translate([0,0,mouse_height]) {
+        difference() {
+            hollow_box(case_width-2*case_thickness, case_length-2*case_thickness, case_height, case_corner_radius);
+            translate([0,0,-case_height/2-case_snap_height/2]) {
+                cube( [200,200,case_height + case_thickness*2], center = true);
+            }
+            translate([0,0,case_height/2+case_snap_height/2]) {
+                cube( [200,200,case_height + case_thickness*2], center = true);
+            }
         }
     }
 }
 
-all_snaps();
-bottom();
+////////////////////////////////////////////////////////////////////////////////
+// The actual parts.
 
-    
+bottom_lid_snap();
+bottom_case();
