@@ -12,7 +12,7 @@ ball_gap = 0.1;
 tab_thickness = 2.0;
 
 // Tag overlap is how much over the center of the ball, the tabs grab.
-tab_overlap = 1.0;
+tab_overlap = 3.0;
 
 // Amount of space between tabs and walls
 tab_wall_spacing = 1.5;
@@ -86,11 +86,38 @@ module ball_attachment() {
 };
 
 // This is the actual holder
-
-
-
 module z3_compact_holder() {
-    // cube([
+
+    // Arms made of cylinders, cuttet with cube
+    difference() {
+        // But, also cut arms with sligtly smaller cylinder than the one for attaching
+        difference() {
+            translate([0,0,cylinder_height]) {
+                rotate([0,90,0] ) {
+                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_width / 2.0 + phone_tab_thickness );
+                }
+                rotate([0,270,0] ) {
+                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_width / 2.0 + phone_tab_thickness );
+                }
+                rotate([90,0,0] ) {
+                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_height / 2.0 + phone_tab_thickness );
+                }
+                rotate([270,0,0] ) {
+                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_height / 2.0 + phone_tab_thickness );
+                }
+            }
+            cylinder(h=cylinder_height, r=cylinder_radius-pad);
+
+            
+        }
+
+
+        // Cut everything with a big cube
+        # translate ([0,0,cylinder_height * 2.0]) {
+            cube([phone_width * 2, phone_height * 2, cylinder_height * 2], center = true );
+        }
+
+    }
             
 }
 
@@ -99,3 +126,5 @@ module z3_compact_holder() {
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 ball_attachment();
+
+// z3_compact_holder();
