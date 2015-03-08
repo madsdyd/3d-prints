@@ -9,10 +9,12 @@ ball_diameter = 16.8;
 ball_gap = 0.1;
 
 // Tab thickness is the thickness of the tabs
-tab_thickness = 2.0;
+// Print 3 was OK, with 2.0. Try with 2.4 to make it slightly tighter.
+tab_thickness = 2.4;
 
 // Tag overlap is how much over the center of the ball, the tabs grab.
-tab_overlap = 3.0;
+// Print 3 was OK, with 3.0, Try with 3.6 to make it slightly tighter.
+tab_overlap = 3.6;
 
 // Amount of space between tabs and walls
 tab_wall_spacing = 1.5;
@@ -32,6 +34,7 @@ phone_width = 127;
 phone_height = 64.5;
 phone_holder_thickness = 2;
 phone_tab_thickness = 2;
+phone_tab_width = 10;
 phone_thickness = 9;
 
 
@@ -88,22 +91,23 @@ module ball_attachment() {
 // This is the actual holder
 module z3_compact_holder() {
 
+    // ARMS
     // Arms made of cylinders, cuttet with cube
     difference() {
         // But, also cut arms with sligtly smaller cylinder than the one for attaching
         difference() {
             translate([0,0,cylinder_height]) {
                 rotate([0,90,0] ) {
-                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_width / 2.0 + phone_tab_thickness );
+                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_width / 2.0 + phone_tab_thickness );
                 }
                 rotate([0,270,0] ) {
-                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_width / 2.0 + phone_tab_thickness );
+                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_width / 2.0 + phone_tab_thickness );
                 }
                 rotate([90,0,0] ) {
-                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_height / 2.0 + phone_tab_thickness );
+                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_tab_thickness );
                 }
                 rotate([270,0,0] ) {
-                    cylinder(r1 = cylinder_height, r2= 5 , h = phone_height / 2.0 + phone_tab_thickness );
+                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_tab_thickness );
                 }
             }
             cylinder(h=cylinder_height, r=cylinder_radius-pad);
@@ -113,12 +117,30 @@ module z3_compact_holder() {
 
 
         // Cut everything with a big cube
-        # translate ([0,0,cylinder_height * 2.0]) {
+        translate ([0,0,cylinder_height * 2.0+pad]) {
             cube([phone_width * 2, phone_height * 2, cylinder_height * 2], center = true );
         }
 
     }
-            
+
+    // Add the tabs.
+    // BOTTOM
+    translate([0,-phone_height / 2.0 - phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
+        # cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
+        translate([0,0,phone_thickness / 2.0]){
+            rotate([45,0,0]) {
+                cube([phone_tab_width, phone_tab_thickness, phone_tab_thickness], center = true);
+            }
+        }
+    }
+    // LEFT
+    translate([-phone_width / 2.0 - phone_tab_thickness / 2.0, 0, cylinder_height + phone_thickness / 2.0] ) {
+        cube([phone_tab_thickness, phone_tab_width, phone_thickness], center = true);
+    }
+    // RIGHT
+    translate([+phone_width / 2.0 + phone_tab_thickness / 2.0, 0, cylinder_height + phone_thickness / 2.0] ) {
+        cube([phone_tab_thickness, phone_tab_width, phone_thickness], center = true);
+    }
 }
 
 
