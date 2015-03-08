@@ -1,5 +1,7 @@
 // Holder for Garmin base.
 
+////////////////////////////////////////////////////////////
+// Variables for the thing that grabs the ball.
 // diameter of ball
 ball_diameter = 16.8;
 
@@ -13,7 +15,7 @@ tab_thickness = 2.0;
 tab_overlap = 1.0;
 
 // Amount of space between tabs and walls
-tab_wall_spacing = 1.0;
+tab_wall_spacing = 1.5;
 
 // Slits are cut through the tabs.
 slit_thickness = 3.0;
@@ -23,6 +25,16 @@ wall_thickness = 1.2;
 
 // base thickness, is the thickness of the material from the edge of the ball to where the mount goes.
 base_thickness = 2.0;
+
+////////////////////////////////////////////////////////////
+// Variables for the phone holder
+phone_width = 127;
+phone_height = 64.5;
+phone_holder_thickness = 2;
+phone_tab_thickness = 2;
+phone_thickness = 9;
+
+
 
 // pad, to aviod non-manifold
 pad = 0.1;
@@ -73,7 +85,14 @@ module ball_attachment() {
     }
 };
 
+// This is the actual holder
 
+
+
+module z3_compact_holder() {
+    // cube([
+            
+}
 
 
 
