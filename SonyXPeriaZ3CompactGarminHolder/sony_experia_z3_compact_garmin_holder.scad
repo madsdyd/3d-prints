@@ -40,10 +40,14 @@ phone_tab_thickness = 2;
 phone_tab_width = 10;
 phone_thickness = 9;
 
-
+phone_tab_flip_radius = 1.5;
+phone_tab_flip_offset = -0.5;
 
 // pad, to aviod non-manifold
 pad = 0.1;
+
+// Increase circles
+$fn = 40;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Calculated stuff.
@@ -78,7 +82,7 @@ module ball_attachment() {
             cylinder(h=tab_height*2.0, r = inner_tube_outer_radius, center = true);
         }
         
-        // TODO: 4 cuts. In some of it
+        // 4 cuts by teo cubes.
         translate([0,0,slit_height / 2.0 - pad]) {
             cube([inner_tube_outer_radius*2.0+pad, slit_thickness, slit_height + 2*pad], center = true );
             cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
@@ -90,6 +94,17 @@ module ball_attachment() {
         }
     }
 };
+
+module holder_tab() {
+    cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
+    scale([1,3,1]) {
+        translate([0,0,phone_thickness / 2.0 + phone_tab_flip_radius + phone_tab_flip_offset ]){
+            rotate([0,90,0]) {
+                cylinder( h = phone_tab_width, r = phone_tab_flip_radius, center = true);
+            }
+        }
+    }
+}
 
 // This is the actual holder
 module z3_compact_holder() {
@@ -129,12 +144,16 @@ module z3_compact_holder() {
     // Add the tabs.
     // BOTTOM
     translate([0,-phone_height / 2.0 - phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
-        # cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
-        translate([0,0,phone_thickness / 2.0]){
-            rotate([45,0,0]) {
-                cube([phone_tab_width, phone_tab_thickness, phone_tab_thickness], center = true);
-            }
-        }
+        holder_tab();
+    }
+    // Add the tabs.
+    // TOP
+    // Different, needs two, translated 2.5 cm to each side
+    translate([25,+phone_height / 2.0 + phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
+        holder_tab();
+    }
+    translate([-25,+phone_height / 2.0 + phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
+        holder_tab();
     }
     // LEFT
     translate([-phone_width / 2.0 - phone_tab_thickness / 2.0, 0, cylinder_height + phone_thickness / 2.0] ) {
@@ -152,4 +171,4 @@ module z3_compact_holder() {
 // Main
 ball_attachment();
 
-// z3_compact_holder();
+z3_compact_holder();
