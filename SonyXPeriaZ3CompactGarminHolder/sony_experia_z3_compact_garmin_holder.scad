@@ -3,10 +3,12 @@
 ////////////////////////////////////////////////////////////
 // Variables for the thing that grabs the ball.
 // diameter of ball
+// Print 3 and 4 was ok, and used 16.8. Try slightly smaller
 ball_diameter = 16.8;
 
 // additional gap * in each side *. Diameter + 2 gap = hole diameter
-ball_gap = 0.1;
+// Print 3 and 4 was OK with 0.1. Try 0.
+ball_gap = 0;
 
 // Tab thickness is the thickness of the tabs
 // Print 3 was OK, with 2.0. Try with 2.4 to make it slightly tighter.
@@ -14,6 +16,7 @@ tab_thickness = 2.4;
 
 // Tag overlap is how much over the center of the ball, the tabs grab.
 // Print 3 was OK, with 3.0, Try with 3.6 to make it slightly tighter.
+
 tab_overlap = 3.6;
 
 // Amount of space between tabs and walls
