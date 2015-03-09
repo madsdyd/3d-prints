@@ -36,12 +36,23 @@ base_thickness = 2.0;
 phone_width = 127;
 phone_height = 64.5;
 phone_holder_thickness = 2;
-phone_tab_thickness = 2;
+phone_tab_thickness = 2.4;
 phone_tab_width = 10;
 phone_thickness = 9;
 
 phone_tab_flip_radius = 1.5;
 phone_tab_flip_offset = -0.5;
+// Control scale of the flips on the holder tabs.
+// top and bottom
+phone_tab_flip_scale_vert = 3;
+// Sides
+phone_tab_flip_scale_horz = 1.0;
+
+// How much to offset the top dual tabs
+phone_top_tab_offset = 25;
+// Controls how much to scale the cylinder.
+// TODO: This could be calculated, simple linear formula
+phone_top_tab_cyl_scale = 0.75;
 
 // pad, to aviod non-manifold
 pad = 0.1;
@@ -95,9 +106,9 @@ module ball_attachment() {
     }
 };
 
-module holder_tab() {
+module holder_tab( scale_factor ) {
     cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
-    scale([1,3,1]) {
+    scale([1,scale_factor,1]) {
         translate([0,0,phone_thickness / 2.0 + phone_tab_flip_radius + phone_tab_flip_offset ]){
             rotate([0,90,0]) {
                 cylinder( h = phone_tab_width, r = phone_tab_flip_radius, center = true);
@@ -115,17 +126,28 @@ module z3_compact_holder() {
         // But, also cut arms with sligtly smaller cylinder than the one for attaching
         difference() {
             translate([0,0,cylinder_height]) {
+                // Right
                 rotate([0,90,0] ) {
                     cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_width / 2.0 + phone_tab_thickness );
                 }
+                // Left
                 rotate([0,270,0] ) {
                     cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_width / 2.0 + phone_tab_thickness );
                 }
+                // Bottom
                 rotate([90,0,0] ) {
                     cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_tab_thickness );
                 }
-                rotate([270,0,0] ) {
-                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_tab_thickness );
+                // Top is different.
+                translate([phone_top_tab_offset,0,0]) {
+                    rotate([270,0,0] ) {
+                        cylinder(r1 = cylinder_height * phone_top_tab_cyl_scale, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_tab_thickness );
+                    }
+                }
+                translate([-phone_top_tab_offset,0,0]) {
+                    rotate([270,0,0] ) {
+                        cylinder(r1 = cylinder_height * phone_top_tab_cyl_scale, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_tab_thickness );
+                    }
                 }
             }
             cylinder(h=cylinder_height, r=cylinder_radius-pad);
@@ -144,24 +166,28 @@ module z3_compact_holder() {
     // Add the tabs.
     // BOTTOM
     translate([0,-phone_height / 2.0 - phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
-        holder_tab();
+        holder_tab( phone_tab_flip_scale_vert );
     }
     // Add the tabs.
     // TOP
     // Different, needs two, translated 2.5 cm to each side
     translate([25,+phone_height / 2.0 + phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
-        holder_tab();
+        holder_tab( phone_tab_flip_scale_vert );
     }
     translate([-25,+phone_height / 2.0 + phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
-        holder_tab();
+        holder_tab( phone_tab_flip_scale_vert );
     }
     // LEFT
     translate([-phone_width / 2.0 - phone_tab_thickness / 2.0, 0, cylinder_height + phone_thickness / 2.0] ) {
-        cube([phone_tab_thickness, phone_tab_width, phone_thickness], center = true);
+        rotate([0,0,90]) {
+            holder_tab( phone_tab_flip_scale_horz );
+        }
     }
     // RIGHT
     translate([+phone_width / 2.0 + phone_tab_thickness / 2.0, 0, cylinder_height + phone_thickness / 2.0] ) {
-        cube([phone_tab_thickness, phone_tab_width, phone_thickness], center = true);
+        rotate([0,0,90]) {
+            holder_tab( phone_tab_flip_scale_horz );
+        }
     }
 }
 
