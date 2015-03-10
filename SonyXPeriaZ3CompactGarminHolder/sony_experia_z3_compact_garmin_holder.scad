@@ -235,6 +235,8 @@ module z3_compact_holder() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main
-ball_attachment();
+union () {
+    ball_attachment();
 
-z3_compact_holder();
+    z3_compact_holder();
+}
