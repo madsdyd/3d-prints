@@ -44,7 +44,7 @@ phone_tab_flip_radius = 1.5;
 phone_tab_flip_offset = -0.5;
 // Control scale of the flips on the holder tabs.
 // top and bottom
-phone_tab_flip_scale_vert = 3;
+phone_tab_flip_scale_vert = 1.3;
 // Sides
 phone_tab_flip_scale_horz = 1.0;
 
