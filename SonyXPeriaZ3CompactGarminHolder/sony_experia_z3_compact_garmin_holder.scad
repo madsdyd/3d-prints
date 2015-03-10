@@ -108,9 +108,28 @@ module ball_attachment() {
 
 // This is a tab on each arm, that holds the phone "clicked" in place.
 module holder_tab( scale_factor ) {
-    // tab arm
-    cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
 
+    intersection() {
+        union() {
+            // tab arm
+            cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
+            
+            // tab click top
+            scale([1,scale_factor,1]) {
+                translate([0,0,phone_thickness / 2.0 + phone_tab_flip_radius + phone_tab_flip_offset ]){
+                    rotate([0,90,0]) {
+                        cylinder( h = phone_tab_width, r = phone_tab_flip_radius, center = true);
+                    }
+                }
+            }
+        }
+        
+        translate([0,phone_tab_thickness / 2.0, 0] ) {
+            cylinder( r = phone_tab_width / 2.0, h = phone_thickness * 2, center = true );
+        }
+    }
+    
+    
     // Does not work, but fun.
     /*
     multmatrix( m = [
@@ -121,15 +140,11 @@ module holder_tab( scale_factor ) {
         # cylinder( r = phone_tab_width / 2.0, h = phone_thickness, center = false );
     }
     */
-
-    // tab click top
-    scale([1,scale_factor,1]) {
-        translate([0,0,phone_thickness / 2.0 + phone_tab_flip_radius + phone_tab_flip_offset ]){
-            rotate([0,90,0]) {
-                cylinder( h = phone_tab_width, r = phone_tab_flip_radius, center = true);
-            }
-        }
+    // Add sphere below
+    translate([0,phone_tab_thickness / 2.0,-phone_thickness / 2.0] ) {
+        #    sphere( r = phone_tab_width / 2.0 );
     }
+    
 }
 
 // This is the actual holder
