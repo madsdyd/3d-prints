@@ -2,43 +2,38 @@
 
 ////////////////////////////////////////////////////////////
 // Variables for the thing that grabs the ball.
+
 // diameter of ball
 // Print 3 and 4 was ok, and used 16.8. Try slightly smaller
 ball_diameter = 16.8;
-
 // additional gap * in each side *. Diameter + 2 gap = hole diameter
 // Print 3 and 4 was OK with 0.1. Try 0.
-ball_gap = 0;
-
+// 0 broke, we add 0.1
+ball_gap = 0.1;
 // Tab thickness is the thickness of the tabs
 // Print 3 was OK, with 2.0. Try with 2.4 to make it slightly tighter.
-tab_thickness = 2.4;
-
-// Tag overlap is how much over the center of the ball, the tabs grab.
+// 2.4 was probably too much, they broke.. Back to 2.0
+tab_thickness = 2.0;
+// Tab overlap is how much over the center of the ball, the tabs grabs
 // Print 3 was OK, with 3.0, Try with 3.6 to make it slightly tighter.
-
 tab_overlap = 3.6;
-
 // Amount of space between tabs and walls
 tab_wall_spacing = 1.5;
-
 // Slits are cut through the tabs.
 slit_thickness = 3.0;
-
 // wall thickness
 wall_thickness = 1.2;
-
 // base thickness, is the thickness of the material from the edge of the ball to where the mount goes.
-base_thickness = 2.0;
+base_thickness = 1.0;
 
 ////////////////////////////////////////////////////////////
 // Variables for the phone holder
-phone_width = 127.3 + 1;
-phone_height = 64.9 + 1;
+phone_width = 127.3 + 0.2;
+phone_height = 64.9 + 0.2;
 phone_holder_thickness = 2;
 phone_tab_thickness = 2.4;
 phone_tab_width = 10;
-phone_thickness = 8.6 + 1;
+phone_thickness = 8.6 - 1.0; // Matches the tabs... I hope
 
 phone_tab_flip_radius = 1.5;
 phone_tab_flip_offset = -0.5;
@@ -66,6 +61,7 @@ $fn = 70;
 ////////////////////////////////////////////////////////////
 // ball attachment stuff
 hollow_radius = ( ball_diameter + 2* ball_gap ) / 2.0;
+// The ball attachment is cut from this cylinder
 cylinder_radius = hollow_radius + tab_thickness + tab_wall_spacing + wall_thickness;
 cylinder_height = base_thickness + hollow_radius + tab_overlap;
 
@@ -93,11 +89,15 @@ module ball_attachment() {
             cylinder(h=tab_height*2.0, r = inner_tube_outer_radius, center = true);
         }
         
-        // 4 cuts by teo cubes.
+        // Cuts by cubes
+        for ( z = [0, 60, 120] ) {
+        rotate([0,0,z]) {
         translate([0,0,slit_height / 2.0 - pad]) {
             cube([inner_tube_outer_radius*2.0+pad, slit_thickness, slit_height + 2*pad], center = true );
-            cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
+            // cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
         }
+        }
+    }
         
         // Make the center hollow
         translate([0,0,tab_overlap]){
@@ -158,6 +158,7 @@ module z3_compact_holder() {
 
     // ARMS
     // Arms made of cylinders, cuttet with cube
+    // TODO: The r1 of all these cylinders should be max of cylinder_height and width, I think, or user set
     difference() {
         // But, also cut arms with sligtly smaller cylinder than the one for attaching
         difference() {
@@ -165,6 +166,7 @@ module z3_compact_holder() {
                 // Right
                 rotate([0,90,0] ) {
                     cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_width / 2.0 );
+                    // cylinder(r1 = cylinder_radius, r2= phone_tab_width / 2.0 , h = phone_width / 2.0 );
                 }
                 // Left
                 rotate([0,270,0] ) {
