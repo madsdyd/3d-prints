@@ -120,12 +120,22 @@ module base() {
 module plate() {
     
     // The wire guide outer stuff
-    # translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
+    difference() {
+        # translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
+            
+            cube([plate_wire_guide_inner_width + 2 * plate_wire_guide_thickness,
+                    plate_wire_guide_inner_height + 2 * plate_wire_guide_thickness,
+                    plate_wire_guide_outer_depth], center = true);
+        }
+        // Cut a hole through it
+        # translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
+            
+            cube([plate_wire_guide_inner_width,
+                    plate_wire_guide_inner_height,
+                    plate_wire_guide_outer_depth * 2 ], center = true);
         
-        cube([plate_wire_guide_inner_width + 2 * plate_wire_guide_thickness,
-                plate_wire_guide_inner_height + 2 * plate_wire_guide_thickness,
-                plate_wire_guide_outer_depth], center = true);
-        
+        }
+            
     }
     
 
