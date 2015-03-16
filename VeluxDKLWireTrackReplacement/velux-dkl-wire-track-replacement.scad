@@ -3,6 +3,7 @@
 
 
 pad = 0.05;
+$fn = 50;
 
 ////////////////////////////////////////////////////////////
 // CONSTANTS
@@ -17,8 +18,8 @@ base_wedge_offset = 26.0; // This is not actual measurement.
 base_wedge_angle = 17; // very approximate
 
 // PLATE CONSTANTS
-plate_width = 24;
-plate_height = 32;
+plate_width = 32;
+plate_height = 22;
 plate_thickness = 2;
 // Offset from bottom edge of base to start of plate.
 plate_base_offset = 7.3;
@@ -108,14 +109,25 @@ module base() {
 // Most is cut from this (shape), using a coordinate system with 0,0 in lover left corner.
 // Later, some additional stuff is added
 module plate() {
-    cube([plate_width, plate_height, plate_thickness]);
+    difference() {
+        // The actual plate
+        cube([plate_width, plate_height, plate_thickness]);
+
+        // Screw hole
+        translate( [plate_screw_hole_x_offset, plate_screw_hole_y_offset, plate_thickness / 2] ) {
+            cylinder(r = plate_screw_hole_diameter / 2.0, h = plate_thickness * 2, center = true );
+        }
+        
+    }
     
 }
 
 module positioned_plate() {
-    translate([0,plate_base_offset,base_thickness-pad]) {
-        rotate([0,270,0]) {
-            plate();
+    translate([-plate_thickness,plate_base_offset,base_thickness-pad]) {
+        rotate([0,90,0]) {
+            rotate([0,0,90]) {
+                plate();
+            }
         }
     }
 }
@@ -141,6 +153,6 @@ module fitter() {
 
 
 
-// plate();
+//  plate();
 base_and_plate();
 // base_weird_edge();
