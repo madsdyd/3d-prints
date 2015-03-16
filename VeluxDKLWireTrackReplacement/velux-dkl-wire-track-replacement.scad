@@ -24,10 +24,19 @@ plate_thickness = 2;
 // Offset from bottom edge of base to start of plate.
 plate_base_offset = 7.3;
 
-// The screw hole is important
+// The screw hole is important. Offsets from center
 plate_screw_hole_x_offset = 17.4;
 plate_screw_hole_y_offset = 8.6;
 plate_screw_hole_diameter = 2.4; // r = d/2 ... 
+
+// And, the wire gude. Offsets from center.
+plate_wire_guide_x_offset = 9.5;
+plate_wire_guide_y_offset = 15.5;
+plate_wire_guide_inner_width = 5;
+plate_wire_guide_inner_height = 6;
+plate_wire_guide_outer_depth = 9.5;
+plate_wire_guide_roundness = 1; // Dunno yet.
+plate_wire_guide_thickness = 3;
 
 // FITTER CONSTANTS
 // ALSO USED BY BASE. REALLY; THIS IS CONFUSING
@@ -109,6 +118,17 @@ module base() {
 // Most is cut from this (shape), using a coordinate system with 0,0 in lover left corner.
 // Later, some additional stuff is added
 module plate() {
+    
+    // The wire guide outer stuff
+    # translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
+        
+        cube([plate_wire_guide_inner_width + 2 * plate_wire_guide_thickness,
+                plate_wire_guide_inner_height + 2 * plate_wire_guide_thickness,
+                plate_wire_guide_outer_depth], center = true);
+        
+    }
+    
+
     difference() {
         // The actual plate
         cube([plate_width, plate_height, plate_thickness]);
@@ -117,9 +137,10 @@ module plate() {
         translate( [plate_screw_hole_x_offset, plate_screw_hole_y_offset, plate_thickness / 2] ) {
             cylinder(r = plate_screw_hole_diameter / 2.0, h = plate_thickness * 2, center = true );
         }
+
+        // Add the hole for the guide for the wire - wireguide
         
     }
-    
 }
 
 module positioned_plate() {
