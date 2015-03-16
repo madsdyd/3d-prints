@@ -5,6 +5,8 @@
 pad = 0.05;
 
 ////////////////////////////////////////////////////////////
+// CONSTANTS
+
 // BASE PART CONSTANTS
 // The largest part. Goes into the track of the curtain
 base_width = 15.8;
@@ -13,6 +15,13 @@ base_thickness = 2.4;
 // The base "wedges off" in the top, with an angle
 base_wedge_offset = 26.0; // This is not actual measurement.
 base_wedge_angle = 17; // very approximate
+
+// FITTER CONSTANTS
+// ALSO USED BY BASE. REALLY; THIS IS CONFUSING
+// The very small edge in the side
+fitter_edge_thickness = 0.7;
+// The offset from the left edge to the start of the fitter
+fitter_base_offset = 14.7;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,12 +73,36 @@ module base_base() {
 
 // The actual base.
 module base() {
+
+    // Cut off some stuff
     difference() {
-        base_base();
-        translate([0,base_height-4,-pad]) {
-            base_weird_edge();
+        // The main base
+        difference() {
+            base_base();
+            translate([0,base_height-4,-pad]) {
+                base_weird_edge();
+            }
+        }
+        // The edge is actually a wedge too, but really...
+        translate( [ base_width + fitter_base_offset, 0, base_thickness + fitter_edge_thickness ] ) {
+            cube([base_width * 2, base_height * 2, base_thickness * 2], center = true );
         }
     }
+}
+
+////////////////////////////////////////////////////////////
+// The fitter is the round part that goes into the something.
+// Yes, I know, I have a really hard time describing it.
+
+module fitter() {
+    
+
+}
+
+module base_and_fitter() {
+    
+
+
 }
 
 
