@@ -61,6 +61,9 @@ plate_tounge_cutout_radius = 1.25;
 plate_tounge_cutout_x_offset_center = 8;
 plate_tounge_cutout_y_offset_bottom = 2;
 
+// shape is the final shape
+shape_tounge_diff = 1.5;
+
 
 // FITTER CONSTANTS
 // ALSO USED BY BASE. REALLY; THIS IS CONFUSING
@@ -259,6 +262,29 @@ module plate() {
         translate( [plate_curtain_holder_x_offset,0,-plate_thickness / 2.0] ) {
             plate_curtain_cutting();
         }
+
+        // And, some cuts for the shape of the plate
+        // Cut above curtain guide
+        translate([plate_width + 4, 6 + 15,0]) {
+            cylinder( r = 15, h = 6, center = true );
+        }
+        // Cut some corner above the curtain guide cut.
+        translate([19,19,-5]) {
+            difference() {
+                cube( [10, 10, 10] );
+                cylinder( r = 3, h = 20 );
+            }
+        }
+        // And around the tounge
+        translate([plate_tounge_x_offset,plate_tounge_y_top - plate_tounge_height ,0]) {
+            difference() {
+                translate([-50,0,-5]) cube([50,50,50]);
+                scale( [plate_tounge_width + 2 * shape_tounge_diff,
+                        ( plate_tounge_height + shape_tounge_diff ) * 2 , 1] ) {
+                    translate([0,0,-6]) cylinder(r = 0.5, h = 52 );
+                }
+            }
+        }
     }
 }
 
@@ -302,11 +328,16 @@ difference() {
     // This is a special cut, which really is part of the tounge, but was too
     // hard to handle in that coordinate system
     // Note, 10 and 5 are hardcoded here.
+    // And, go way oversize, to allow for the other stuff to move arounc
     translate([base_width + 5/cos(plate_tounge_limit_angle),0,0]) {
         rotate([0,90+plate_tounge_limit_angle,0]) {
             cube([plate_tounge_width * 10, plate_tounge_height * 10, 10 ], center = true );
         }
     }
+
+
+    // Some final 
+    
 }
 
 // base_weird_edge();
