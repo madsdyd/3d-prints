@@ -42,8 +42,8 @@ plate_wire_guide_thickness = 2.4;
 plate_curtain_holder_x_offset = 19.1;
 
 // A small guide thing, that goes in, close the curtain holder
-plate_guide_width = 6.8;
-plate_guide_height = 1.3;
+plate_guide_width = 6.0;
+plate_guide_height = 1.2;
 plate_guide_depth = 5;
 plate_guide_x_offset = 19;
 plate_guide_y_offset = 5.0;
@@ -53,7 +53,7 @@ plate_guide_angle = 4;
 plate_tounge_width = 16;
 plate_tounge_height = 5; // Half height
 plate_tounge_x_offset = 9;
-plate_tounge_y_top = 9;
+plate_tounge_y_top = 8.5;
 plate_tounge_limit_angle = 22.5;
 plate_tounge_depth = 10; // Not precise, just more than the limit stuff.
 // Two cutouts
