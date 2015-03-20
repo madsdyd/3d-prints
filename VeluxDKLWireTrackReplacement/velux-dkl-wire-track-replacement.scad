@@ -41,6 +41,14 @@ plate_wire_guide_thickness = 3;
 // And, the curtain holder
 plate_curtain_holder_x_offset = 19.1;
 
+// A small guide thing, that goes in, close the curtain holder
+plate_guide_width = 6.8;
+plate_guide_height = 1.3;
+plate_guide_depth = 5;
+plate_guide_x_offset = 19;
+plate_guide_y_offset = 5.0;
+plate_guide_angle = 4;
+
 // FITTER CONSTANTS
 // ALSO USED BY BASE. REALLY; THIS IS CONFUSING
 // The very small edge in the side
@@ -165,6 +173,14 @@ module plate() {
             
         }
         sphere( r = plate_wire_guide_roundness );
+    }
+
+    ////////////////////////////////////////
+    // The little guide
+    translate([plate_guide_x_offset, plate_guide_y_offset, plate_thickness - pad]) {
+    rotate([0,0,-plate_guide_angle]) {
+            # cube([plate_guide_width, plate_guide_height, plate_guide_depth]);
+        }
     }
 
     //////////////////////////////////////////////////
