@@ -38,6 +38,9 @@ plate_wire_guide_outer_depth = 9.5;
 plate_wire_guide_roundness = 1; // Dunno yet.
 plate_wire_guide_thickness = 3;
 
+// And, the curtain holder
+plate_curtain_holder_x_offset = 19.1;
+
 // FITTER CONSTANTS
 // ALSO USED BY BASE. REALLY; THIS IS CONFUSING
 // The very small edge in the side
@@ -188,9 +191,9 @@ module plate() {
 
         ////////////////////////////////////////
         // The cutting for the actual cloth of the curtain
-        
-        
-        
+        translate( [plate_curtain_holder_x_offset,0,-plate_thickness / 2.0] ) {
+            plate_curtain_cutting();
+        }
     }
 }
 
