@@ -25,12 +25,12 @@ plate_thickness = 2;
 plate_base_offset = 7.3;
 
 // The screw hole is important. Offsets from center
-plate_screw_hole_x_offset = 17.4;
+plate_screw_hole_x_offset = 18;
 plate_screw_hole_y_offset = 8.6;
-plate_screw_hole_diameter = 2.4; // r = d/2 ... 
+plate_screw_hole_diameter = 3.0; // r = d/2 ... 
 
 // And, the wire gude. Offsets from center.
-plate_wire_guide_x_offset = 9.5;
+plate_wire_guide_x_offset = 14.5;
 plate_wire_guide_y_offset = 15.5;
 plate_wire_guide_inner_width = 5;
 plate_wire_guide_inner_height = 6;
@@ -68,7 +68,6 @@ module base_weird_edge() {
 
 // The base part, without weird cuttings.
 module base_base() {
-
     // Base with wedge
     // The rotation is sort of weird
     translate([base_width / 2.0, base_height / 2.0, 0] ) {
@@ -117,9 +116,32 @@ module base() {
 // The plate is the vertical plate from the base
 // Most is cut from this (shape), using a coordinate system with 0,0 in lover left corner.
 // Later, some additional stuff is added
+
+/////////////////////////////////////////////////
+// Some weird cutting that fits the curtain.
+module plate_curtain_cutting() {
+    linear_extrude( height = plate_thickness * 2 ) {
+        polygon(points=[
+                [0,-pad],
+                [0,4],
+                [0.5,4],
+                [8,1],
+                [7.9,2.5],
+                [11,2.5],
+                [11,1.5],
+                [9.5,0.75],
+                [9.5,-pad]
+            ]);
+    }
+}
+// plate_curtain_cutting();
+
+// The actual plate
 module plate() {
     
-    // The wire guide 
+    //////////////////////////////////////////////////
+    // The wire guide
+    // This is made as a cube with a rounded hole in.
     minkowski($fn = 10) {
         difference() {
             translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
@@ -139,30 +161,35 @@ module plate() {
             }
             
         }
-    sphere( r = plate_wire_guide_roundness );
-}
+        sphere( r = plate_wire_guide_roundness );
+    }
 
-    
-    
-
+    //////////////////////////////////////////////////
+    // The plate, with various cuttings in it.
     difference() {
         // The actual plate
         cube([plate_width, plate_height, plate_thickness]);
 
+        ////////////////////////////////////////
         // Screw hole
         translate( [plate_screw_hole_x_offset, plate_screw_hole_y_offset, plate_thickness / 2] ) {
             cylinder(r = plate_screw_hole_diameter / 2.0, h = plate_thickness * 2, center = true );
         }
 
         // Add the hole for the guide for the wire - wireguide
-            // Note, this is also done above, sort of
-            translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
-                
-                cube([plate_wire_guide_inner_width + plate_wire_guide_roundness * 2,
-                        plate_wire_guide_inner_height + plate_wire_guide_roundness * 2,
-                        plate_wire_guide_outer_depth * 2 ], center = true);
-                
-            }
+        // Note, this is also done above, sort of
+        translate([ plate_wire_guide_x_offset, plate_wire_guide_y_offset, plate_wire_guide_outer_depth / 2.0 - plate_wire_guide_outer_depth + pad]) {
+            
+            cube([plate_wire_guide_inner_width + plate_wire_guide_roundness * 2,
+                    plate_wire_guide_inner_height + plate_wire_guide_roundness * 2,
+                    plate_wire_guide_outer_depth * 2 ], center = true);
+            
+        }
+
+        ////////////////////////////////////////
+        // The cutting for the actual cloth of the curtain
+        
+        
         
     }
 }
