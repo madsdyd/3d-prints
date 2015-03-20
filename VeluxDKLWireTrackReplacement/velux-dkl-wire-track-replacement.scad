@@ -31,12 +31,12 @@ plate_screw_hole_diameter = 3.0; // r = d/2 ...
 
 // And, the wire gude. Offsets from center.
 plate_wire_guide_x_offset = 14.5;
-plate_wire_guide_y_offset = 15.5;
+plate_wire_guide_y_offset = 16;
 plate_wire_guide_inner_width = 5;
 plate_wire_guide_inner_height = 6;
 plate_wire_guide_outer_depth = 9.5;
 plate_wire_guide_roundness = 1; // Dunno yet.
-plate_wire_guide_thickness = 3;
+plate_wire_guide_thickness = 2.4;
 
 // And, the curtain holder
 plate_curtain_holder_x_offset = 19.1;
@@ -48,6 +48,19 @@ plate_guide_depth = 5;
 plate_guide_x_offset = 19;
 plate_guide_y_offset = 5.0;
 plate_guide_angle = 4;
+
+// Tounge - visible oval thingy
+plate_tounge_width = 16;
+plate_tounge_height = 5; // Half height
+plate_tounge_x_offset = 9;
+plate_tounge_y_top = 9;
+plate_tounge_limit_angle = 22.5;
+plate_tounge_depth = 10; // Not precise, just more than the limit stuff.
+// Two cutouts
+plate_tounge_cutout_radius = 1.25;
+plate_tounge_cutout_x_offset_center = 8;
+plate_tounge_cutout_y_offset_bottom = 2;
+
 
 // FITTER CONSTANTS
 // ALSO USED BY BASE. REALLY; THIS IS CONFUSING
@@ -147,6 +160,34 @@ module plate_curtain_cutting() {
 }
 // plate_curtain_cutting();
 
+////////////////////////////////////////
+// The "tounge" is the round sloped thing that goes into the visible user area
+// This is cut against the base, later
+module plate_tounge() {
+    difference() {
+        union() {
+            scale( [plate_tounge_width, plate_tounge_height*2,1] ) {
+                cylinder(r = 0.5, h = plate_tounge_depth );
+            }
+            // Cube thinge
+            // Something fishy with pad here.
+            translate([ 0, - plate_tounge_y_top / 2.0 + base_thickness / 2.0 + 3*pad, plate_tounge_depth / 2 + pad] ) {
+                cube( [plate_tounge_width, plate_tounge_y_top - plate_tounge_height + base_thickness, plate_tounge_depth], center = true );
+            }
+        }
+        // Two very minor cuts
+        union() {
+            translate([-plate_tounge_cutout_x_offset_center, - plate_tounge_y_top / 2.0 + base_thickness / 2.0 + 3*pad - plate_tounge_cutout_y_offset_bottom/2.0, 0] ) {
+                cylinder(r = 1.25, h = plate_tounge_depth*2);
+            }
+            translate([plate_tounge_cutout_x_offset_center, - plate_tounge_y_top / 2.0 + base_thickness / 2.0 + 3*pad - plate_tounge_cutout_y_offset_bottom/2.0, 0] ) {
+                cylinder(r = 1.25, h = plate_tounge_depth*2);
+            }
+        }
+
+    }
+}
+
 // The actual plate
 module plate() {
     
@@ -177,12 +218,20 @@ module plate() {
 
     ////////////////////////////////////////
     // The little guide
+    // TODO: May want to round corners here.
     translate([plate_guide_x_offset, plate_guide_y_offset, plate_thickness - pad]) {
-    rotate([0,0,-plate_guide_angle]) {
-            # cube([plate_guide_width, plate_guide_height, plate_guide_depth]);
+        rotate([0,0,-plate_guide_angle]) {
+            cube([plate_guide_width, plate_guide_height, plate_guide_depth]);
         }
     }
 
+    // The tounge
+    translate([plate_tounge_x_offset, plate_tounge_y_top - plate_tounge_height, plate_thickness - pad]) {
+
+        plate_tounge();
+    }
+
+    
     //////////////////////////////////////////////////
     // The plate, with various cuttings in it.
     difference() {
@@ -245,5 +294,19 @@ module fitter() {
 
 
 //  plate();
-base_and_plate();
+
+difference() {
+    base_and_plate();
+
+
+    // This is a special cut, which really is part of the tounge, but was too
+    // hard to handle in that coordinate system
+    // Note, 10 and 5 are hardcoded here.
+    translate([base_width + 5/cos(plate_tounge_limit_angle),0,0]) {
+        rotate([0,90+plate_tounge_limit_angle,0]) {
+            cube([plate_tounge_width * 10, plate_tounge_height * 10, 10 ], center = true );
+        }
+    }
+}
+
 // base_weird_edge();
