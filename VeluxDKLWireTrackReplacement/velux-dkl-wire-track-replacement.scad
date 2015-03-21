@@ -318,26 +318,28 @@ module fitter() {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
 
-//  plate();
-
-difference() {
-    base_and_plate();
-
-
-    // This is a special cut, which really is part of the tounge, but was too
-    // hard to handle in that coordinate system
-    // Note, 10 and 5 are hardcoded here.
-    // And, go way oversize, to allow for the other stuff to move arounc
-    translate([base_width + 5/cos(plate_tounge_limit_angle),0,0]) {
-        rotate([0,90+plate_tounge_limit_angle,0]) {
-            cube([plate_tounge_width * 10, plate_tounge_height * 10, 10 ], center = true );
+module main() {
+    // Rotate to support print better
+    rotate([0,-90,0]) {
+        difference() {
+            base_and_plate();
+            
+            // This is a special cut, which really is part of the tounge, but was too
+            // hard to handle in that coordinate system
+            // Note, 10 and 5 are hardcoded here.
+            // And, go way oversize, to allow for the other stuff to move arounc
+            translate([base_width + 5/cos(plate_tounge_limit_angle),0,0]) {
+                rotate([0,90+plate_tounge_limit_angle,0]) {
+                    cube([plate_tounge_width * 10, plate_tounge_height * 10, 10 ], center = true );
+                }
+            }
         }
     }
-
-
-    // Some final 
-    
 }
 
-// base_weird_edge();
+// Finally, print one for each side
+translate([-10,0,0]) main();
+mirror([1,0,0]) translate([-10,0,0]) main();
+
