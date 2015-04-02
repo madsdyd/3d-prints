@@ -3,17 +3,17 @@
 // 5 and 15 degrees.
 
 
-base_width = 25.5;
+base_width = 24.5;
 base_height = 19.5;
-base_thickness = 4.0;
+base_thickness = 5.0;
 base_hole_offset = 8;
-base_hole_radius = 3.75 + 0.1;
+base_hole_radius = 3.75 + 0.25;
 
 ludo_base_height = 12.5;
 ludo_total_height = 21;
 ludo_ball_radius = 9.7 / 2.0;
 ludo_base_radius = 7.4 / 2.0;
-ludo_top_radius = 5.8 / 2.0;
+ludo_top_radius = 5.5 / 2.0;
 
 ludo_offset = 6.5; // Add fudge here, to increase distance
 ludo_rel_angle = 5;
