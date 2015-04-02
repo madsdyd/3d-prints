@@ -12,7 +12,7 @@ handle_hole_radius = 3 / 2.0;
 handle_hole_offset = 15;
 
 // Stuff to fasten fitting
-fitting_hole_radius = 5 / 2.5;
+fitting_hole_radius = 5 / 2.0;
 fitting_hole_angle = 45;
 
 // Pad and roundness
