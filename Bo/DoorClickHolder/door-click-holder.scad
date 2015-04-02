@@ -4,9 +4,9 @@
 
 
 base_width = 24.5;
-base_height = 19.5;
+base_height = 19.5 + 3.0; // Add 3 mm.
 base_thickness = 5.0;
-base_hole_offset = 8;
+base_hole_offset = 8 + 3.0 - 2.0; // Offset center. - move 3 mmm
 base_hole_radius = 3.75 + 0.25;
 
 ludo_base_height = 12.5;
