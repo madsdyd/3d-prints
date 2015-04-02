@@ -8,8 +8,8 @@ thickness = 10;
 center_hole_radius = 12 / 2.0;
 
 // Stuff to fasten handle too
-handle_holes_radius = 3 / 2.0;
-handle_holes_offset = 15;
+handle_hole_radius = 3 / 2.0;
+handle_hole_offset = 15;
 
 // Stuff to fasten fitting
 fitting_hole_radius = 5 / 2.5;
@@ -19,14 +19,40 @@ fitting_hole_angle = 45;
 $fn = 50;
 pad = 0.05;
 
-// Base is the main stuff, exclusive the fitting holes
-module base() {
+// A handle hole
+module handle_holes() {
+    translate( [handle_hole_offset,0,0] ) {
+        cylinder( h = thickness + 2*pad, r = handle_hole_radius, center = true );
+    }
+    translate( [-handle_hole_offset,0,0] ) {
+        cylinder( h = thickness + 2*pad, r = handle_hole_radius, center = true );
+    }
+}
 
-    
-    cylinder( h = 10, r = radius );
-    
-    
+module fitting_holes() {
+
+
+
+}
+
+// The fitting
+module fitting() {
+
+    difference() {
+        // The main cylinder
+        cylinder( h = thickness, r = radius, center = true );
+
+        // center hole
+        cylinder( h = thickness + 2*pad, r = center_hole_radius, center = true );
+        
+        // Holes for fastening the handle
+        handle_holes();
+
+        // Tricky stuff.
+        fitting_holes();
+        
+    }
     
 }
 
-base();
+fitting();
