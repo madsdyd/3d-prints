@@ -30,9 +30,16 @@ module handle_holes() {
 }
 
 module fitting_holes() {
-
-
-
+    // Rotate into place
+    rotate([0,0,fitting_hole_angle]) {
+        // Translates in x to match edge of main fitting
+        translate([radius, 0, 0]) {
+            cylinder( h = thickness + 2*pad, , r = fitting_hole_radius, center = true );
+        }
+        translate([-radius, 0, 0]) {
+            cylinder( h = thickness + 2*pad, , r = fitting_hole_radius, center = true );
+        }
+    }
 }
 
 // The fitting
