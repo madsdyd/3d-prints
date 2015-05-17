@@ -1,7 +1,12 @@
 // Holder to hand a guitar (bass) on a shelf
 
+// Note: Your openscad previewer needs to increase
+// Preferences->Advanced->Turn of rendering at elements ... to about 6000 to work.
+
 // There are three parts to this, the thing that fits on the shelf,
 // the tigthening screw, and the actual holder for the bass.
+
+use <Thread_Library.scad>;
 
 // shelf_grabber
 shelf_grabber_width = 60;
@@ -53,26 +58,34 @@ module round_cube(x, y, z, r) {
     }
 }
 
-
 // The shelf grabber is more or less a box
 sg_thread_x = shelf_grabber_width / 2.0;
-sg_thread_y = shelf_grabber_depth-screw_radius-shelf_grabber_thickness/2.0-round_corner_radius;
+sg_thread_y = shelf_grabber_depth-screw_radius-shelf_grabber_thickness-round_corner_radius;
+
 module shelf_grabber() {
     // Cut the thread into this
-    // Round outer thing, cut something from it
     difference() {
-        round_cube(shelf_grabber_width, shelf_grabber_depth, shelf_grabber_height, round_corner_radius);
-        translate([-pad,shelf_grabber_thickness,shelf_grabber_thickness]) cube([shelf_grabber_width+2*pad, shelf_grabber_depth, shelf_thickness]);
-    }
-    // Add support for the screw, center back.
-    if ( shelf_grabber_extra_screw_support > 0 ) {
-        // Note the x and y values are the center for the thread too
-        translate([sg_thread_x, sg_thread_y, -shelf_grabber_extra_screw_support]) {
-            cylinder( r = screw_radius + shelf_grabber_thickness / 2.0, h = shelf_grabber_extra_screw_support + pad);
+        // Round outer thing, cut something from it
+        union() {
+            difference() {
+                round_cube(shelf_grabber_width, shelf_grabber_depth, shelf_grabber_height, round_corner_radius);
+                translate([-pad,shelf_grabber_thickness,shelf_grabber_thickness]) cube([shelf_grabber_width+2*pad, shelf_grabber_depth, shelf_thickness]);
+            }
+            // Add support for the screw, center back.
+            if ( shelf_grabber_extra_screw_support > 0 ) {
+                // Note the x and y values are the center for the thread too
+                translate([sg_thread_x, sg_thread_y, -shelf_grabber_extra_screw_support]) {
+                    cylinder( r = screw_radius + shelf_grabber_thickness, h = shelf_grabber_extra_screw_support + pad);
+                }
+            }
+        }
+        // Cut out the thread
+        // # center_screw_hole( screw_length, screw_pitch, screw_radius, screw_radius + 6 );
+        // ([10,0,0] ) {
+        translate([sg_thread_x, sg_thread_y, -screw_length/2.0] ) {
+            trapezoidThreadNegativeSpace( screw_length, screw_pitch, screw_radius );
         }
     }
-
-       
 }
 
 
