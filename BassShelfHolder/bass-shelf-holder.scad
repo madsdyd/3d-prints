@@ -3,6 +3,8 @@
 // Note: Your openscad previewer needs to increase
 // Preferences->Advanced->Turn of rendering at elements ... to about 6000 to work.
 
+// Also, this takes about 1 minut to preview, about 2 minutes to render.
+
 // There are three parts to this, the thing that fits on the shelf,
 // the tigthening screw, and the actual holder for the bass.
 
