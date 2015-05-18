@@ -47,19 +47,29 @@ screw_clearance = 0.3;
 
 
 // Values for actual holders, called "arms" here
-arm_thickness = 8;
-arm_length = 50;
-arm_knob_radius = 8;
+arm_thickness = 10;
+arm_thickness_grab = 10;
+arm_grab_upper_depth = 20;
+arm_grab_lower_depth = 40;
+arm_hang = 10;
+// The delta from the hang to the top. Makes the guitar slide towards the wall
+arm_lift = 10;
+// Distance from shelf edge to center of balls.
+arm_length = 45; 
+arm_knob_radius = 7;
 // Inside distance
 arm_separation = 42;
 
 
-$fn = 20;
+$fn = 5;
 pad = 0.1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Calculated consts
-shelf_grabber_width = arm_separation + 2 * arm_thickness + 2*round_corner_radius;
+
+arm_support_width = arm_separation + 2 * arm_thickness;
+arm_support_depth = arm_grab_lower_depth;
+
 shelf_grabber_height = shelf_grabber_thickness * 2 + shelf_thickness;
 shelf_grabber_extra_screw_support = shelf_grabber_min_screw_support - shelf_grabber_thickness;
 screw_length = shelf_grabber_extra_screw_support > 0 ? shelf_grabber_extra_screw_support + screw_wander + shelf_grabber_thickness : screw_wander + shelf_grabber_thickness;
@@ -124,35 +134,56 @@ module screw() {
 
 
 // Finally the arms.
+// Right arm, seen from front
+rc = round_corner_radius;
 module arm() {
-    translate([arm_thickness / 2.0 - round_corner_radius, pad, 2*round_corner_radius])
+    translate([arm_thickness / 2.0 - round_corner_radius, arm_grab_upper_depth+rc, shelf_thickness+2*arm_thickness_grab]) {
     minkowski() {
         rotate([90,0,-90])
         linear_extrude( height = arm_thickness - 2*round_corner_radius) 
         // Clockwise, x and y
+        // Really put on the thinking cap with regards to the corners!
         polygon(points=[
-                [0,0],
-                [0,shelf_grabber_height-4*round_corner_radius],
-                [arm_length,shelf_grabber_height-4*round_corner_radius],
-                [arm_length,shelf_grabber_height-1*round_corner_radius-arm_knob_radius]
+                [0+rc,0-rc],
+                [arm_grab_upper_depth+arm_hang,0-rc],
+                [arm_grab_upper_depth+arm_length-rc,arm_lift-rc],
+                [arm_grab_upper_depth+arm_length-rc,arm_lift-arm_thickness_grab+rc],
+                [arm_grab_upper_depth+arm_hang-rc,-shelf_thickness-2*arm_thickness_grab+rc],
+                // Leftmost point
+                [arm_grab_upper_depth-arm_grab_lower_depth+rc,-shelf_thickness-2*arm_thickness_grab+rc],
+                // Leftmost side
+                [arm_grab_upper_depth-arm_grab_lower_depth+rc,-shelf_thickness-arm_thickness_grab-rc],
+                // Underside of grabber, rightmost point
+                [arm_grab_upper_depth+rc,-shelf_thickness-arm_thickness_grab-rc],
+                // Grabber inside wall
+                [arm_grab_upper_depth+rc,-arm_thickness_grab+rc],
+                [0+rc,-arm_thickness_grab+rc]
             ]);
         sphere(r = round_corner_radius);
     }
     // Finally, add a knob at the end
-    translate([0,-arm_length,shelf_grabber_height-round_corner_radius])
+    translate([arm_thickness/2.0-arm_knob_radius,-arm_length-arm_grab_upper_depth+round_corner_radius,arm_lift])
     sphere( r = arm_knob_radius );
+    }
 }
 
 module arms() {
-    translate([-(arm_separation+arm_thickness)/2.0,0,0]) arm();
+    translate([-(arm_separation+arm_thickness)/2.0,0,0]) mirror([1,0,0]) arm();
     translate([(arm_separation+arm_thickness)/2.0,0,0]) arm();
 }
 
-// Main
-shelf_grabber();
-screw();
-arms();
+module arm_support() {
+    translate([-arm_support_width/2.0, 0, 0]) {
+        round_cube( arm_support_width, arm_support_depth+rc, arm_thickness_grab, round_corner_radius );
+    }
+}
 
+
+// Main
+// shelf_grabber();
+// screw();
+arms();
+arm_support();
 
 
 
