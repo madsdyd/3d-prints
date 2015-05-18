@@ -8,6 +8,15 @@
 // There are three parts to this, the thing that fits on the shelf,
 // the tigthening screw, and the actual holder for the bass.
 
+// TODO: Change this is in a number of ways:
+// Arms lot shorter
+// Arms should go "upward" about a 10 mm.
+// Arms should extend, instead of the top of the grabber
+// Arms should be thicker on top and especially bottom.
+// Print with larger infill, to make it stiffer.
+// Much less screw wander.
+
+
 use <Thread_Library.scad>;
 
 // shelf_grabber
