@@ -110,8 +110,8 @@ module arm() {
 }
 
 module arms() {
-    translate([-(arm_separation+arm_thickness)/2.0,0,0]) mirror([1,0,0]) arm();
-    translate([(arm_separation+arm_thickness)/2.0,0,0]) arm();
+    translate([(arm_separation+arm_thickness)/2.0,0,0]) mirror([1,0,0]) arm();
+    translate([-(arm_separation+arm_thickness)/2.0,0,0]) arm();
 }
 
 // Support for the arms / the screw
