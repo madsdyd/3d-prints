@@ -3,7 +3,7 @@
 // Note: Your openscad previewer needs to increase
 // Preferences->Advanced->Turn of rendering at elements ... to about 6000 to work.
 
-// Also, this takes about 1 minut to preview, about 2 minutes to render.
+// Also, this takes about 180 seconds minut to preview, about 180 seconds to compile afterwards.
 
 // Print with LARGE infill, to make it stiffer.
 
