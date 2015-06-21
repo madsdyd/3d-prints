@@ -28,8 +28,10 @@ base_thickness = 1.0;
 
 ////////////////////////////////////////////////////////////
 // Variables for the phone holder
-phone_width = 127.3 + 0.2;
-phone_height = 64.9 + 0.2;
+// By adding something extra here, the phone holder gets enlarged.
+// Print with 30% infill?
+phone_width = 127.3 + 0.2 + 1.5;
+phone_height = 64.9 + 0.2 + 1.5;
 phone_holder_thickness = 2;
 phone_tab_thickness = 2.4;
 phone_tab_width = 10;
