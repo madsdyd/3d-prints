@@ -93,13 +93,13 @@ module ball_attachment() {
         
         // Cuts by cubes
         for ( z = [0, 60, 120] ) {
-        rotate([0,0,z]) {
-        translate([0,0,slit_height / 2.0 - pad]) {
-            cube([inner_tube_outer_radius*2.0+pad, slit_thickness, slit_height + 2*pad], center = true );
-            // cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
+            rotate([0,0,z]) {
+                translate([0,0,slit_height / 2.0 - pad]) {
+                    cube([inner_tube_outer_radius*2.0+pad, slit_thickness, slit_height + 2*pad], center = true );
+                    // cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
+                }
+            }
         }
-        }
-    }
         
         // Make the center hollow
         translate([0,0,tab_overlap]){
@@ -135,11 +135,11 @@ module holder_tab( scale_factor ) {
     // Does not work, but fun.
     /*
     multmatrix( m = [
-            [1, 0, 0, 0],
-            [0, 1, 0.4, -phone_tab_thickness / 2.0],
-            [0, 0, 1, -phone_thickness / 2.0],
-            [0, 0, 0,  1] ] ) {
-        # cylinder( r = phone_tab_width / 2.0, h = phone_thickness, center = false );
+    [1, 0, 0, 0],
+    [0, 1, 0.4, -phone_tab_thickness / 2.0],
+    [0, 0, 1, -phone_thickness / 2.0],
+    [0, 0, 0,  1] ] ) {
+    # cylinder( r = phone_tab_width / 2.0, h = phone_thickness, center = false );
     }
     */
     
