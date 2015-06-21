@@ -1,5 +1,7 @@
 // Holder for Garmin base.
 
+include <nuts_and_bolts.scad>;
+
 ////////////////////////////////////////////////////////////
 // Variables for the thing that grabs the ball.
 
@@ -25,6 +27,16 @@ slit_thickness = 3.0;
 wall_thickness = 1.2;
 // base thickness, is the thickness of the material from the edge of the ball to where the mount goes.
 base_thickness = 1.0;
+
+// Variables for the nut and bolt tightener
+// m3
+nut_size = 3;
+nut_support_radius = 3.6;
+// Nudge against round thing here.
+nut_nudge = 0.5;
+// Calculated below
+// nut_support_depth = base_thickness+wall_thickness+tab_thickness;
+
 
 ////////////////////////////////////////////////////////////
 // Variables for the phone holder
@@ -66,7 +78,7 @@ hollow_radius = ( ball_diameter + 2* ball_gap ) / 2.0;
 // The ball attachment is cut from this cylinder
 cylinder_radius = hollow_radius + tab_thickness + tab_wall_spacing + wall_thickness;
 cylinder_height = base_thickness + hollow_radius + tab_overlap;
-
+nut_support_depth = cylinder_radius - ball_diameter / 2.0 +1;
 // tab height is the height of the free space behind the tabs. It
 // should be <= than hollow_radius + tab_overlap
 tab_height = hollow_radius + tab_overlap;
@@ -81,22 +93,58 @@ inner_tube_outer_radius = cylinder_radius - wall_thickness - tab_wall_spacing;
 // top is at cylinder_height.
 module ball_attachment() {
 
-    // Everything is carved from a cylinder
+
     difference() {
-        cylinder(h=cylinder_height, r=cylinder_radius);
         
-        // Cut the walls
-        difference() {
-            cylinder(h=tab_height*2.0, r = inner_tube_outer_radius + tab_wall_spacing , center = true);
-            cylinder(h=tab_height*2.0, r = inner_tube_outer_radius, center = true);
+        union() {
+            
+            // Most is carved from a cylinder
+            difference() {
+                cylinder(h=cylinder_height, r=cylinder_radius);
+                
+                // Cut the walls
+                difference() {
+                    cylinder(h=tab_height*2.0, r = inner_tube_outer_radius + tab_wall_spacing , center = true);
+                    cylinder(h=tab_height*2.0, r = inner_tube_outer_radius, center = true);
+                }
+                
+                // Cuts by cubes
+                for ( z = [0, 60, 120] ) {
+                    rotate([0,0,z]) {
+                        translate([0,0,slit_height / 2.0 - pad]) {
+                            cube([inner_tube_outer_radius*2.0+pad, slit_thickness, slit_height + 2*pad], center = true );
+                            // cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
+                        }
+                    }
+                }
+
+            }
+            
+            // Add a cylinder to put a nut and bolt into
+            translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
+                rotate( [270,0,0] ) {
+                    cylinder( r = nut_support_radius, h = nut_support_depth, center = true );
+                }
+            }
+            
+            // A nut hole. What ever that is
+
+            
         }
-        
-        // Cuts by cubes
-        for ( z = [0, 60, 120] ) {
-            rotate([0,0,z]) {
-                translate([0,0,slit_height / 2.0 - pad]) {
-                    cube([inner_tube_outer_radius*2.0+pad, slit_thickness, slit_height + 2*pad], center = true );
-                    // cube([slit_thickness, inner_tube_outer_radius*2.0+pad, slit_height + 2*pad], center = true );
+        // Cut by nut and bolt. This is not really convenient.
+        translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
+            rotate( [270,0,0] ) {
+                // Two nuts, to ensure depth enough on slopy cut
+                translate([0,0,-nut_support_depth/2.0-pad]) {
+                    nutHole(nut_size);
+                }
+                translate([0,0,-nut_support_depth/2.0-pad+nut_nudge]) {
+                    nutHole(nut_size);
+                }
+                // A cylinder for the screw
+                rotate([180,0,0])
+                translate([0,0,-nut_support_depth/2.0-pad]) {
+                    boltHole(nut_size, length = nut_support_depth);
                 }
             }
         }
