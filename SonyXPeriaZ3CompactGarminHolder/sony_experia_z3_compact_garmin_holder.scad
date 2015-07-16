@@ -47,15 +47,20 @@ phone_height = 64.9 + 0.2 + 0.5;
 phone_holder_thickness = 2;
 phone_tab_thickness = 2.4;
 phone_tab_width = 10;
-phone_thickness = 8.6 - 1.0; // Matches the tabs... I hope
+phone_thickness = 8.6 + 0.7; // Matches the tabs... I hope
+phone_real_thickness = 8.6; // Yearh. I know.
+// TODO: 8.6 is the 
 
 phone_tab_flip_radius = 1.5;
-phone_tab_flip_offset = -0.5;
+phone_tab_flip_offset = -0.1;
 // Control scale of the flips on the holder tabs.
 // top and bottom
 phone_tab_flip_scale_vert = 1.3;
 // Sides
-phone_tab_flip_scale_horz = 1.0;
+phone_tab_flip_scale_horz = 3.0;
+
+// Control how much longer the bottom support is.
+phone_bottom_tab_extension = 12;
 
 // How much to offset the top dual tabs
 phone_top_tab_offset = 25;
@@ -158,12 +163,11 @@ module ball_attachment() {
 
 // This is a tab on each arm, that holds the phone "clicked" in place.
 module holder_tab( scale_factor ) {
-
     // Round the tab
     intersection() {
         union() {
             // tab arm
-            cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
+            # cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
             
             // tab click top
             scale([1,scale_factor,1]) {
@@ -176,10 +180,10 @@ module holder_tab( scale_factor ) {
         }
         
         translate([0,phone_tab_thickness / 2.0, 0] ) {
-            cylinder( r = phone_tab_width / 2.0, h = phone_thickness * 2, center = true );
+            cylinder( r = phone_tab_width / 2.0, h = phone_thickness * 5, center = true );
         }
     }
-    
+
     // Does not work, but fun.
     /*
     multmatrix( m = [
@@ -203,6 +207,38 @@ module holder_tab( scale_factor ) {
     
 }
 
+// This is a holder for a magnetic charger cable.
+module cable_holder() {
+    cable_holder_inner_radius = 7 / 2.0 + 0.5;
+    cable_holder_thickness = 1.2; // Around - probably no larger than 1.5
+    cable_holder_slot_height = 4.2;
+    cable_holder_slot_offset = 1.5;
+    cable_holder_charge_length = 21.3;
+    // Center is middle of cable_holder_charge_length / 2 + cable_holder_slot_offset + cable_holder_thickness.
+    cable_holder_cyl_length = 30 + cable_holder_thickness;
+    cable_holder_cyl_radius = cable_holder_inner_radius + cable_holder_thickness;
+
+    // Translate to center of mag holder. This is somewhat confusing.
+    translate([0,0,-cable_holder_cyl_length + cable_holder_thickness + cable_holder_slot_offset + cable_holder_charge_length / 2.0] ) {
+        difference() {
+            // Outer cylinder
+            cylinder ( r = cable_holder_cyl_radius, h = cable_holder_cyl_length );
+            
+            // Inner cylinder cut
+            translate( [0,0,-cable_holder_thickness ] ) {
+                cylinder ( r = cable_holder_inner_radius, h = cable_holder_cyl_length );
+            }
+            
+            // Slot cut
+            translate( [pad,-cable_holder_slot_height/2.0,-cable_holder_thickness-cable_holder_slot_offset] ) {
+                cube([cable_holder_cyl_radius + pad,cable_holder_slot_height,cable_holder_cyl_length]);
+            }
+            
+        }
+    }
+}
+
+
 // This is the actual holder
 module z3_compact_holder() {
 
@@ -224,9 +260,10 @@ module z3_compact_holder() {
                 }
                 // Bottom
                 rotate([90,0,0] ) {
-                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_height / 2.0);
+                    cylinder(r1 = cylinder_height, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 + phone_bottom_tab_extension);
                 }
                 // Top is different.
+                if ( false ) {
                 translate([phone_top_tab_offset,0,0]) {
                     rotate([270,0,0] ) {
                         cylinder(r1 = cylinder_height * phone_top_tab_cyl_scale, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 );
@@ -236,6 +273,7 @@ module z3_compact_holder() {
                     rotate([270,0,0] ) {
                         cylinder(r1 = cylinder_height * phone_top_tab_cyl_scale, r2= phone_tab_width / 2.0 , h = phone_height / 2.0 );
                     }
+                }
                 }
             }
             cylinder(h=cylinder_height, r=cylinder_radius-pad);
@@ -252,6 +290,7 @@ module z3_compact_holder() {
     }
 
     // Add the tabs.
+    if ( false ) {
     // BOTTOM
     translate([0,-phone_height / 2.0 - phone_tab_thickness / 2.0, cylinder_height + phone_thickness / 2.0] ) {
         holder_tab( phone_tab_flip_scale_vert );
@@ -269,6 +308,8 @@ module z3_compact_holder() {
             holder_tab( phone_tab_flip_scale_vert );
         }
     }
+}
+    
     // LEFT
     translate([-phone_width / 2.0 - phone_tab_thickness / 2.0, 0, cylinder_height + phone_thickness / 2.0] ) {
         rotate([0,0,270]) {
@@ -289,6 +330,14 @@ module z3_compact_holder() {
 // Main
 union () {
     ball_attachment();
-
+    
     z3_compact_holder();
+
+    // Rotate and translate into place
+    // The 1 in the x axis is because I can't get it to insert all the way...
+    translate([1,-phone_height / 2.0 - phone_bottom_tab_extension + 2 ,cylinder_height + phone_real_thickness/2.0])
+    rotate([90,0,0]) rotate([0,90,0]) 
+    cable_holder();
+
+
 }
