@@ -335,8 +335,9 @@ union () {
 
     // Rotate and translate into place
     // The 1 in the x axis is because I can't get it to insert all the way...
+    // The rotation means the wire must be insert from the right, which is the only way it fits.
     translate([1,-phone_height / 2.0 - phone_bottom_tab_extension + 2 ,cylinder_height + phone_real_thickness/2.0])
-    rotate([90,0,0]) rotate([0,90,0]) 
+    rotate([-90,0,0]) rotate([0,-90,0]) 
     cable_holder();
 
 
