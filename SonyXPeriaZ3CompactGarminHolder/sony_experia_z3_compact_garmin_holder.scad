@@ -51,9 +51,9 @@ nut_nudge = 0.5;
 // nut_support_depth = base_thickness+wall_thickness+tab_thickness;
 
 // Variables for the screw holder
-screw_radius = 2.1;
-screw_pitch = 1.2;
-screw_clearance = 0.2;
+screw_radius = 1.8;
+screw_pitch = 1.8;
+screw_clearance = 0.3;
 // Change this if needed.
 screw_support_radius = nut_support_radius;
 screw_wander = 3;
@@ -200,7 +200,7 @@ module screw() {
     translate([0,sg_thread_y,-screw_length*2]) {
         trapezoidThread( screw_length, screw_pitch, screw_radius, clearance=screw_clearance );
         // The handle uses the same thickness as the grabber, scales relative to screw
-        scale([screw_radius * 2, screw_radius, 1])
+        scale([screw_radius * 4, screw_radius * 1.2, 1])
         translate([0,0,-screw_handle_thickness])
         cylinder(h = screw_handle_thickness+pad, r = 1);
     }
