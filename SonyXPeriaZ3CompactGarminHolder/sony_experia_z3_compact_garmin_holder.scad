@@ -1,6 +1,19 @@
 // Holder for Garmin base.
 
+// Part of openscad
 include <nuts_and_bolts.scad>;
+// Local library
+use <Thread_Library.scad>;
+
+// Note: Your openscad previewer needs to increase
+// Preferences->Advanced->Turn of rendering at elements ... to about 6000 to work.
+
+// Also, this takes about 180 seconds minut to preview, about 5 minutes to compile afterwards.
+
+// Print with LARGE infill, to make it stiffer.
+
+
+
 
 ////////////////////////////////////////////////////////////
 // Variables for the thing that grabs the ball.
@@ -37,6 +50,15 @@ nut_nudge = 0.5;
 // Calculated below
 // nut_support_depth = base_thickness+wall_thickness+tab_thickness;
 
+// Variables for the screw holder
+screw_radius = 2.1;
+screw_pitch = 1.2;
+screw_clearance = 0.2;
+// Change this if needed.
+screw_support_radius = nut_support_radius;
+screw_wander = 3;
+screw_handle_thickness = 5;
+// Calculated
 
 ////////////////////////////////////////////////////////////
 // Variables for the phone holder
@@ -84,6 +106,7 @@ hollow_radius = ( ball_diameter + 2* ball_gap ) / 2.0;
 cylinder_radius = hollow_radius + tab_thickness + tab_wall_spacing + wall_thickness;
 cylinder_height = base_thickness + hollow_radius + tab_overlap;
 nut_support_depth = cylinder_radius - ball_diameter / 2.0 +1;
+screw_length = screw_wander + nut_support_depth;
 // tab height is the height of the free space behind the tabs. It
 // should be <= than hollow_radius + tab_overlap
 tab_height = hollow_radius + tab_overlap;
@@ -126,7 +149,7 @@ module ball_attachment() {
             }
             
             // Add a cylinder to put a nut and bolt into
-            translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
+            # translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
                 rotate( [270,0,0] ) {
                     cylinder( r = nut_support_radius, h = nut_support_depth, center = true );
                 }
@@ -136,23 +159,34 @@ module ball_attachment() {
 
             
         }
-        // Cut by nut and bolt. This is not really convenient.
-        translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
-            rotate( [270,0,0] ) {
-                // Two nuts, to ensure depth enough on slopy cut
-                translate([0,0,-nut_support_depth/2.0-pad]) {
-                    nutHole(nut_size);
-                }
-                translate([0,0,-nut_support_depth/2.0-pad+nut_nudge]) {
-                    nutHole(nut_size);
-                }
-                // A cylinder for the screw
-                rotate([180,0,0])
-                translate([0,0,-nut_support_depth/2.0-pad]) {
-                    boltHole(nut_size, length = nut_support_depth);
+        // Nut and bolt soluation
+        if ( false ) {
+            // Cut by nut and bolt. This is not really convenient.
+            translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
+                rotate( [270,0,0] ) {
+                    // Two nuts, to ensure depth enough on slopy cut
+                    translate([0,0,-nut_support_depth/2.0-pad]) {
+                        nutHole(nut_size);
+                    }
+                    translate([0,0,-nut_support_depth/2.0-pad+nut_nudge]) {
+                        nutHole(nut_size);
+                    }
+                    // A cylinder for the screw
+                    rotate([180,0,0])
+                    translate([0,0,-nut_support_depth/2.0-pad]) {
+                        boltHole(nut_size, length = nut_support_depth);
+                    }
                 }
             }
+        } else {
+            // Cut by screw thing.
+            translate([0,cylinder_radius-screw_length / 2.0-2,screw_support_radius])
+            rotate([-90,0,0])
+            # trapezoidThreadNegativeSpace( screw_length, screw_pitch, screw_radius, clearance=screw_clearance );
+
         }
+            
+        
         
         // Make the center hollow
         translate([0,0,tab_overlap]){
@@ -160,6 +194,18 @@ module ball_attachment() {
         }
     }
 };
+
+// A screw
+module screw() {
+    translate([0,sg_thread_y,-screw_length*2]) {
+        trapezoidThread( screw_length, screw_pitch, screw_radius, clearance=screw_clearance );
+        // The handle uses the same thickness as the grabber, scales relative to screw
+        scale([screw_radius * 2, screw_radius, 1])
+        translate([0,0,-screw_handle_thickness])
+        cylinder(h = screw_handle_thickness+pad, r = 1);
+    }
+}
+
 
 // This is a tab on each arm, that holds the phone "clicked" in place.
 module holder_tab( scale_factor ) {
@@ -325,20 +371,28 @@ module z3_compact_holder() {
 }
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Main
-union () {
-    ball_attachment();
-    
-    z3_compact_holder();
-
+// The cable holder
+module final_cable_holder() {
     // Rotate and translate into place
     // The 1 in the x axis is because I can't get it to insert all the way...
     // The rotation means the wire must be insert from the right, which is the only way it fits.
     translate([1,-phone_height / 2.0 - phone_bottom_tab_extension + 2 ,cylinder_height + phone_real_thickness/2.0])
     rotate([-90,0,0]) rotate([0,-90,0]) 
     cable_holder();
+}
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Main
+union () {
+    ball_attachment();
+    
+    // z3_compact_holder();
+    // final_cable_holder();
+
+    translate([0,screw_length+cylinder_radius + 5,screw_support_radius])
+    rotate([90,0,0])
+    screw();
+
+    
 }
