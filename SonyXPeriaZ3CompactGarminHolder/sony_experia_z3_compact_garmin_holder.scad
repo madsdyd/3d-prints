@@ -9,6 +9,7 @@ use <Thread_Library.scad>;
 // Preferences->Advanced->Turn of rendering at elements ... to about 6000 to work.
 
 // Also, this takes about 180 seconds minut to preview, about 5 minutes to compile afterwards.
+// Also: Previews may not work very well.
 
 // Print with LARGE infill, to make it stiffer.
 
@@ -44,19 +45,20 @@ base_thickness = 1.0;
 // Variables for the nut and bolt tightener
 // m3
 nut_size = 3;
-nut_support_radius = 3.6;
+// 3.6 means the center is where tab_overlap is.
+nut_support_radius = 4.6;
 // Nudge against round thing here.
 nut_nudge = 0.5;
 // Calculated below
 // nut_support_depth = base_thickness+wall_thickness+tab_thickness;
 
 // Variables for the screw holder
-screw_radius = 1.8;
+screw_radius = 2.7;
 screw_pitch = 1.8;
 screw_clearance = 0.3;
 // Change this if needed.
 screw_support_radius = nut_support_radius;
-screw_wander = 3;
+screw_wander = 6;
 screw_handle_thickness = 5;
 // Calculated
 
@@ -149,7 +151,7 @@ module ball_attachment() {
             }
             
             // Add a cylinder to put a nut and bolt into
-            # translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,tab_overlap]) {
+            translate([0,ball_diameter/2.0+nut_support_depth/2.0-nut_nudge,nut_support_radius]) {
                 rotate( [270,0,0] ) {
                     cylinder( r = nut_support_radius, h = nut_support_depth, center = true );
                 }
@@ -182,7 +184,7 @@ module ball_attachment() {
             // Cut by screw thing.
             translate([0,cylinder_radius-screw_length / 2.0-2,screw_support_radius])
             rotate([-90,0,0])
-            # trapezoidThreadNegativeSpace( screw_length, screw_pitch, screw_radius, clearance=screw_clearance );
+            trapezoidThreadNegativeSpace( screw_length, screw_pitch, screw_radius, clearance=screw_clearance );
 
         }
             
@@ -213,7 +215,7 @@ module holder_tab( scale_factor ) {
     intersection() {
         union() {
             // tab arm
-            # cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
+            cube([phone_tab_width, phone_tab_thickness, phone_thickness], center = true);
             
             // tab click top
             scale([1,scale_factor,1]) {
@@ -387,8 +389,8 @@ module final_cable_holder() {
 union () {
     ball_attachment();
     
-    // z3_compact_holder();
-    // final_cable_holder();
+    z3_compact_holder();
+    final_cable_holder();
 
     translate([0,screw_length+cylinder_radius + 5,screw_support_radius])
     rotate([90,0,0])
