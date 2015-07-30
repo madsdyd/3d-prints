@@ -77,21 +77,23 @@ module hose_holder() {
 }
 
 // A single holder, based in 0,0,0, oriented along x axis.
+hose_holder_angle = hose_holder_angles / 2;
+hose_outer_radius = hose_outer_diameter / 2;
+hose_holder_inside_radius = hose_outer_radius;
+hose_holder_outside_radius = hose_holder_inside_radius + overall_thickness;
 module hose_holder() {
-    hose_holder_angle = hose_holder_angles / 2;
-    hose_outer_radius = hose_outer_diameter / 2;
     rotate([0,0,90])
     rotate([0,90,0])
-    translate([-hose_outer_radius,0,-overall_width/2])
+    translate([-hose_holder_outside_radius,0,-overall_width/2])
     difference() {
         union() {
-            cylinder_half_slice( r1 = hose_outer_radius, r2 = hose_outer_radius, h = overall_width, start_angle = -hose_holder_angle, end_angle = 0 );
-            cylinder_half_slice( r1 = hose_outer_radius, r2 = hose_outer_radius, h = overall_width, start_angle = 0, end_angle = hose_holder_angle );
+            cylinder_half_slice( r1 = hose_holder_outside_radius, r2 = hose_holder_outside_radius, h = overall_width, start_angle = -hose_holder_angle, end_angle = 0 );
+            cylinder_half_slice( r1 = hose_holder_outside_radius, r2 = hose_holder_outside_radius, h = overall_width, start_angle = 0, end_angle = hose_holder_angle );
         }
         translate([0,0,-pad])
         union() {
-            cylinder_half_slice( r1 = hose_outer_radius-overall_thickness, r2 = hose_outer_radius-overall_thickness, h = overall_width+2*pad, start_angle = -hose_holder_angle-1, end_angle = 0 );
-            cylinder_half_slice( r1 = hose_outer_radius-overall_thickness, r2 = hose_outer_radius-overall_thickness, h = overall_width+2*pad, start_angle = 0, end_angle = hose_holder_angle+1 );
+            cylinder_half_slice( r1 = hose_holder_inside_radius, r2 = hose_holder_inside_radius, h = overall_width+2*pad, start_angle = -hose_holder_angle-1, end_angle = 0 );
+            cylinder_half_slice( r1 = hose_holder_inside_radius, r2 = hose_holder_inside_radius, h = overall_width+2*pad, start_angle = 0, end_angle = hose_holder_angle+1 );
         }
     }
             
@@ -99,9 +101,9 @@ module hose_holder() {
 
 module hose_holders() {
     // Iterate, then translate into place.
-    single_width = hose_outer_diameter + hose_holder_spacing;
-    total_width = number_of_hoses * hose_outer_diameter + (number_of_hoses - 1 ) * hose_holder_spacing;
-    translate([-total_width/2 + hose_outer_diameter / 2, 0, 0])
+    single_width = hose_holder_outside_radius * 2 + hose_holder_spacing;
+    total_width = number_of_hoses * hose_holder_outside_radius * 2 + (number_of_hoses - 1 ) * hose_holder_spacing;
+    translate([-total_width/2 + hose_holder_outside_radius, 0, 0])
     for ( n = [1:number_of_hoses] ) {
        translate([(n-1)*single_width,0,0]) {
            hose_holder();
