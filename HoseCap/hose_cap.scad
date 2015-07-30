@@ -15,9 +15,11 @@ use <Thread_Library.scad>;
 
 
 cap_height = 17;
-cap_thickness = 2.1;
+cap_thickness = 3;
+bottom_thickness = 3;
 
-
+grip_numbers = 16; // Should probably split 360 evenly
+grip_radius = 2; // If too large, grips will overlap.
 
 // thread controls
 // This is based on
@@ -33,11 +35,16 @@ thread_clearance = 0.1;
 
 // This is for "control"
 washer_diameter = 24;
+pad = 0.1;
 // Increase circles
 $fn = 70;
 
 // Calculated
 thread_radius = (thread_major_radius + thread_minor_radius) / 2;
+// This may work better.
+// thread_radius = thread_major_radius;
+
+outer_radius = thread_radius + cap_thickness;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Calculated stuff.
@@ -45,8 +52,8 @@ thread_radius = (thread_major_radius + thread_minor_radius) / 2;
 ////////////////////////////////////////////////////////////
 module cap() {
     difference() {
-        cylinder( r = thread_radius + cap_thickness, h = cap_height );
-        translate([0,0,cap_thickness]) {
+        cylinder( r = outer_radius, h = cap_height );
+        translate([0,0,bottom_thickness]) {
             trapezoidThreadNegativeSpace(
                 length      = cap_height,
                 pitch       = thread_pitch,
@@ -59,5 +66,26 @@ module cap() {
     }
 }
 
+module grip(angle) {
+    rotate([0,0,angle]) {
+        translate([outer_radius,0,0])
+        cylinder( h = cap_height, r = grip_radius );
+        translate([-outer_radius,0,0])
+        cylinder( h = cap_height, r = grip_radius );
+    }
+}
+    
+module grips() {
+    angle_step = 180 / ( grip_numbers / 2 );
+    difference() {
+        union() {
+            for ( n = [0:(grip_numbers / 2 - 1)] ) {
+                grip(n*angle_step);
+            }
+        }
+        cylinder(h = cap_height, r = outer_radius - pad);
+    }
+}
 
+grips();
 cap();
