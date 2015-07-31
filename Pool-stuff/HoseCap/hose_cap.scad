@@ -16,7 +16,8 @@ use <Thread_Library.scad>;
 
 cap_height = 17;
 cap_thickness = 3;
-bottom_thickness = 3;
+// If possible, print the bottom (or maybe entire cap) solid (100% infill).
+bottom_thickness = 4;
 
 grip_numbers = 16; // Should probably split 360 evenly
 grip_radius = 2; // If too large, grips will overlap.
