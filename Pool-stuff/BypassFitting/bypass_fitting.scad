@@ -36,9 +36,9 @@ overall_thickness = 3;
 // The commented ones are INTERNAL THREAD diameters...
 // I had to reduce to make an EXTERNAL THREAD diameter.
 // thread_minor_radius = 24.120 / 2;
-thread_minor_radius = 23.6 / 2;
+thread_minor_radius = 23.7 / 2;
 // thread_major_radius = 26.441 / 2;
-thread_major_radius = 25.9 / 2;
+thread_major_radius = 26.0 / 2;
 thread_pitch = 1.814;
 thread_angle = 55 / 2;
 
