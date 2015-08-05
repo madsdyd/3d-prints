@@ -21,10 +21,10 @@ hose_holder_spacing = 2;
 solid_width = 137;
 
 // Extra width
-solid_extra_width = 3;
+solid_extra_width = 5;
 
 // Substract/flex. This is substracted in *each* side.
-solid_substract_width = 3;
+solid_substract_width = 4;
 
 // Solid gribbing
 solid_grib_height = 40;
