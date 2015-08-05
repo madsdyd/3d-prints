@@ -5,10 +5,11 @@ $fn = 180;
 // Variables
 
 // The outer diameter of the hose to hold
-hose_outer_diameter = 34;
+// Note that some hoses expand and shrink when pressure/suction is applied.
+hose_outer_diameter = 40;
 
 // The overall angle for the hose holder
-hose_holder_angles = 240;
+hose_holder_angles = 250;
 
 // Number of hoses to hold. Minimum is 1
 number_of_hoses = 2;
@@ -144,4 +145,6 @@ module main() {
     hose_holders();
 }
 
+// Rotate to match best build setup
+rotate([90,0,0])
 main();
