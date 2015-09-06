@@ -1,9 +1,9 @@
 // Small fix for a binocular thing that brooke
 
 thickness = 1.6;
-hole_radius = 1.7;
-head_radius = 2.5 + 0.2;
-outer_radius = 7.5;
+hole_radius = 2;
+head_radius = 3.1;
+outer_radius = 7;
 outer_top_radius = 5;
 outer_thickness = 5;
 
