@@ -2,6 +2,48 @@
 
 $fn = 180;
 
+// Variables
+
+// Radius of the cup to hang on, inside
+cup_radius = 45;
+
+// Height of the holder (the part that the toothbrush head goes into
+inner_height = 39;
+
+// Radius of the cutout for the head
+cutout_radius = 12;
+
+// Side thickness. You probably want this to match your extruder
+cutout_side_thickness = 0.4 * 3;
+
+// Bottom thickness. You probably want this to match your layer height
+cutout_bottom_thickness = 0.3 * 4;
+
+////////////////////////////////////////////////////////////////////////////////
+// Calculated stuff
+
+// This is the center of the toothbrush. We calculate the angle based on this.
+center_radius = cup_radius - cutout_side_thickness - cutout_radius;
+
+// This is the distance that out cutout angle most cover.
+// Using notation from http://mathworld.wolfram.com/Circle-CircleIntersection.html
+circ_R = center_radius;
+circ_r = cutout_radius;
+circ_d = center_radius;
+circ_x = ( circ_d*circ_d - circ_r * circ_r + circ_R * circ_R ) / ( 2 * circ_d );
+echo ("circ_x: ", circ_x );
+circ_half_angle = asin( circ_x / circ_R);
+echo ("circ_half_angle: ", circ_half_angle); 
+
+shell_total_height = inner_height + cutout_bottom_thickness;
+
+// TODO: Add the cutout thickness here
+shell_total_angle = circ_half_angle * 2;
+
+
+pad = 0.05;
+
+
 ////////////////////////////////////////////////////////////
 // Helper functions
 // Obs, will only slice 0-180 degrees, but the angles can go from
@@ -45,7 +87,7 @@ module cylinder_half_slice( r1, r2, h, start_angle, end_angle ) {
 // side_thickness is also measured in angles
 // thickness is measured in mm
 // pad is padding to keep manifold
-module shell( r_low, r_high, height, width, depth, cut_height, side_thickness, thickness, pad ) {
+module old_shell( radius, height, width, depth, cut_height, side_thickness, thickness, pad ) {
     // TODO: Calculate stuff
     // Change width parameter to be in mm, calculate from radius.
     // Make sides boxes, so they have the same thickness everywhere.
@@ -84,20 +126,13 @@ module shell( r_low, r_high, height, width, depth, cut_height, side_thickness, t
 }
 
 
-top_radius = 45;
-bottom_radius = 35;
-inner_height = 39;
-inner_width_in_angles = 25;
-depth = 17;
-cut_heigth = 25;
-// TODO: Calculate to match thickness
-side_thickness_in_angles = 2;
-front_back_thickness = 1.2;
-pad = 0.05;
 
-shell( bottom_radius, top_radius,
-    inner_height, inner_width_in_angles, depth, cut_height,
-    side_thickness_in_angles, front_back_thickness, pad );
+module  shell() {
+    cylinder_half_slice( cup_radius, cup_radius, shell_total_height, 0, shell_total_angle);
 
+
+}
+
+shell();
 
 
