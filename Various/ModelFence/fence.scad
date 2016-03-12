@@ -11,7 +11,7 @@ bottom_vertical_percent = 15;
 // Support is below fence...
 support_height = 10;
 
-target_length = 150;
+target_length = 50;
 target_height = 22.5;
 
 pad=0.5;
