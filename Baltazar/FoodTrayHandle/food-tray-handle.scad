@@ -120,10 +120,28 @@ module cutter() {
     cube([main_length + pad, main_depth, main_height], center = true);
 }
 
+module round_edge() {
+    translate([0, main_depth/2.0-1, main_height/2.0-1])
+    rotate([0,90,0])
+    difference() {
+        translate([-1,1,0])
+        cube([2, 2, main_length+pad], center = true);
+        cylinder(r = 1, h = main_length + pad, center = true);
+    }
+
+}
+
+module round_edges() {
+    round_edge();
+    mirror([0,0,1]) round_edge();
+
+}
+
 module main() {
     difference() {
         part();
         cutter();
+        round_edges();
     }
     hinge();
     mirror([1,0,0]) hinge();
