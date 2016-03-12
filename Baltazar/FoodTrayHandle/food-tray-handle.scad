@@ -45,8 +45,20 @@ module part() {
 
 module peg(length, depth, height) {
     translate([0,(main_depth-depth)/2.0+pad,(main_cutter_height-height)/2.0+pad])
-    cube([length,depth,height], center = true);
+    difference() {
+        cube([length,depth,height], center = true);
+        
+        translate([0,-(depth-height)/2.0,0])
+        difference() {
+            translate([0,-length/2.0,-length/2.0])
+            cube([length+pad, length+pad, length+pad], center = true);
+            rotate([0,90,0])
+            cylinder(r = height/2.0, h = length+pad, center = true);
+        }
+    }
 }
+
+
 
 // "Pegs" - some guidiance thing, I guess
 module small_peg() {
@@ -103,3 +115,4 @@ module main() {
 
 // main_cutter();
 main();
+// large_peg();
