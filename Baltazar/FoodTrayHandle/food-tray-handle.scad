@@ -20,8 +20,12 @@ th_grip = 2;
 peg_s_length = 2;
 peg_s_depth = 14;
 peg_s_height = 1;
-
 peg_s_distance=35;
+
+peg_l_length = 2;
+peg_l_depth = 14;
+peg_l_height = 2;
+peg_l_distance=69;
 
 pad = 0.1;
 
@@ -52,13 +56,26 @@ module small_pegs() {
     small_peg();
 }
 
+module large_peg() {
+    translate([0,(main_depth-peg_l_depth)/2.0+pad,(main_cutter_height-peg_l_height)/2.0+pad])
+    cube([peg_l_length,peg_l_depth,peg_l_height], center = true);
+}
+
+module large_pegs() {
+    translate([-peg_l_distance/2.0,0,0])
+    large_peg();
+    large_peg();
+    translate([peg_l_distance/2.0,0,0])
+    large_peg();
+}
+
 module main_cutter() {
     difference() {
         
         cube([main_length + pad, main_depth, main_cutter_height], center = true);
         // A "peg"
-        # small_pegs();
-
+        small_pegs();
+        large_pegs();
     }
 }
 
