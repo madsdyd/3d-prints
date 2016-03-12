@@ -43,10 +43,14 @@ module part() {
     }
 }
 
+module peg(length, depth, height) {
+    translate([0,(main_depth-depth)/2.0+pad,(main_cutter_height-height)/2.0+pad])
+    cube([length,depth,height], center = true);
+}
+
 // "Pegs" - some guidiance thing, I guess
 module small_peg() {
-    translate([0,(main_depth-peg_s_depth)/2.0+pad,(main_cutter_height-peg_s_height)/2.0+pad])
-    cube([peg_s_length,peg_s_depth,peg_s_height], center = true);
+    peg(peg_s_length, peg_s_depth, peg_s_height);
 }
 
 module small_pegs() {
@@ -57,8 +61,7 @@ module small_pegs() {
 }
 
 module large_peg() {
-    translate([0,(main_depth-peg_l_depth)/2.0+pad,(main_cutter_height-peg_l_height)/2.0+pad])
-    cube([peg_l_length,peg_l_depth,peg_l_height], center = true);
+    peg(peg_l_length, peg_l_depth, peg_l_height);
 }
 
 module large_pegs() {
