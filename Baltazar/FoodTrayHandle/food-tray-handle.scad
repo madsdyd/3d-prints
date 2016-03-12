@@ -27,6 +27,13 @@ peg_l_depth = 14;
 peg_l_height = 2;
 peg_l_distance=69;
 
+hinge_diameter = 3;
+hinge_length = 4.5;
+hinge_dist = 15.5;
+hinge_support=4;
+// Needs handtuning...
+hinge_offset = 2.4;
+
 pad = 0.1;
 
 $fn = 200;
@@ -58,6 +65,14 @@ module peg(length, depth, height) {
     }
 }
 
+module hinge() {
+    translate([(main_length-hinge_support)/2.0,(main_depth-hinge_dist)/2.0,(main_height-hinge_support)/2.0-hinge_offset])
+    # rotate([0,90,0]) {
+        cube([hinge_support, hinge_dist, hinge_support], center = true);
+        translate([0, -(hinge_dist - hinge_diameter) / 2.0, hinge_support/2.0-pad])
+        cylinder( r = hinge_diameter/2.0, h = hinge_length + pad);
+    }
+}
 
 
 // "Pegs" - some guidiance thing, I guess
@@ -110,9 +125,8 @@ module main() {
         part();
         cutter();
     }
-    
+    hinge();
+    mirror([1,0,0]) hinge();
 }
 
-// main_cutter();
 main();
-// large_peg();
