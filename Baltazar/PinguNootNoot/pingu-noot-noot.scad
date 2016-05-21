@@ -17,8 +17,8 @@ outer_sleeve_height = 10;
 outer_sleeve_min_thickness = 1;
 outer_thickness = 4;
 // The noot is the trumpet at the end
-outer_noot_height = 20;
-outer_noot_min_radius = 55;
+outer_noot_height = 60;
+outer_noot_min_radius = 30;
 outer_noot_max_radius = 60;
 
 ////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ inner_outer_min_radius = outer_inner_min_radius - (outer_inner_max_radius - oute
 
 // Plate is to mount on
 inner_mount_thickness = 4;
-inner_mount_number = 6;
+inner_mount_number = 0;
 // Offset from center
 inner_mount_offset = 10;
 inner_mount_hole_radius = 2;
