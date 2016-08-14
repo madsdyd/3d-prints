@@ -25,7 +25,7 @@ outer_noot_max_radius = 60;
 // Inner
 
 // Overlap with inner
-inner_overlap = 20;
+inner_overlap = 15;
 
 // Outer max should match inner + overlap
 // Overlap addition radius can be calculated
@@ -37,7 +37,7 @@ inner_outer_min_radius = outer_inner_min_radius - (outer_inner_max_radius - oute
 
 // Plate is to mount on
 inner_mount_thickness = 4;
-inner_mount_number = 0;
+inner_mount_number = 4;
 // Offset from center
 inner_mount_offset = 10;
 inner_mount_hole_radius = 2;
@@ -105,10 +105,11 @@ module inner() {
 
 module main() {
 
-    outer();
+//    outer();
     rotate([180,0,0])
-    translate([outer_noot_max_radius + inner_outer_max_radius + 10, 0, -outer_total_height])
-    inner();
+//    translate([outer_noot_max_radius + inner_outer_max_radius + 10, 0, -outer_total_height])
+    translate([0,0,-outer_total_height])
+inner(); 
 
 }
 
