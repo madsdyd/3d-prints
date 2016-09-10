@@ -98,7 +98,10 @@ module arm() {
                     // Underside of grabber, rightmost point
                     [arm_grab_upper_depth+rc,-shelf_thickness-arm_thickness_grab-rc],
                     // Grabber inside wall
-                    [arm_grab_upper_depth+rc,-arm_thickness_grab+rc],
+                    [arm_grab_upper_depth+rc,-arm_thickness_grab+rc-1.5],
+                    [arm_grab_upper_depth+rc-0.2,-arm_thickness_grab+rc-0.8],
+                    [arm_grab_upper_depth+rc-0.8,-arm_thickness_grab+rc-0.2],
+                    [arm_grab_upper_depth+rc-1.5,-arm_thickness_grab+rc],
                     [0+rc,-arm_thickness_grab+rc]
                 ]);
             sphere(r = round_corner_radius);
@@ -134,6 +137,7 @@ module arm_support() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main
+//arm();
 screw();
 arms();
 arm_support();
