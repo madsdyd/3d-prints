@@ -1,16 +1,16 @@
 // Lift sensor caps
 
 // Overall cap thickness
-cap_thickness = 2;
+cap_thickness = 1.6;
 
 // plate parameters
-plate_thickness = 2;
+plate_thickness = 1.8;
 plate_edge = 1;
 hole_diameter = 4;
 hole_edge = 2;
 
 // Inner slip diameter
-inner_slip = 1;
+inner_slip = 0;
 
 // The cable cap measurements
 cable_diameter = 15 + inner_slip;
