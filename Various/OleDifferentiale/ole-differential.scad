@@ -41,6 +41,16 @@ h_box_width = 43.1;
 outer_knast_diameter = 18;
 knast_offset = 56.1;
 
+// Støttebøsning
+hole_support_diameter = 9.0;
+hole_support_height = 3;
+
+// Tapper
+tap_width = 2.7;
+tap_depth = 4.5;
+// Offset fra center :-)
+tap_offset = 37.5;
+
 // Slightly more corners
 $fn = 60;
 
@@ -66,15 +76,32 @@ module knaster() {
         rotate([0,0,120*i])
         translate([0,knast_offset,-main_height/2.0])
         difference() {
-            cylinder(r = outer_knast_diameter / 2.0, h = main_height);
-            translate([0,0,-1])
-            cylinder(r = small_hole_diameter/2.0, h = center_hole_height);
+            union() {
+                cylinder(r = outer_knast_diameter / 2.0, h = main_height);
+                translate([0,0,-hole_support_height])
+                cylinder(r = hole_support_diameter / 2.0, h = hole_support_height);
+            }
+            translate([0,0,-center_hole_height / 2.0])
+            cylinder(r = small_hole_diameter/2.0, h = center_hole_height*2 );
         }
         
         // Runde knaster af.
     }
 }
 
+// Weird stuff on the B side
+module tappe() {
+    for( i = [-1,1]) {
+        translate([i*(tap_offset + tap_depth / 2.0),0,-main_height / 2.0 + b_rim_thickness / 2.0])
+        cube([tap_depth, tap_width, b_rim_thickness], center=true);
+    }
+}
+
+// Cutouts for the holes on the A side
+module cutouts() {
+
+
+}
 
 module main() {
     difference() {
@@ -112,10 +139,11 @@ module main() {
         two_boxes(v_box_offset, v_box_height, v_box_width);
         // Horiz. boxes
         two_boxes(h_box_offset, h_box_height, h_box_width);
-        
     }
 
-     
+    // Manually add some minor adjustments.
+    tappe();
+    
 
 }
 
