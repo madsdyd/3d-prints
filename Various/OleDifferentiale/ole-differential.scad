@@ -93,13 +93,13 @@ module knaster() {
         // Runde knaster af.
         for(j=[-1,1]) {
             difference() {
-                rotate([0,0,120*i-11*j])
+                rotate([0,0,120*i-10*j])
                 translate([0,outer_diameter / 2.0,-main_height/2.0])
-                cylinder(r = 7, h = main_height);
+                cylinder(r = 5.5, h = main_height);
                 // Substract something round
-                rotate([0,0,120*i-19.3*j])
-                translate([0,outer_diameter / 2.0 + 15,-main_height/2.0])
-                cylinder(r = 15, h = main_height);
+                rotate([0,0,120*i-16.375*j])
+                translate([0,outer_diameter / 2.0 + 8.925,-main_height/2.0])
+                cylinder(r = 9, h = main_height);
             }
         }
         
