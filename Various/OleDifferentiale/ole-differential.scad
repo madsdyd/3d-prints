@@ -28,12 +28,14 @@ inner_hole_offset = 36.5;
 
 // The boxes. Two are vertical, two are horizontal
 // Vertical box offset from center to center.
-v_box_height = 23.3;
-v_box_offset = 8.2 + v_box_height / 2.0;
-v_box_width  = 8.1;
+v_box_height = 23.0;
+v_box_offset = 10.9 + v_box_height / 2.0;
+v_box_width  = 8.0;
 
 // Horizontal box offset from center
-// h_box_offset = 
+h_box_offset = v_box_offset;
+h_box_height = 13.4;
+h_box_width = 43.1;
 
 // Knaster
 outer_knast_diameter = 18;
@@ -54,7 +56,7 @@ module four_holes(offset) {
 module two_boxes(offset, h, w) {
     for( i = [1,-1] ){
         translate([0,i*offset,0])
-        # cube([w,h,center_hole_height], center = true);
+        cube([w,h,center_hole_height], center = true);
     }
 }
 
@@ -68,6 +70,7 @@ module knaster() {
             translate([0,0,-1])
             cylinder(r = small_hole_diameter/2.0, h = center_hole_height);
         }
+        
         // Runde knaster af.
     }
 }
@@ -107,6 +110,8 @@ module main() {
         
         // Vertical boxes
         two_boxes(v_box_offset, v_box_height, v_box_width);
+        // Horiz. boxes
+        two_boxes(h_box_offset, h_box_height, h_box_width);
         
     }
 
