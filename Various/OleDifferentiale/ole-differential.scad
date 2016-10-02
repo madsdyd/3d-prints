@@ -73,6 +73,7 @@ module two_boxes(offset, h, w) {
     }
 }
 
+
 // Knaster
 module knaster() {
     for(i = [0,1,2]) {
@@ -81,14 +82,27 @@ module knaster() {
         difference() {
             union() {
                 cylinder(r = outer_knast_diameter / 2.0, h = main_height);
+                // Extra support on the back size
                 translate([0,0,-hole_support_height])
                 cylinder(r = hole_support_diameter / 2.0, h = hole_support_height);
             }
             translate([0,0,-center_hole_height / 2.0])
             cylinder(r = small_hole_diameter/2.0, h = center_hole_height*2 );
         }
-        
+
         // Runde knaster af.
+        for(j=[-1,1]) {
+            difference() {
+                rotate([0,0,120*i-11*j])
+                translate([0,outer_diameter / 2.0,-main_height/2.0])
+                cylinder(r = 7, h = main_height);
+                // Substract something round
+                rotate([0,0,120*i-19.3*j])
+                translate([0,outer_diameter / 2.0 + 15,-main_height/2.0])
+                cylinder(r = 15, h = main_height);
+            }
+        }
+        
     }
 }
 
