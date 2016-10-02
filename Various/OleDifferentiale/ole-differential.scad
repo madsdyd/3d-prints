@@ -51,6 +51,9 @@ tap_depth = 4.5;
 // Offset fra center :-)
 tap_offset = 37.5;
 
+// Cutouts
+cutout_radius = 6.5;
+
 // Slightly more corners
 $fn = 60;
 
@@ -99,9 +102,13 @@ module tappe() {
 
 // Cutouts for the holes on the A side
 module cutouts() {
-
-
+    for( i = [-5,-2.5,0,2.5,5,90,175,177.5,180,182.5,185,270] ) {
+        rotate([0,0,i])
+        translate([outer_hole_offset, 0, main_height / 2.0 - a_rim_thickness])
+        cylinder(r = cutout_radius, h = center_hole_height);
+    }
 }
+
 
 module main() {
     difference() {
@@ -139,6 +146,9 @@ module main() {
         two_boxes(v_box_offset, v_box_height, v_box_width);
         // Horiz. boxes
         two_boxes(h_box_offset, h_box_height, h_box_width);
+
+        // Cutouts from the a side
+        cutouts();
     }
 
     // Manually add some minor adjustments.
