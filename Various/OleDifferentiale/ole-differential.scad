@@ -4,7 +4,7 @@
 // mcculloch m95-66x 9.5 hp motor, ca. 2012
 
 outer_diameter = 106.5;
-main_height = 11.21;
+main_height = 12.1;
 
 // A is the nice side
 
@@ -16,37 +16,47 @@ b_rim_thickness = 1.9;
 // This does not really matter, should just be larger than the thickness.
 rim_cutter_height = 4;
 
+// Hole expansion. This is because the liquid sets a bit.
+// We multiply by two, because there are two sides... (silly)
+hole_addition = 2 * 0.25;
+
+
 // Center hole diameter
-center_hole_diameter = 9.2;
+center_hole_diameter = 9.2 + hole_addition;
 center_hole_height = 20;
 
 // Small holes diameter
-small_hole_diameter = 4.2;
+small_hole_diameter = 4.0 + hole_addition;
 // outer_hole_offset from center
 outer_hole_offset = 44.8;
 inner_hole_offset = 36.5;
 
+// Hole expansion. This is because the liquid sets a bit.
+// We multiply by two, because there are two sides... (silly)
+hole_addition = 2 * 0.25;
+
 // The boxes. Two are vertical, two are horizontal
 // Vertical box offset from center to center.
-v_box_height = 23.0;
+v_box_height = 23.0 + hole_addition;
 v_box_offset = 10.9 + v_box_height / 2.0;
-v_box_width  = 8.0;
+v_box_width  = 8.0 + hole_addition;
 
 // Horizontal box offset from center
 h_box_offset = v_box_offset;
-h_box_height = 13.4;
+h_box_height = 13.4 + hole_addition;
+// We do not add here, because it is meant to keep distance to the bore holes
 h_box_width = 43.1;
 
 // Knaster
 outer_knast_diameter = 18;
 knast_offset = 56.1;
 
-// Støttebøsning
+// Støttebøsning 
 hole_support_diameter = 9.0;
 hole_support_height = 3;
 
 // Tapper
-tap_width = 2.7;
+tap_width = 2.7 - hole_addition;
 tap_depth = 4.5;
 // Offset fra center :-)
 tap_offset = 37.5;
@@ -57,6 +67,9 @@ cutout_radius = 6.5;
 // Slightly more corners
 $fn = 60;
 
+// Sometimes a pad is helpfull
+pad = 0.05;
+
 // Make four holes using the small_hole_diameter, and a given offset
 module four_holes(offset) {
     for( i = [0,1,2,3] ) {
@@ -65,6 +78,24 @@ module four_holes(offset) {
         cylinder(r = small_hole_diameter/2.0, h = center_hole_height);
     }
 }
+
+// Make four hole supports using the small_hole_diameter, and a given offset
+module four_holes_support(offset) {
+    for( i = [0,1,2,3] ) {
+        rotate([0,0,90*i])
+        translate([offset, 0, -center_hole_height/2.0])
+        difference() {
+            cylinder(r = hole_support_diameter / 2.0, h = main_height);
+            // Cut it at the main_height / 2
+            translate([0,0,+center_hole_height / 2.0 - 1.5 * main_height ])
+            cylinder(r = hole_support_diameter / 2.0 + 2*pad, h = main_height);
+            // This is basically the hole again from four_holes
+            cylinder(r = small_hole_diameter/2.0, h = center_hole_height);
+        }
+    }
+}
+
+
 
 module two_boxes(offset, h, w) {
     for( i = [1,-1] ){
@@ -98,8 +129,8 @@ module knaster() {
                 cylinder(r = 5.5, h = main_height);
                 // Substract something round
                 rotate([0,0,120*i-16.375*j])
-                translate([0,outer_diameter / 2.0 + 8.925,-main_height/2.0])
-                cylinder(r = 9, h = main_height);
+                translate([0,outer_diameter / 2.0 + 8.925,-main_height/2.0-pad])
+                cylinder(r = 9, h = main_height + pad * 2);
             }
         }
         
@@ -168,6 +199,8 @@ module main() {
     // Manually add some minor adjustments.
     tappe();
     
+    // Small holes support
+    four_holes_support(outer_hole_offset);
 
 }
 
