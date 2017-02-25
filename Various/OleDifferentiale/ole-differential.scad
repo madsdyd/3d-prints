@@ -4,15 +4,15 @@
 // mcculloch m95-66x 9.5 hp motor, ca. 2012
 
 outer_diameter = 106.5;
-main_height = 12.1;
+main_height = 12.2 + 0.3;
 
 // A is the nice side
 
 // Thickness of rim
-a_inner_rim = 5.0;
-b_inner_rim = 11.5;
-a_rim_thickness = 1.2;
-b_rim_thickness = 1.9;
+a_inner_rim = 4.5;
+b_inner_rim = 11;
+a_rim_thickness = 1.2 + 0.3;
+b_rim_thickness = 1.9 + 0.3;
 // This does not really matter, should just be larger than the thickness.
 rim_cutter_height = 4;
 
@@ -22,14 +22,14 @@ hole_addition = 2 * 0.25;
 
 
 // Center hole diameter
-center_hole_diameter = 9.2 + hole_addition;
+center_hole_diameter = 9.7 + hole_addition;
 center_hole_height = 20;
 
 // Small holes diameter
 small_hole_diameter = 4.0 + hole_addition;
 // outer_hole_offset from center
 outer_hole_offset = 44.8;
-inner_hole_offset = 36.5;
+inner_hole_offset = 37;
 
 // Hole expansion. This is because the liquid sets a bit.
 // We multiply by two, because there are two sides... (silly)
@@ -52,17 +52,17 @@ outer_knast_diameter = 18;
 knast_offset = 56.1;
 
 // Støttebøsning 
-hole_support_diameter = 9.0;
+hole_support_diameter = 8.5;
 hole_support_height = 3;
 
 // Tapper
 tap_width = 2.7 - hole_addition;
 tap_depth = 4.5;
 // Offset fra center :-)
-tap_offset = 37.5;
+tap_offset = 38;
 
 // Cutouts
-cutout_radius = 6.5;
+cutout_radius = 7;
 
 // Slightly more corners
 $fn = 60;
@@ -153,6 +153,13 @@ module cutouts() {
         cylinder(r = cutout_radius, h = center_hole_height);
     }
 }
+module cutouts2() {
+    for( i = [-7.5,-5,-2.5,0,2.5,5,7.5, 90, 172.5,175,177.5,180,182.5,185,187.5, 270] ) {
+        rotate([0,0,i])
+        translate([outer_hole_offset, 0, main_height / 2.0 - a_rim_thickness])
+        cylinder(r = cutout_radius, h = center_hole_height);
+    }
+}
 
 
 module main() {
@@ -193,7 +200,7 @@ module main() {
         two_boxes(h_box_offset, h_box_height, h_box_width);
 
         // Cutouts from the a side
-        cutouts();
+        cutouts2();
     }
 
     // Manually add some minor adjustments.
