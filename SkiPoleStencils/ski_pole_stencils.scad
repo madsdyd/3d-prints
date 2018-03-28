@@ -1,4 +1,5 @@
 use <Writescad/write.scad>
+use <Chamfers-for-OpenSCAD/Chamfer.scad>
 
 stencil_thickness = 3;
 
@@ -21,9 +22,9 @@ rsh_text_height = text_height / 4;
 
 // Handle is a simple cube.
 //handle_length = 100;
-handle_length = 20;
-
+handle_length = 50;
 handle_width = 15;
+handle_hole_radius = 3;
 
 // Include handle
 inner_only = false;
@@ -50,7 +51,8 @@ module stencil(number) {
         if (inner_only) {
             scale([1, stencil_inner_radius1/stencil_inner_radius2, 1]) cylinder(h=stencil_thickness, r=stencil_inner_radius2, center = true);
         } else {
-            scale([1, stencil_outer_radius1/stencil_outer_radius2, 1]) cylinder(h=stencil_thickness, r=stencil_outer_radius2, center = true);
+            translate([0,0, -stencil_thickness/2])
+            scale([1, stencil_outer_radius1/stencil_outer_radius2, 1]) chamferCylinder(height=stencil_thickness, radius=stencil_outer_radius2);
         }
         // Substract the stencil font
         write_cc(str(number), text_height);
@@ -66,8 +68,15 @@ module stencil(number) {
     // Include handle if set for that.
     if (!inner_only) {
         // Handle. 0.9 will not work with all values.
+        translate([-handle_length/2, -handle_width/2, -stencil_thickness/2])
         translate([-handle_length/2-stencil_outer_radius2*0.9,0,0])
-        cube([handle_length, handle_width, stencil_thickness], center = true);
+        difference() {
+            chamferCube(handle_length, handle_width, stencil_thickness);
+            
+            // Cut a hole for a keyring, or something
+            translate([handle_width/2,handle_width/2,-stencil_thickness/2])
+            cylinder(h=stencil_thickness*3, r=handle_hole_radius);
+        }
     }
 }
 
