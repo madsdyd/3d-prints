@@ -4,18 +4,18 @@ stencil_thickness = 3;
 
 // Sort of try to make it an elipse / oval
 
-// stencil_outer_radius1 = 35;
-// stencil_outer_radius2 = 45;
-stencil_outer_radius1 = 20;
-stencil_outer_radius2 = 25;
+stencil_outer_radius1 = 30;
+stencil_outer_radius2 = 35;
+// stencil_outer_radius1 = 25;
+//stencil_outer_radius2 = 25;
 
 // This is the inner ones - basically the head of the poles handle.
 // Used during development.
-stencil_inner_radius1 = 15;
-stencil_inner_radius2 = 20;
+stencil_inner_radius1 = 18;
+stencil_inner_radius2 = 24;
 
 // text height determines the size that will fit on the head of the pole handle.
-text_height = 13;
+text_height = 16;
 
 rsh_text_height = text_height / 4;
 
@@ -54,10 +54,13 @@ module stencil(number) {
         }
         // Substract the stencil font
         write_cc(str(number), text_height);
+        
+        // This will not work, unfortunately
+        /*
         translate([0,-stencil_inner_radius1*0.8,0])
         write_cc("RSH", rsh_text_height);
         translate([0,stencil_inner_radius1*0.8,0])
-        write_cc("RSH", rsh_text_height);
+        write_cc("RSH", rsh_text_height); */
     }
 
     // Include handle if set for that.
