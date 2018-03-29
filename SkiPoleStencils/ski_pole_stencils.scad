@@ -5,8 +5,8 @@ stencil_thickness = 3;
 
 // Sort of try to make it an elipse / oval
 
-stencil_outer_radius1 = 30;
-stencil_outer_radius2 = 35;
+stencil_outer_radius1 = 22;
+stencil_outer_radius2 = 30;
 // stencil_outer_radius1 = 25;
 //stencil_outer_radius2 = 25;
 
@@ -22,7 +22,7 @@ rsh_text_height = text_height / 4;
 
 // Handle is a simple cube.
 //handle_length = 100;
-handle_length = 50;
+handle_length = 60;
 handle_width = 15;
 handle_hole_radius = 3;
 
@@ -42,6 +42,24 @@ module write_cc(text, height) {
     // Lucky, even works with other lenghts! :-)
     translate([-(height*0.22),-height/6,0])
     write(text, t = text_thickness, thickness, h = height, space = 1.2, center= true);
+}
+
+module handle() {
+    // Handle. 0.9 will not work with all values.
+    translate([-handle_length/2, -handle_width/2, -stencil_thickness/2])
+    translate([-handle_length/2-stencil_outer_radius2*0.9,0,0])
+    difference() {
+        chamferCube(handle_length, handle_width, stencil_thickness);
+        
+        // Cut a hole for a keyring, or something
+        translate([handle_width/2,handle_width/2,-stencil_thickness/2])
+        cylinder(h=stencil_thickness*3, r=handle_hole_radius);
+    }
+}
+
+module handles() {
+    handle();
+    rotate([0,0,180]) handle();
 }
 
 // An oval, centered, with the number in. Includes outer stencil (cover) and handle if global variable set.
@@ -67,16 +85,7 @@ module stencil(number) {
 
     // Include handle if set for that.
     if (!inner_only) {
-        // Handle. 0.9 will not work with all values.
-        translate([-handle_length/2, -handle_width/2, -stencil_thickness/2])
-        translate([-handle_length/2-stencil_outer_radius2*0.9,0,0])
-        difference() {
-            chamferCube(handle_length, handle_width, stencil_thickness);
-            
-            // Cut a hole for a keyring, or something
-            translate([handle_width/2,handle_width/2,-stencil_thickness/2])
-            cylinder(h=stencil_thickness*3, r=handle_hole_radius);
-        }
+        handles();
     }
 }
 
@@ -94,4 +103,4 @@ module main() {
 
 
 // main();
-stencil(125);
+stencil(130);
