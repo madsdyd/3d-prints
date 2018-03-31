@@ -36,39 +36,7 @@ stencil_height = 2 * y_border + num_y * letter_height + (num_y-1) * y_spacing;
 echo( "stencil_width: ", stencil_width );
 echo( "stencil_height: ", stencil_height );
 
-
-
-
-// Not used anymore
-
-
-
-// Sort of try to make it an elipse / oval
-
-stencil_outer_radius1 = 22;
-stencil_outer_radius2 = 30;
-// stencil_outer_radius1 = 25;
-//stencil_outer_radius2 = 25;
-
-// This is the inner ones - basically the head of the poles handle.
-// Used during development.
-stencil_inner_radius1 = 18;
-stencil_inner_radius2 = 24;
-
-
-rsh_text_height = text_height / 4;
-
-// Handle is a simple cube.
-//handle_length = 100;
-handle_length = 10;
-handle_width = 15;
-handle_hole_radius = 3;
-
-// Include handle
-inner_only = false;
-
-// Calculated stuff.
-
+// Just to make sure we go through
 text_thickness = stencil_thickness * 2 ;
 
 
@@ -82,64 +50,20 @@ module write_cc(text, height) {
     write(text, t = text_thickness, h = height, space = 1.2, center= true);
 }
 
-module handle() {
-    // Handle. 0.9 will not work with all values.
-    translate([-handle_length/2, -handle_width/2, -stencil_thickness/2])
-    translate([-handle_length/2-stencil_outer_radius2*0.9,0,0])
-    difference() {
-        chamferCube(handle_length, handle_width, stencil_thickness);
-        
-        // Cut a hole for a keyring, or something
-        translate([handle_width/2,handle_width/2,-stencil_thickness/2])
-        cylinder(h=stencil_thickness*3, r=handle_hole_radius);
-    }
-}
-
-module handles() {
-    handle();
-    rotate([0,0,180]) handle();
-}
-
-// An oval, centered, with the number in. Includes outer stencil (cover) and handle if global variable set.
-
-module stencil(number) {
-    difference() {
-        if (inner_only) {
-            scale([1, stencil_inner_radius1/stencil_inner_radius2, 1]) cylinder(h=stencil_thickness, r=stencil_inner_radius2, center = true);
-        } else {
-            translate([0,0, -stencil_thickness/2])
-            scale([1, stencil_outer_radius1/stencil_outer_radius2, 1]) chamferCylinder(height=stencil_thickness, radius=stencil_outer_radius2);
-        }
-        // Substract the stencil font
-        write_cc(str(number), text_height);
-        
-        // This will not work, unfortunately
-        /*
-        translate([0,-stencil_inner_radius1*0.8,0])
-        write_cc("RSH", rsh_text_height);
-        translate([0,stencil_inner_radius1*0.8,0])
-        write_cc("RSH", rsh_text_height); */
-    }
-
-    // Include handle if set for that.
-    if (!inner_only) {
-        handles();
-    }
-}
-
 ///////////////////////////////////////
-xi_start = 0;
-xi_end = num_x-1;
-yi_start = 0;
-yi_end = num_y-1;
-
+// Write the numbers
 module numbers() {
-    for (xi = [xi_start:xi_end] ) {
-        for (yi = [yi_start:yi_end]) {
+    xi_start = 0;
+    xi_end = num_x-1;
+    yi_start = 0;
+    yi_end = num_y-1;
+    for (yi = [yi_start:yi_end]) {
+        for (xi = [xi_start:xi_end] ) {
             number = number_start + xi*num_y*number_step + yi*number_step;
             // trans_y = stencil_height - ( y_border*2 + yi * (letter_height + y_spacing) );
             trans_y = stencil_height - ( y_border + letter_height / 2.0 + yi * (letter_height + y_spacing) );
             // Need to if on number < 100...
+            // "A variable can only have one value in a scope"... nice, that one.
             if ( number < 100 ) {
                 trans_x = x_border + xi + two_letter_width / 2.0;
                 echo(number, " ", trans_x, " ", trans_y);
@@ -149,17 +73,23 @@ module numbers() {
                 echo(number, " ", trans_x, " ", trans_y);
                 translate([trans_x, trans_y, 0]) write_cc(str(number), text_height);
             }
+            // Also, add the holes.
+            translate([hole_offset_from_edge, trans_y, 0])
+            cylinder( h = text_thickness, r = hole_radius, center = true);
+            translate([stencil_width - hole_offset_from_edge, trans_y, 0])
+            cylinder( h = text_thickness, r = hole_radius, center = true);
         }
     }
 }
 
-
+// The main cube
 module main_cube() {
     // translate([-stencil_width/2, -stencil_height/2, -stencil_thickness/2])
     translate([0, 0, -stencil_thickness/2])
     chamferCube(stencil_width, stencil_height, stencil_thickness);
 }
 
+// Difference maincube with numbers and holes... 
 module main() {
     difference() {
         main_cube();
