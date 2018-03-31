@@ -65,13 +65,13 @@ module mounts() {
 module main() {
     
     difference() {
-        cube([box_length, box_width, box_height], center = true);
+        cccube(box_length, box_width, box_height);
         
         // Make box hollow
         translate([0,0,wall_thickness])
-        cube([box_length - 2*wall_thickness,
+        cccube(box_length - 2*wall_thickness,
                 box_width - 2*wall_thickness,
-                box_height], center = true);
+                box_height);
         
         // Make the cutout for the contact
         translate([0, -box_width/2.0+wall_thickness/2.0, 0])
