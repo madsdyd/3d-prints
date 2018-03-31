@@ -9,18 +9,18 @@ box_width = 34;  // y
 box_height = 20; // z
 
 wall_thickness = 2.4;
-wire_radius = 3; // Radius of wire going into the box.
+wire_radius = 3 + 0.5; // Radius of wire going into the box.
 wire_distance = (box_width - 2*wall_thickness)/3 + wire_radius; // Distance between the wire holes;
 
 // Measurements of the contact
-cutout_length = 19;
-cutout_height = 12.5;
+cutout_length = 21 + 0.5;
+cutout_height = 13 + 0.8;
 
 // Mounts
 mount_outer_radius = 6;
-mount_inner_radius = 2;
-mount_thickness = 2.4;
-screw_head_radius = 4;
+mount_inner_radius = 2 + 0.5; // For the screws
+mount_thickness = 2.7;
+screw_head_radius = 4 + 10;
 
 // Hole in the side of the box.
 module wire_hole() {
@@ -45,8 +45,8 @@ module mount() {
     difference() {
         union() {
             ccc(h=mount_thickness, r = mount_outer_radius);
-            translate([-mount_outer_radius/2,0,0])
-            cccube(mount_outer_radius, mount_outer_radius*2, mount_thickness);
+            translate([-(screw_head_radius+wall_thickness)/2,0,0])
+            cccube(screw_head_radius+wall_thickness, mount_outer_radius*2, mount_thickness);
         }
         cylinder(h = mount_thickness * 2, r = mount_inner_radius, center = true);
     }
