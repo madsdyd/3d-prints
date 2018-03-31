@@ -20,7 +20,7 @@ cutout_height = 13 + 0.8;
 mount_outer_radius = 6;
 mount_inner_radius = 2 + 0.5; // For the screws
 mount_thickness = 2.7;
-screw_head_radius = 4 + 10;
+screw_head_radius = 4 + 0.5;
 
 // Hole in the side of the box.
 module wire_hole() {
