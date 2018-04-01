@@ -13,7 +13,7 @@ wire_radius = 3 + 0.5; // Radius of wire going into the box.
 wire_distance = (box_width - 2*wall_thickness)/3 + wire_radius; // Distance between the wire holes;
 
 // Measurements of the contact
-cutout_length = 21 + 0.5;
+cutout_length = 21 + 0.5 - 1.5;
 cutout_height = 13 + 0.8;
 
 // Mounts
