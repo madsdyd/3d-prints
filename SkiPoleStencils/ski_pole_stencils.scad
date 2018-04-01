@@ -4,7 +4,7 @@ use <Chamfers-for-OpenSCAD/Chamfer.scad>
 // This started out as seperate stencils, but I have realised a huge
 // stencil mounted in a contraption is a better idea.
 
-stencil_thickness = 1.2; // Match layer thickness of .3 - print solid, I reckon.
+stencil_thickness = 1.5; // Match layer thickness of .3 - print solid, I reckon.
 
 
 // text height determines the size that will fit on the head of the pole handle.
@@ -15,13 +15,9 @@ two_letter_width = 30;
 three_letter_width = 40;
 letter_height = 25; // Not really, but for spacing issues.
 x_spacing = 12.5;
-x_border = 15; // For the holes
+x_border = 10; // For the holes
 y_spacing = 15;
 y_border = 10;
-
-hole_radius = 3;
-hole_offset_from_edge = 7.5;
-
 
 // For laying out numbers
 // Make sure first row is all two_letter, or you will get issues.
@@ -30,11 +26,24 @@ num_y = 4;
 number_start = 80;
 number_step = 5;
 
+// Controlling holes
+hole_radius = 1.5;
+hole_offset_from_edge = 5;
+hole_number = 10;
+
+
+
+
 // Calculated
 stencil_width = 2 * x_border + two_letter_width + (num_x-1) * (three_letter_width + x_spacing);
 stencil_height = 2 * y_border + num_y * letter_height + (num_y-1) * y_spacing;
 echo( "stencil_width: ", stencil_width );
 echo( "stencil_height: ", stencil_height );
+
+hole_x_distance = (stencil_width - 2*hole_offset_from_edge) / (hole_number-1);
+hole_y_distance = (stencil_height - 2*hole_offset_from_edge) / (hole_number-1);
+echo( "hole_x_distance: ", hole_x_distance );
+echo( "hole_y_distance: ", hole_y_distance );
 
 // Just to make sure we go through
 text_thickness = stencil_thickness * 2 ;
@@ -49,6 +58,24 @@ module write_cc(text, height) {
     translate([-(height*0.22),-height/6,0])
     write(text, t = text_thickness, h = height, space = 1.2, center= true);
 }
+
+//////////////////////////////
+// Make the holes
+module holes() {
+    for(i = [0:hole_number-1]) {
+        // x axis
+        translate([hole_offset_from_edge + i*hole_x_distance, hole_offset_from_edge, 0])
+        cylinder(r=hole_radius, h = stencil_thickness * 2, center = true);
+        translate([hole_offset_from_edge + i*hole_x_distance, stencil_height-hole_offset_from_edge, 0])
+        cylinder(r=hole_radius, h = stencil_thickness * 2, center = true);
+        // y axis
+        translate([hole_offset_from_edge, hole_offset_from_edge + i*hole_y_distance, 0])
+        cylinder(r=hole_radius, h = stencil_thickness * 2, center = true);
+        translate([stencil_width - hole_offset_from_edge, hole_offset_from_edge + i*hole_y_distance, 0])
+        cylinder(r=hole_radius, h = stencil_thickness * 2, center = true);
+    }
+}
+
 
 ///////////////////////////////////////
 // Write the numbers
@@ -74,19 +101,27 @@ module numbers() {
                 translate([trans_x, trans_y, 0]) write_cc(str(number), text_height);
             }
             // Also, add the holes.
+            /*
             translate([hole_offset_from_edge, trans_y, 0])
             cylinder( h = text_thickness, r = hole_radius, center = true);
             translate([stencil_width - hole_offset_from_edge, trans_y, 0])
             cylinder( h = text_thickness, r = hole_radius, center = true);
+            */
         }
     }
+    holes();
+
+
 }
 
 // The main cube
 module main_cube() {
     // translate([-stencil_width/2, -stencil_height/2, -stencil_thickness/2])
     translate([0, 0, -stencil_thickness/2])
-    chamferCube(stencil_width, stencil_height, stencil_thickness);
+    //chamferCube(stencil_width, stencil_height, stencil_thickness);
+    cube([stencil_width, stencil_height, stencil_thickness]);
+
+    
 }
 
 // Difference maincube with numbers and holes... 
