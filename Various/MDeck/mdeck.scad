@@ -11,6 +11,9 @@ deck_length = 13100 - border_width;
 deck_width = 3800 - border_width; 
 // If you change width, you need to recalculate the number of braedder
 braedder_rows = 31;
+// And, possibly also this
+spaer_rows = 3;
+spaer_distance = 1200;
 // And, this will also depends, etc.
 // It is the number of stroer pr. braedde, but all will be sharing two stroer, so it is really one more for each braedde.
 stroer_per_braedde = 6;
@@ -60,8 +63,19 @@ stroer_length = deck_width-stroer_width-pap_thickness;
 // Must add one in the end
 stroer_count = braedder_span_number * stroer_per_braedde + 1;
 
+// Calculating lengths for borders
+border_a_length = deck_width - house_cut_width + border_width;
+border_b_length = deck_length + 2 * border_width;
+border_c_length = deck_width + border_width;
+
+// Lengths for spaer
+spaer_length = deck_length;
+
 module information() {
-    //
+    // Spaer
+    echo("Spær");
+    echo(str("  Dimensioner: ", spaer_width, "x", spaer_height, "x", spaer_length, ", stk: ", spaer_rows));
+    echo(str("    Afstand imellem midten af hvert spær = ", spaer_distance));
 
     // Rem
     echo("Rem");
@@ -77,6 +91,12 @@ module information() {
     echo(str("  Dimensioner: ", braedder_width, "x", braedder_height, "x", braedder_length, ", stk: ", braedder_count)); 
     echo(str("    Mellemrum imellem brædder = ", braedder_gap));
 
+    echo("Afslutning");
+    echo(str("  Dimensioner: ", border_width, "x", border_height, "x", border_a_length, ", stk: ", 1)); 
+    echo(str("  Dimensioner: ", border_width, "x", border_height, "x", border_b_length, ", stk: ", 1)); 
+    echo(str("  Dimensioner: ", border_width, "x", border_height, "x", border_c_length, ", stk: ", 1)); 
+   
+    
 }
 
 
@@ -161,17 +181,17 @@ module border() {
     color([0.6, 0.5, 0.2])
     translate([0,house_cut_width,-border_height])
     rotate([0,0,90])
-    cube([deck_width - house_cut_width + border_width, border_width, border_height]);
+    cube([border_a_length, border_width, border_height]);
     // Very long
     color([0.6, 0.5, 0.2])
-    translate([0,deck_width,-border_height])
+    translate([-border_width,deck_width,-border_height])
     rotate([0,0,0])
-    cube([deck_length, border_width, border_height]);
+    cube([border_b_length, border_width, border_height]);
     // End.
     color([0.6, 0.5, 0.2])
     translate([deck_length+border_width,0,-border_height])
     rotate([0,0,90])
-    cube([deck_width + border_width, border_width, border_height]);
+    cube([border_c_length, border_width, border_height]);
 }
 
 // Time for the strøer
@@ -203,11 +223,27 @@ module stroer() {
     stroe();
 }
 
+module spaer() {
+    color([0.2, 0.1, 0.05])
+    translate([0,0,-braedder_height-stroer_height-spaer_height-pap_thickness])
+    cube([spaer_length, spaer_width, spaer_height]);
+
+}
+
+module spaers() {
+    for( i = [1:spaer_rows] ) {
+        translate([0,i*spaer_distance,0])
+        spaer();
+    }
+}
+
 
 house();
-ground();
+// ground();
+spaers();
 rem();
 stroer();
-// deck();
+deck();
 border();
+
 information();
