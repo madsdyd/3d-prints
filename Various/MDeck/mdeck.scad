@@ -10,7 +10,7 @@ border_width = 28 + 7;
 deck_length = 13100 - border_width;
 deck_width = 3800 - border_width; 
 // If you change width, you need to recalculate the number of braedder
-braedder_count = 31;
+braedder_rows = 31;
 // And, this will also depends, etc.
 // It is the number of stroer pr. braedde, but all will be sharing two stroer, so it is really one more for each braedde.
 stroer_per_braedde = 6;
@@ -36,13 +36,11 @@ spaer_suppoert_min = 1500;
 
 stroer_height      = 100;
 stroer_width       = 50;
-stroer_support_min = 550;
 
 // 125 x 32 is actually 28x115
 braedder_width  = 115;
 braedder_height = 28;
-braedder_gap    = deck_width / braedder_count - braedder_width;
-echo ("Mellemrum imellem brædder = ", braedder_gap);
+braedder_gap    = deck_width / braedder_rows - braedder_width;
 // The "pap" is used between different parts to stop water / moisture from moving
 pap_thickness = 3;
 
@@ -54,11 +52,33 @@ braedder_max_length = 3300;
 // NOTE: MUST BE CHANGED / CALCULATED
 braedder_span_number = 4;
 braedder_length = deck_length / braedder_span_number;
-echo ("Længde af brædder = ", braedder_length);
+braedder_count = braedder_span_number * braedder_rows;
+
 braedder_length_gap = 2; // This is for visual feedback only.
 stroer_distance = braedder_length / stroer_per_braedde;
-echo ("Antal strøer pr. bræt = ", stroer_per_braedde);
-echo ("Afstand imellem midten af hver strø = ", stroer_distance);
+stroer_length = deck_width-stroer_width-pap_thickness;
+// Must add one in the end
+stroer_count = braedder_span_number * stroer_per_braedde + 1;
+
+module information() {
+    //
+
+    // Rem
+    echo("Rem");
+    echo(str("  Dimensioner: ", stroer_width, "x", stroer_height, "x", deck_length, ", stk: ", 1)); 
+    
+    // Strøer
+    echo("Strøer");
+    echo(str("  Dimensioner: ", stroer_width, "x", stroer_height, "x", stroer_length, ", stk: ", stroer_count)); 
+    echo(str("    Antal strøer pr. bræt = ", stroer_per_braedde));
+    echo(str("    Afstand imellem midten af hver strø = ", stroer_distance));
+
+    echo("Dæk");
+    echo(str("  Dimensioner: ", braedder_width, "x", braedder_height, "x", braedder_length, ", stk: ", braedder_count)); 
+    echo(str("    Mellemrum imellem brædder = ", braedder_gap));
+
+}
+
 
 gap = 0.5;
 
@@ -99,7 +119,7 @@ module half_braedde() {
 
 // Does a lot of braedder
 module deck() {
-    for ( row = [0:braedder_count - 1]) {
+    for ( row = [0:braedder_rows - 1]) {
         // Do something different for every other row
         if ( row % 2 == 0 ) {
             difference() {
@@ -156,10 +176,10 @@ module border() {
 
 // Time for the strøer
 
-// The rem is where the stroer are mounted
+// The rem is where the stroer are mounted. It is offset by the pap
 module rem() {
     color([0.4, 0.3, 0.1])
-    translate([0,0,-braedder_height-stroer_height])
+    translate([0,pap_thickness,-braedder_height-stroer_height])
     cube([deck_length, stroer_width, stroer_height]);
     // TODO: Add mounts for this?
     
@@ -167,15 +187,15 @@ module rem() {
 
 module stroe() {
     color([0.4, 0.3, 0.1])
-    translate([-stroer_width/2,stroer_width,-braedder_height-stroer_height])
-    cube([stroer_width, deck_width-stroer_width, stroer_height]);
+    translate([-stroer_width/2,stroer_width+pap_thickness,-braedder_height-stroer_height])
+    cube([stroer_width, stroer_length, stroer_height]);
 }
 
 module stroer() {
     // First and last are special.
     translate([stroer_width/2,0,0])
     stroe();
-    for (i = [1:braedder_span_number * stroer_per_braedde - 1]) {
+    for (i = [1:stroer_count - 2]) {
         translate([stroer_distance*i,0,0])
         stroe();
     }
@@ -190,3 +210,4 @@ rem();
 stroer();
 // deck();
 border();
+information();
