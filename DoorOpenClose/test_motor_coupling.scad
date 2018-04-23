@@ -16,8 +16,14 @@ module D_shaft(height, diameter, remain, pad) {
 
 
 
-
 difference() {
-    cylinder(r=15, h=3, center=true);
-    D_shaft(6, 2.3, 0.55, 0.1);
+    difference() {
+        cylinder(r=15, h=3, center=true);
+        D_shaft(6, 2.3, 0.55, 0.2);
+    }
+    translate([-8,3,0])
+    linear_extrude(height = 4) {
+        text("0.2", size = 8);
+    }
 }
+
