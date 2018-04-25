@@ -4,49 +4,62 @@ include <gear.scad>
 
 $fn=200;
 
+// The shafts are used several places.
+shaft_diameter = 2.3 + 0.8; // 0.8 added for printing, and adjusted after first print.
 
+////////////////////////////////////////
+// Measurements of the motor
 motor_shaft_length   = 5; // That is, after the "star" thing has been put on...
 motor_shaft_diameter = 2.3;  // Raw measure
 motor_shaft_d_remain = 0.55; // From center of shaft to no more material - shortest distance.
 motor_print_pad      = 0.2;  // Pad for inner hole shrinkage. This is "diameter"
 // 0.2 for white filament, something else for black... 
 
-// The geat thickness
-gear_thickness = motor_shaft_length;
-
+// We reuse the "star" gear from the original motor.
 motor_star_fitting_inner_diameter = 2.5;
 motor_star_fitting_outer_diameter = 4.7;
 star_print_pad = 1.3; // Seems to depend somewhat on filament. 1.3 slightly tighther than last print.
 
+////////////////////////////////////////
+// General gear settings
+// The geat thickness. For now, go with motor_shaft_length
+gear_thickness = motor_shaft_length;
+
+// Not used for now. May never be, actually.
 // pressure_angle = 25;
 
-// All must use same circular pitch.
-circular_pitch=5;
+// All gears must use same circular pitch.
+// Changing this, greatly influences the size / dimension of everything.
+circular_pitch = 5;
+
+
+////////////////////////////////////////
+// Specific gear settings.
 
 // Motor, and we go for 1:5
-motor_shaft_gear_num_teeth = 9;
-motor_shaft_gear_radius    = pitch_radius(num_teeth=motor_shaft_gear_num_teeth, circular_pitch=circular_pitch);
-motor_shaft_gear_inner_radius = motor_shaft_gear_radius - dedendum(circular_pitch=circular_pitch);
-echo(str("motor_shaft_gear_num_teeth = ", motor_shaft_gear_num_teeth));
-echo(str("motor_shaft_gear_radius = ", motor_shaft_gear_radius));
+motor_gear_num_teeth    = 9;
+motor_gear_pitch_radius = pitch_radius(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
+motor_gear_inner_radius = motor_gear_pitch_radius - dedendum(circular_pitch=circular_pitch);
+motor_gear_outer_radius = motor_gear_pitch_radius - addendum(circular_pitch=circular_pitch);
+echo(str( "Motor gear: num_teeth=", motor_gear_num_teeth, ", outer_radius=", motor_gear_outer_radius, ", pitch_radius=", motor_gear_pitch_radius));
 
-// Ratio - get as close to 5 as possibly
+
+// Ratio - get as close to 3 as possibly. 
 // Middle has two gears, really.
-middle_gear_source_num_teeth    = 25; // Source is from the motor
-middle_gear_source_pitch_radius = pitch_radius(num_teeth=middle_gear_source_num_teeth, circular_pitch=circular_pitch);
-middle_gear_source_inner_radius = middle_gear_source_pitch_radius - dedendum(circular_pitch=circular_pitch);
-middle_gear_source_outer_radius = middle_gear_source_pitch_radius + addendum(circular_pitch=circular_pitch);
-echo(str( "Middle gear source: num_teeth=", middle_gear_source_num_teeth, ", outer_radius=", middle_gear_source_outer_radius));
+// Input, gets input from the motor.
+// Output, output gear, really
+middle_gear_input_num_teeth    = 25; 
+middle_gear_input_pitch_radius = pitch_radius(num_teeth=middle_gear_input_num_teeth, circular_pitch=circular_pitch);
+middle_gear_input_inner_radius = middle_gear_input_pitch_radius - dedendum(circular_pitch=circular_pitch);
+middle_gear_input_outer_radius = middle_gear_input_pitch_radius + addendum(circular_pitch=circular_pitch);
+echo(str( "Middle gear input: num_teeth=", middle_gear_input_num_teeth, ", outer_radius=", middle_gear_input_outer_radius, ", pitch_radius=", middle_gear_input_pitch_radius));
 
-middle_gear_sink_num_teeth    = 9; // Source is from the motor
-middle_gear_sink_pitch_radius = pitch_radius(num_teeth=middle_gear_sink_num_teeth, circular_pitch=circular_pitch);
-middle_gear_sink_inner_radius = middle_gear_sink_pitch_radius - dedendum(circular_pitch=circular_pitch);
-middle_gear_sink_outer_radius = middle_gear_sink_pitch_radius + addendum(circular_pitch=circular_pitch);
-echo(str( "Middle gear sink: num_teeth=", middle_gear_sink_num_teeth, ", outer_radius=", middle_gear_sink_outer_radius));
+middle_gear_output_num_teeth    = 9; 
+middle_gear_output_pitch_radius = pitch_radius(num_teeth=middle_gear_output_num_teeth, circular_pitch=circular_pitch);
+middle_gear_output_inner_radius = middle_gear_output_pitch_radius - dedendum(circular_pitch=circular_pitch);
+middle_gear_output_outer_radius = middle_gear_output_pitch_radius + addendum(circular_pitch=circular_pitch);
+echo(str( "Middle gear output: num_teeth=", middle_gear_output_num_teeth, ", outer_radius=", middle_gear_output_outer_radius, ", pitch_radius=", middle_gear_output_pitch_radius));
 
-
-// And a shaft diameter
-middle_gear_shaft_diameter = 2.3 + 0.8; // 0.8 added for printing, and adjusted after first print.
 
 
 // Pad, for ensuring overlap
@@ -129,7 +142,7 @@ module motor_gear() {
     difference() {
         translate([0,0,-gear_thickness/2])
         linear_extrude(height=gear_thickness)
-        gear(num_teeth=motor_shaft_gear_num_teeth, circular_pitch=circular_pitch);
+        gear(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
         
         # star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
         // D_shaft(6, motor_shaft_diameter, motor_shaft_d_remain, motor_print_pad;
@@ -137,7 +150,7 @@ module motor_gear() {
     // Add a cylinder at the top, to protect the casing from the spin of the metal part.
     // This may *not* be a good idea...
     translate([0,0,-gear_thickness/2-1/2])
-    cylinder( h = 1, r = motor_shaft_gear_inner_radius, center = true);
+    cylinder( h = 1, r = motor_gear_inner_radius, center = true);
 
 }
 
@@ -153,7 +166,7 @@ module test_motor_gear() {
         // Radius
         translate([-2.2,-6.4,1])
         linear_extrude(height = 4) {
-            text(str(floor(motor_shaft_gear_radius*10)/10), size = 3);
+            text(str(floor(motor_gear_pitch_radius*10)/10), size = 3);
         }
     }
 }
@@ -165,13 +178,13 @@ module middle_gear() {
         union() {
             translate([0,0,-pad])
             linear_extrude(height=gear_thickness+pad)
-            gear(num_teeth=middle_gear_sink_num_teeth, circular_pitch=circular_pitch);
+            gear(num_teeth=middle_gear_output_num_teeth, circular_pitch=circular_pitch);
             translate([0,0,-gear_thickness])
             linear_extrude(height=gear_thickness)
-            gear(num_teeth=middle_gear_source_num_teeth, circular_pitch=circular_pitch);
+            gear(num_teeth=middle_gear_input_num_teeth, circular_pitch=circular_pitch);
         }
         // The shaft
-        cylinder(h = gear_thickness * 4, r = middle_gear_shaft_diameter / 2.0, center = true);
+        cylinder(h = gear_thickness * 4, r = shaft_diameter / 2.0, center = true);
     }
 }
 
@@ -195,7 +208,7 @@ motor_gear();
 
 // Second gear, testing
 /*
-translate([-driver_gear_radius-motor_shaft_gear_radius,0,0])
+translate([-driver_gear_radius-motor_gear_pitch_radius,0,0])
 linear_extrude(height=3)
 gear(num_teeth=driver_gear_num_teeth, circular_pitch=circular_pitch);
 */
