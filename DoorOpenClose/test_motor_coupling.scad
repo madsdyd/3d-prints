@@ -27,10 +27,10 @@ module D_shaft(height, diameter, remain, pad) {
 }
 
 // Make a test gear for the motor shaft.
-circular_pitch=9;
+circular_pitch=7;
 
 // Motor, and we go for 1:5
-motor_shaft_gear_num_teeth = 10;
+motor_shaft_gear_num_teeth = 9;
 motor_shaft_gear_radius    = pitch_radius(num_teeth=motor_shaft_gear_num_teeth, circular_pitch=circular_pitch);
 echo(str("motor_shaft_gear_num_teeth = ", motor_shaft_gear_num_teeth));
 echo(str("motor_shaft_gear_radius = ", motor_shaft_gear_radius));
@@ -53,14 +53,14 @@ difference() {
         D_shaft(6, 2.3, 0.55, 0.2);
     }
     // Circular pitch
-    translate([-2,3,1])
+    translate([-1.7,2,1])
     linear_extrude(height = 4) {
-        text(str(circular_pitch), size = 6);
+        text(str(circular_pitch), size = 4);
     }
     // Radius
-    translate([-6,-7.5,1])
+    translate([-3,-4.5,1])
     linear_extrude(height = 4) {
-        text(str(floor(motor_shaft_gear_radius*10)/10), size = 5);
+        text(str(floor(motor_shaft_gear_radius*10)/10), size = 3);
     }
  
     
