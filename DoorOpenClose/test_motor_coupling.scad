@@ -16,7 +16,7 @@ gear_thickness = motor_shaft_length;
 
 motor_star_fitting_inner_diameter = 2.5;
 motor_star_fitting_outer_diameter = 4.7;
-star_print_pad = 1.4; // Seems to depend somewhat on filament.
+star_print_pad = 1.3; // Seems to depend somewhat on filament. 1.3 slightly tighther than last print.
 
 // pressure_angle = 25;
 
@@ -46,7 +46,7 @@ echo(str( "Middle gear sink: num_teeth=", middle_gear_sink_num_teeth, ", outer_r
 
 
 // And a shaft diameter
-middle_gear_shaft_diameter = 2.3 + 1; // 1 added for printing.
+middle_gear_shaft_diameter = 2.3 + 0.8; // 0.8 added for printing, and adjusted after first print.
 
 
 // Pad, for ensuring overlap
@@ -117,6 +117,8 @@ module star_shaft(height, inner, outer, pad) {
     }
 }
 
+//////////////////////////////////////////////////////////////////////
+// Create a holder for the axels.
 
 
 
@@ -182,8 +184,8 @@ module middle_gear() {
 
 
 
-// test_motor_gear();
-middle_gear();
+motor_gear();
+// middle_gear();
 
 
 ////////////////////////////////////////////////////////////////////////////////
