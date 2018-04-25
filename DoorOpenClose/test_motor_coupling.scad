@@ -147,15 +147,15 @@ module axle_holder() {
 // A gear with room for the shaft, is it is now.
 module motor_gear() {
     difference() {
-        translate([0,0,-gear_thickness/2])
         linear_extrude(height=gear_thickness)
         gear(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
         
-        star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
+        translate([0,0,gear_thickness/2])
+        # star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
         // D_shaft(6, motor_shaft_diameter, motor_shaft_d_remain, motor_print_pad;
     }
     // Add an axle holder to the bottom.
-    translate([0,0,-gear_thickness/2-axle_holder_height/2])
+    translate([0,0,-axle_holder_height/2])
     axle_holder();
 }
 
