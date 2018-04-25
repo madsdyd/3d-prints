@@ -65,7 +65,9 @@ middle_gear_output_inner_radius = middle_gear_output_pitch_radius - dedendum(cir
 middle_gear_output_outer_radius = middle_gear_output_pitch_radius + addendum(circular_pitch=circular_pitch);
 echo(str( "Middle gear output: num_teeth=", middle_gear_output_num_teeth, ", outer_radius=", middle_gear_output_outer_radius, ", pitch_radius=", middle_gear_output_pitch_radius));
 
-
+////////////////////////////////////////////////////////////
+// Some calculated distances
+motor_gear_to_middle_gear_distance = motor_gear_pitch_radius+middle_gear_input_pitch_radius;
 
 // Pad, for ensuring overlap when "joining" structures
 pad = 0.01;
@@ -151,7 +153,7 @@ module motor_gear() {
         gear(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
         
         translate([0,0,gear_thickness/2])
-        # star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
+        star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
         // D_shaft(6, motor_shaft_diameter, motor_shaft_d_remain, motor_print_pad;
     }
     // Add an axle holder to the bottom.
@@ -194,27 +196,21 @@ module middle_gear() {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Main, sets the stuff together, as needed
+module main() {
+    motor_gear();
+    translate([motor_gear_to_middle_gear_distance,0,0])
+    rotate([180,0,0])
+    middle_gear();
+}
 
 
+main();
 
-
-
-
-
-
-motor_gear();
+// motor_gear();
 // middle_gear();
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Main, sets the stuff together, as needed
 
-
-
-// Second gear, testing
-/*
-translate([-driver_gear_radius-motor_gear_pitch_radius,0,0])
-linear_extrude(height=3)
-gear(num_teeth=driver_gear_num_teeth, circular_pitch=circular_pitch);
-*/
 
