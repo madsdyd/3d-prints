@@ -6,6 +6,11 @@ $fn=200;
 
 // The shafts are used several places.
 shaft_diameter = 2.3 + 0.8; // 0.8 added for printing, and adjusted after first print.
+// And, some settings for the axle_holders
+axle_holder_height = 5;
+axle_holder_outer_diameter = 10;
+axle_holder_bearings_thickness = 2; // Not really bearings. ... forget the name.
+
 
 ////////////////////////////////////////
 // Measurements of the motor
@@ -62,11 +67,8 @@ echo(str( "Middle gear output: num_teeth=", middle_gear_output_num_teeth, ", out
 
 
 
-// Pad, for ensuring overlap
+// Pad, for ensuring overlap when "joining" structures
 pad = 0.01;
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Make a d-shaft
@@ -83,6 +85,7 @@ module D_shaft(height, diameter, remain, pad) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Make a star
 // Copied from https://gist.github.com/anoved/9622826
 // points = number of points (minimum 3)
 // outer  = radius to outer points
@@ -131,9 +134,13 @@ module star_shaft(height, inner, outer, pad) {
 }
 
 //////////////////////////////////////////////////////////////////////
-// Create a holder for the axels.
-
-
+// Create a holder for the axles
+module axle_holder() {
+    difference() {
+        cylinder(h = axle_holder_height,   r = axle_holder_outer_diameter / 2, center = true);
+        cylinder(h = axle_holder_height*2, r = shaft_diameter / 2, center = true);
+    }
+}
 
 ////////////////////////////////////////////////////////////
 // Motor gear
@@ -144,14 +151,12 @@ module motor_gear() {
         linear_extrude(height=gear_thickness)
         gear(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
         
-        # star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
+        star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
         // D_shaft(6, motor_shaft_diameter, motor_shaft_d_remain, motor_print_pad;
     }
-    // Add a cylinder at the top, to protect the casing from the spin of the metal part.
-    // This may *not* be a good idea...
-    translate([0,0,-gear_thickness/2-1/2])
-    cylinder( h = 1, r = motor_gear_inner_radius, center = true);
-
+    // Add an axle holder to the bottom.
+    translate([0,0,-gear_thickness/2-axle_holder_height/2])
+    axle_holder();
 }
 
 // Testing the motor gear
