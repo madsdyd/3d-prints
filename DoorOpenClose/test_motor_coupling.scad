@@ -26,6 +26,16 @@ motor_star_fitting_outer_diameter = 4.7;
 star_print_pad = 1.3; // Seems to depend somewhat on filament. 1.3 slightly tighther than last print.
 
 ////////////////////////////////////////
+// Box dimensions - eventually we may calculate this.
+box_outer_length = 80; // X axis
+box_outer_height = 70;
+box_outer_width  = 30; // Final, probably 48
+box_thickness    = 2;
+
+// Use this for offset between motor axl and outer wall
+temp_offset      = 15;
+
+////////////////////////////////////////
 // General gear settings
 // The geat thickness. For now, go with motor_shaft_length
 gear_thickness = motor_shaft_length;
@@ -195,14 +205,40 @@ module middle_gear() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Mechanical structure
+module bottom() {
+    // For now, has two axles...
+    // Translate in place below gears... 
+    translate([0,0,-axle_holder_height*2-axle_holder_bearings_thickness])
+    union() {
+        translate([-temp_offset,-box_outer_width/2,-box_thickness])
+        cube([box_outer_length, box_outer_width, box_thickness], center);
+        // Now, add the axle holders
+        translate([0,0,axle_holder_height/2])
+        axle_holder();
+        translate([motor_gear_to_middle_gear_distance,0,axle_holder_height/2])
+        axle_holder();
+
+    }
+    
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Main, sets the stuff together, as needed
 module main() {
+    // Motor gead
     motor_gear();
+
+    // Middle gear - translated from motor gear
     translate([motor_gear_to_middle_gear_distance,0,0])
     rotate([180,0,0])
     middle_gear();
+
+    // The bottom
+    bottom();
+    
 }
 
 
