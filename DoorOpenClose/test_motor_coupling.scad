@@ -238,8 +238,24 @@ module main() {
 
     // The bottom
     bottom();
-    
 }
+
+// Elements - set the elements up for printing
+module main() {
+    // Motor gead
+    motor_gear();
+
+    // Middle gear - translated from motor gear
+//    translate([motor_gear_to_middle_gear_distance,0,0])
+//    rotate([180,0,0])
+//    middle_gear();
+
+    // The bottom
+    
+    translate([0,25,axle_holder_height+axle_holder_bearings_thickness+box_thickness])
+    bottom();
+}
+
 
 
 main();
