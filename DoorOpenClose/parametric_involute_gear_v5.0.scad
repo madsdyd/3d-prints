@@ -108,6 +108,7 @@ module bevel_gear (
 	finish = (finish != -1) ? finish : (pitch_angle < 45) ? bevel_gear_flat : bevel_gear_back_cone;
 
 	apex_to_apex=cone_distance / cos (pitch_angle);
+        echo( str("apex_to_apex = ", apex_to_apex));
 	back_cone_radius = apex_to_apex * sin (pitch_angle);
 
 	// Calculate and display the pitch angle. This is needed to determine the angle to mount two meshing cone gears.
@@ -137,6 +138,7 @@ module bevel_gear (
 		dedendum * cos (pitch_angle) - 
 		gear_thickness / tan (pitch_angle);
 	back_cone_descent = dedendum * sin (pitch_angle) + gear_thickness;
+        echo(str("back_cone_descent = ", back_cone_descent));        
 
 	// Root diameter: Diameter of bottom of tooth spaces.
 	root_radius = back_cone_radius - dedendum;
@@ -155,7 +157,7 @@ module bevel_gear (
 	// For the bevel_gear_flat finish option, calculate the height of a cube to select the portion of the gear that includes the full pitch face.
 	bevel_gear_flat_height = pitch_apex - (cone_distance - face_width) * cos (pitch_angle);
 
-//	translate([0,0,-pitch_apex])
+	translate([0,0,back_cone_descent])
 	difference ()
 	{
 		intersection ()
