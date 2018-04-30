@@ -1,5 +1,6 @@
 
 include <parametric_involute_gear_v5.0.scad>
+include <MCAD/shapes.scad>
 
 // From: https://www.thingiverse.com/thing:3575
 
@@ -51,7 +52,7 @@ echo ("pitch_angle1 + pitch_angle2", pitch_angle1 + pitch_angle2);
 
 module bevel_gears() {
     // rotate([0,0,90])
-    translate ([0,0,pitch_apex1])
+    translate ([0,0,pitch_apex1+7]) // 7 is a manual fudge factor.
     {
         rotate([0,0,18]) // Rotate to mesh teeth, I hope
         translate([0,0,-pitch_apex1])
@@ -62,7 +63,7 @@ module bevel_gears() {
             outside_circular_pitch=outside_circular_pitch,
             gear_thickness = gear_thickness,
             face_width = face_width,
-            bore_diameter = bore_diameter,
+            bore_diameter = 0, // This one get a hexagon axle
             finish=bevel_gear_back_cone,
             backlash=backlash
         );
@@ -88,3 +89,13 @@ module bevel_gears() {
 
 // testing
 bevel_gears();
+
+// Testing hexagon
+// 6 and 12 works...
+// 6 is the distance between two faces
+// 12 is the height of the motor thingy.
+translate([0,0,-5.99])
+hexagon(6, 12);
+
+
+
