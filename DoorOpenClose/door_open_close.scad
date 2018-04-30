@@ -1,268 +1,90 @@
 
-include <gear.scad>
+include <parametric_involute_gear_v5.0.scad>
+
+// From: https://www.thingiverse.com/thing:3575
+
+$fn=50;
+
+// Example
+//==================================================
+// Bevel Gears:
+// Two gears with the same cone distance, circular pitch (measured at the cone distance) 
+// and pressure angle will mesh
+
+// Gear measurements.
+
+gear1_teeth = 10;
+gear2_teeth = 10;
+axis_angle = 90;
+// outside_circular_pitch vs estimated total radius
+// Target radius 16-17 mm
+// 350 ~ 12.5 mm
+// 470 ~ 16.5
+// My formula: outside_circular_pitch = ( target_radius * 360 ) / ( gear_teeth * Fudge )
+// Where F = 1.28571428571428571428
+// This is for the current values of thickness, face width, etc.
+
+outside_circular_pitch=470;
+
+gear_thickness = 5;
+face_width = 5;
+bore_diameter = 2.3 + 0.8;
+backlash = 1;
 
 
-$fn=200;
+// Calculated
+outside_pitch_radius1 = gear1_teeth * outside_circular_pitch / 360;
+outside_pitch_radius2 = gear2_teeth * outside_circular_pitch / 360;
+echo(str("outside_pitch_radius1 = ", outside_pitch_radius1));
+echo(str("outside_pitch_radius2 = ", outside_pitch_radius2));
+pitch_apex1 = outside_pitch_radius2 * sin (axis_angle)
+             + (outside_pitch_radius2 * cos (axis_angle) + outside_pitch_radius1) / tan (axis_angle);
+cone_distance = sqrt (pow (pitch_apex1, 2) + pow (outside_pitch_radius1, 2));
+pitch_apex2 = sqrt (pow (cone_distance, 2) - pow (outside_pitch_radius2, 2));
+echo ("cone_distance", cone_distance);
+pitch_angle1 = asin (outside_pitch_radius1 / cone_distance);
+pitch_angle2 = asin (outside_pitch_radius2 / cone_distance);
+echo ("pitch_angle1, pitch_angle2", pitch_angle1, pitch_angle2);
+echo ("pitch_angle1 + pitch_angle2", pitch_angle1 + pitch_angle2);
 
-// The shafts are used several places.
-shaft_diameter = 2.3 + 0.8; // 0.8 added for printing, and adjusted after first print.
-// And, some settings for the axle_holders
-axle_holder_height = 5;
-axle_holder_outer_diameter = 10;
-axle_holder_bearings_thickness = 2; // Not really bearings. ... forget the name.
+// Why doesn't the gears mesh in the render and preview... ?
 
-
-////////////////////////////////////////
-// Measurements of the motor
-motor_shaft_length   = 5; // That is, after the "star" thing has been put on...
-motor_shaft_diameter = 2.3;  // Raw measure
-motor_shaft_d_remain = 0.55; // From center of shaft to no more material - shortest distance.
-motor_print_pad      = 0.2;  // Pad for inner hole shrinkage. This is "diameter"
-// 0.2 for white filament, something else for black... 
-
-// We reuse the "star" gear from the original motor.
-motor_star_fitting_inner_diameter = 2.5;
-motor_star_fitting_outer_diameter = 4.7;
-star_print_pad = 1.3; // Seems to depend somewhat on filament. 1.3 slightly tighther than last print.
-
-////////////////////////////////////////
-// Box dimensions - eventually we may calculate this.
-box_outer_length = 80; // X axis
-box_outer_height = 70;
-box_outer_width  = 30; // Final, probably 48
-box_thickness    = 2;
-
-// Use this for offset between motor axl and outer wall
-temp_offset      = 15;
-
-////////////////////////////////////////
-// General gear settings
-// The geat thickness. For now, go with motor_shaft_length
-gear_thickness = motor_shaft_length;
-
-// Not used for now. May never be, actually.
-// pressure_angle = 25;
-
-// All gears must use same circular pitch.
-// Changing this, greatly influences the size / dimension of everything.
-circular_pitch = 5;
-
-
-////////////////////////////////////////
-// Specific gear settings.
-
-// Motor, and we go for 1:5
-motor_gear_num_teeth    = 9;
-motor_gear_pitch_radius = pitch_radius(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
-motor_gear_inner_radius = motor_gear_pitch_radius - dedendum(circular_pitch=circular_pitch);
-motor_gear_outer_radius = motor_gear_pitch_radius - addendum(circular_pitch=circular_pitch);
-echo(str( "Motor gear: num_teeth=", motor_gear_num_teeth, ", outer_radius=", motor_gear_outer_radius, ", pitch_radius=", motor_gear_pitch_radius));
-
-
-// Ratio - get as close to 3 as possibly. 
-// Middle has two gears, really.
-// Input, gets input from the motor.
-// Output, output gear, really
-middle_gear_input_num_teeth    = 25; 
-middle_gear_input_pitch_radius = pitch_radius(num_teeth=middle_gear_input_num_teeth, circular_pitch=circular_pitch);
-middle_gear_input_inner_radius = middle_gear_input_pitch_radius - dedendum(circular_pitch=circular_pitch);
-middle_gear_input_outer_radius = middle_gear_input_pitch_radius + addendum(circular_pitch=circular_pitch);
-echo(str( "Middle gear input: num_teeth=", middle_gear_input_num_teeth, ", outer_radius=", middle_gear_input_outer_radius, ", pitch_radius=", middle_gear_input_pitch_radius));
-
-middle_gear_output_num_teeth    = 9; 
-middle_gear_output_pitch_radius = pitch_radius(num_teeth=middle_gear_output_num_teeth, circular_pitch=circular_pitch);
-middle_gear_output_inner_radius = middle_gear_output_pitch_radius - dedendum(circular_pitch=circular_pitch);
-middle_gear_output_outer_radius = middle_gear_output_pitch_radius + addendum(circular_pitch=circular_pitch);
-echo(str( "Middle gear output: num_teeth=", middle_gear_output_num_teeth, ", outer_radius=", middle_gear_output_outer_radius, ", pitch_radius=", middle_gear_output_pitch_radius));
-
-////////////////////////////////////////////////////////////
-// Some calculated distances
-motor_gear_to_middle_gear_distance = motor_gear_pitch_radius+middle_gear_input_pitch_radius;
-
-// Pad, for ensuring overlap when "joining" structures
-pad = 0.01;
-
-////////////////////////////////////////////////////////////////////////////////
-// Make a d-shaft
-// @length The length of the shaft
-// @diameter The diameter of the shaft
-// @remain The amount of material left on one side, after cutting it flat
-// @pad Padding for printing, recommended 0.05-0.1
-module D_shaft(height, diameter, remain, pad) {
-    difference() {
-        cylinder(h=height, r=diameter/2+pad/2, center = true);
-        translate([0,diameter/2+pad/2+remain+pad,0])
-        cube([diameter+pad,diameter+pad,height*2], center=true);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Make a star
-// Copied from https://gist.github.com/anoved/9622826
-// points = number of points (minimum 3)
-// outer  = radius to outer points
-// inner  = radius to inner points
-module Star(points, outer, inner) {
-    
-    // polar to cartesian: radius/angle to x/y
-    function x(r, a) = r * cos(a);
-    function y(r, a) = r * sin(a);
-    
-    // angular width of each pie slice of the star
-    increment = 360/points;
-    
-    union() {
-        for (p = [0 : points-1]) {
-            
-            // outer is outer point p
-            // inner is inner point following p
-            // next is next outer point following p
-
-            assign(     x_outer = x(outer, increment * p),
-                y_outer = y(outer, increment * p),
-                x_inner = x(inner, (increment * p) + (increment/2)),
-                y_inner = y(inner, (increment * p) + (increment/2)),
-                x_next  = x(outer, increment * (p+1)),
-                y_next  = y(outer, increment * (p+1))) {
-                polygon(points = [[x_outer, y_outer], [x_inner, y_inner], [x_next, y_next], [0, 0]], paths  = [[0, 1, 2, 3]]);
-            }
-        }
-    }
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Make a star shaft.
-// @length The length of the shaft
-// @diameter The diameter of the shaft
-// @remain The amount of material left on one side, after cutting it flat
-// @pad Padding for printing, recommended 0.05-0.1
-module star_shaft(height, inner, outer, pad) {
-    difference() {
-        translate([0,0,-height/2])
-        linear_extrude( height = height ) 
-        Star(6, outer+pad/2, inner+pad/2);
-    }
-}
-
-//////////////////////////////////////////////////////////////////////
-// Create a holder for the axles
-module axle_holder() {
-    difference() {
-        cylinder(h = axle_holder_height,   r = axle_holder_outer_diameter / 2, center = true);
-        cylinder(h = axle_holder_height*2, r = shaft_diameter / 2, center = true);
-    }
-}
-
-////////////////////////////////////////////////////////////
-// Motor gear
-// A gear with room for the shaft, is it is now.
-module motor_gear() {
-    difference() {
-        linear_extrude(height=gear_thickness)
-        gear(num_teeth=motor_gear_num_teeth, circular_pitch=circular_pitch);
+module bevel_gears() {
+    // rotate([0,0,90])
+    translate ([0,0,pitch_apex1])
+    {
+        rotate([0,0,18]) // Rotate to mesh teeth, I hope
+        translate([0,0,-pitch_apex1])
+        bevel_gear (
+            number_of_teeth=gear1_teeth,
+            cone_distance=cone_distance,
+            pressure_angle=25,
+            outside_circular_pitch=outside_circular_pitch,
+            gear_thickness = gear_thickness,
+            face_width = face_width,
+            bore_diameter = bore_diameter,
+            finish=bevel_gear_back_cone,
+            backlash=backlash
+        );
         
-        translate([0,0,gear_thickness/2])
-        star_shaft(6, motor_star_fitting_outer_diameter/2, motor_star_fitting_inner_diameter/2, star_print_pad);
-        // D_shaft(6, motor_shaft_diameter, motor_shaft_d_remain, motor_print_pad;
+        // rotate([18,0,0]) // Rotate to mesh teeth, I hope
+        rotate([0,-(pitch_angle1+pitch_angle2),0]) // Rotate up from Z plane, I think
+        translate([0,0,-pitch_apex2])
+        bevel_gear (
+            number_of_teeth=gear2_teeth,
+            cone_distance=cone_distance,
+            pressure_angle=25,
+            outside_circular_pitch=outside_circular_pitch,
+            gear_thickness = gear_thickness,
+            face_width = face_width,
+            bore_diameter = bore_diameter,
+            finish=bevel_gear_back_cone,
+            backlash=backlash
+        );
     }
-    // Add an axle holder to the bottom.
-    translate([0,0,-axle_holder_height/2])
-    axle_holder();
-}
 
-// Testing the motor gear
-module test_motor_gear() {
-    difference() {
-        motor_gear();
-        // Circular pitch
-        translate([-1.3,3.4,1])
-        linear_extrude(height = 4) {
-            text(str(circular_pitch), size = 4);
-        }
-        // Radius
-        translate([-2.2,-6.4,1])
-        linear_extrude(height = 4) {
-            text(str(floor(motor_gear_pitch_radius*10)/10), size = 3);
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////
-// The middle gear holds two conversions.
-module middle_gear() {
-    difference() {
-        union() {
-            translate([0,0,-pad])
-            linear_extrude(height=gear_thickness+pad)
-            gear(num_teeth=middle_gear_output_num_teeth, circular_pitch=circular_pitch);
-            translate([0,0,-gear_thickness])
-            linear_extrude(height=gear_thickness)
-            gear(num_teeth=middle_gear_input_num_teeth, circular_pitch=circular_pitch);
-        }
-        // The shaft
-        cylinder(h = gear_thickness * 4, r = shaft_diameter / 2.0, center = true);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Mechanical structure
-module bottom() {
-    // For now, has two axles...
-    // Translate in place below gears... 
-    translate([0,0,-axle_holder_height*2-axle_holder_bearings_thickness])
-    union() {
-        translate([-temp_offset,-box_outer_width/2,-box_thickness])
-        cube([box_outer_length, box_outer_width, box_thickness], center);
-        // Now, add the axle holders
-        translate([0,0,axle_holder_height/2])
-        axle_holder();
-        translate([motor_gear_to_middle_gear_distance,0,axle_holder_height/2])
-        axle_holder();
-
-    }
-    
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Main, sets the stuff together, as needed
-module main() {
-    // Motor gead
-    motor_gear();
-
-    // Middle gear - translated from motor gear
-    translate([motor_gear_to_middle_gear_distance,0,0])
-    rotate([180,0,0])
-    middle_gear();
-
-    // The bottom
-    bottom();
-}
-
-// Elements - set the elements up for printing
-module main() {
-    // Motor gead
-    motor_gear();
-
-    // Middle gear - translated from motor gear
-//    translate([motor_gear_to_middle_gear_distance,0,0])
-//    rotate([180,0,0])
-//    middle_gear();
-
-    // The bottom
-    
-    translate([0,25,axle_holder_height+axle_holder_bearings_thickness+box_thickness])
-    bottom();
-}
-
-
-
-main();
-
-// motor_gear();
-// middle_gear();
-
-
-
-
+// testing
+bevel_gears();
