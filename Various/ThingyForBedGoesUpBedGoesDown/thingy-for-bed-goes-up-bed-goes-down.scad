@@ -4,14 +4,14 @@
 bed_support_thickness = 23;
 
 // The length of the thing going between the support and the matress.
-tounge_length = 24;
+tounge_length = 21;
 
 // The rest here, should not need adjusting.
 // Generel thickness of the thing.
 thickness = 3;
 
 // Generel width of the thing.
-width = 30;
+width = 28;
 
 // Connection sizes - measured from the end that is inserted.
 connector_offset = 20;
@@ -25,7 +25,7 @@ slack = 2;
 cutout_outside_width = 6.0;
 cutout_outside_height = 0.5;
 cutout_inside_height = 2.2;
-cutout_inside_width = 3.0;
+cutout_inside_width = 3.0 + 0.6;
 cutout_outside_length = connector_offset;
 
 cutout_left_thickness = 1.2;
