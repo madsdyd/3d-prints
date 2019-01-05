@@ -1,5 +1,7 @@
 // Thing for the remote to bed-goes-up, bed-goes-down.
 
+use <MCAD/boxes.scad>
+
 // Total inner length, should more or less be the width of the thing it rests on. Note, at least 23 mm.
 bed_support_thickness = 23;
 
@@ -17,7 +19,7 @@ width = 28;
 connector_offset = 20;
 
 // Slack is extra length, to allow for slip on the bed support.
-slack = 2;
+slack = 0;
 
 
 
@@ -37,13 +39,13 @@ pad = 0.05;
 
 // Various elements make it up.
 
-$fn = 20;
+$fn = 50;
 // "Base"
 // translate([total_length/2, 0, thickness / 2])
 
 round_thickness = thickness + cutout_outside_height * 2; 
 
-// This sucks.
+// This sucks. Rounds the base.
 module round_it() {
     translate([round_thickness/2,0,-thickness/2])
     rotate([90,0,0])
@@ -60,6 +62,18 @@ module round_it() {
     }
 }
 
+// Lifted from the net. Thank you, nophead.
+module fillet(r, h) {
+    translate([r / 2, r / 2, 0])
+
+    difference() {
+        cube([r + 0.01, r + 0.01, h], center = true);
+
+        translate([r/2, r/2, 0])
+        cylinder(r = r, h = h + 1, center = true);
+
+    }
+}
 
 // The round taps. 
 round_tap_thickness = 1;
@@ -74,39 +88,101 @@ module round_taps() {
     mirror([0,1,0]) round_tap();
 }
 
-module base() {
+module corner_fillet(r) {
+    translate([-r, -r, 0])
+    
     difference() {
-        difference() {
-            // Base with cutout extra
-            union() {
-                translate([total_length/2, 0, -(thickness / 2)])
-                cube([total_length, width, thickness], center = true);
-
-                translate([0,-(cutout_outside_width/2),0])
-                cube([cutout_outside_length, cutout_outside_width, cutout_outside_height]);
-            }
-
-            union() {
-                // Weird cutout
-                translate([-pad,-(cutout_inside_width/2),-(cutout_inside_height - cutout_outside_height)])
-                cube([cutout_outside_length+pad, cutout_inside_width, cutout_inside_height+pad]);
-
-                slits();
-            }
-        }
-        round_it();
+        cube([r, r, r]);
+        
+        translate([r-pad, r-pad, r-pad])
+        sphere(r = r, center = true);
+        
     }
+}
 
+
+module base() {
+    // Round all relevant corners
+    difference() {
+        // Difference with end of connector()
+        difference() {
+            difference() {
+                // Base with cutout extra
+                union() {
+                    translate([total_length/2, 0, -(thickness / 2)])
+                    cube([total_length, width, thickness], center = true);
+
+                    translate([0,-(cutout_outside_width/2),0])
+                    cube([cutout_outside_length, cutout_outside_width, cutout_outside_height]);
+                }
+
+                union() {
+                    // Weird cutout
+                    translate([-pad,-(cutout_inside_width/2),-(cutout_inside_height - cutout_outside_height)])
+                    cube([cutout_outside_length+pad, cutout_inside_width, cutout_inside_height+pad]);
+
+                    slits();
+                }
+            }
+            round_it();
+        }
+
+        // Round cornes, made from fillets
+        union() {
+            // side
+            translate([total_length / 2 + connector_offset, - width / 2, - thickness])
+            rotate([0,270,0])
+            fillet(thickness / 2, total_length);
+            translate([total_length, - width / 2,0])
+            rotate([0,180,0])
+            fillet(thickness / 2, total_length);
+            // Corners
+            translate([total_length-thickness/2, -width/2+thickness/2, -thickness])
+            rotate([0,0,90])
+            corner_fillet(thickness/2);
+
+
+            
+            // other side
+            mirror([0,1,0])
+            union() {
+                translate([total_length / 2 + connector_offset, - width / 2, - thickness])
+                rotate([0,270,0])
+                fillet(thickness / 2, total_length);
+                translate([total_length, - width / 2,0])
+                rotate([0,180,0])
+                fillet(thickness / 2, total_length);
+            // Corners
+            translate([total_length-thickness/2, -width/2+thickness/2, -thickness])
+            rotate([0,0,90])
+            corner_fillet(thickness/2);
+            }
+            
+            
+            // End
+            translate([total_length, 0, - thickness])
+            rotate([0,270,90])
+            fillet(thickness / 2, total_length);
+
+            
+            
+        }
+        
+    }
     taps();
 
     round_taps();
-
 }
 
+
 // Tongue...
-module tounge() {
+module tounge_old() {
   translate([thickness/2, 0, (tounge_length + thickness)/2])
   cube([thickness,width,tounge_length + thickness], center = true);
+}
+module tounge() {
+    translate([thickness/2, 0, (tounge_length + thickness)/2])
+    roundedBox([thickness,width,tounge_length + thickness], thickness/2, false);
 }
 
 // Taps
@@ -164,5 +240,5 @@ module main() {
     
 }
 
-
+// base();
 main();
