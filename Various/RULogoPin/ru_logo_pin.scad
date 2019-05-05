@@ -1,6 +1,6 @@
 // RU Logo pin
 
-tag_radius = 15;
+tag_radius = 15; // Not really a radius - this is a diameter. Sigh.
 tag_thickness = 1.2;
 tag_chamfer = 0.2;
 corner_fraction = 4;
@@ -9,7 +9,7 @@ hole_offset = 8; // From edge
 
 use <PraxisEF-Bold.otf>
 use <PraxisEF-Regular.otf>
-text_letter = "?";
+text_letter = "?"; 
 text_size = 13;
 text_thickness = 1;
 font="PraxisEF:style=Bold";
@@ -46,12 +46,19 @@ module roundedRect(size, radius)
 
 
 module main() {
-    translate([0,0,-tag_thickness-0.05])
-    roundedRect([tag_radius, tag_radius, tag_thickness], tag_radius/corner_fraction);
-    #linear_extrude(text_thickness) {
-    text(text = text_letter, halign = "center", valign = "center", size=text_size,
-        font=font);
+    scale([0.80,0.80,1,])
+    union() {
+        translate([0,0,-tag_thickness-0.05])
+        roundedRect([tag_radius, tag_radius, tag_thickness], tag_radius/corner_fraction);
+        // roundedRect([tag_radius, tag_radius, tag_thickness], 1);
+        #linear_extrude(text_thickness) {
+            text(text = text_letter, halign = "center", valign = "center", size=text_size,
+                font=font);
+        }
     }
+    // This is something to grab, when using it to create a negative
+    translate([0,0,-40-tag_thickness+0.25])
+    cylinder(h=40, r = tag_radius/2 + 10);
 }
 
 main();
