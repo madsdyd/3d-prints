@@ -16,7 +16,7 @@ surface_pivot_length = 30;
 surface_pivot_height = 14;
 surface_pivot_thickness = 10;
 surface_pivot_keel_diameter = 30;
-surface_pivot_keel_thickness_surface = 2;
+surface_pivot_keel_thickness_surface = 3;
 surface_pivot_keel_thickness_slope = 2;
 
 screw_hole_diameter = 4;
@@ -30,8 +30,7 @@ screw_counter_sunk_radius = screw_counter_sunk_diameter / 2.0;
 handle_hole_width = 6;
 handle_hole_height = 1.8;
 handle_hole_end_offset = 2;
-handle_feet_thickness = 1.5;
-handle_feet_width = 3;
+handle_shape_fit_thickness = 1.2;
 
 pad = 0.05;
 $fn = 50;
@@ -138,24 +137,43 @@ module handle_pivot_end() {
 }
 
 module handle_pivot_end_full() {
+    // Substract for shape of handle
     difference() {
-        union() {
-            handle_pivot_end();
-            mirror([0,0,1]) handle_pivot_end();
+    
+        // foot with hole
+        difference() {
+            union() {
+                handle_pivot_end();
+                mirror([0,0,1]) handle_pivot_end();
+            }
+            // Room for hole
+            translate([handle_hole_width/2 -(surface_pivot_length)/2 + handle_hole_end_offset,
+                    0,
+                    -surface_pivot_height/2])
+            cube([handle_hole_width, 1000, handle_hole_height], center = true);
         }
-        // Room for hole
-        translate([handle_hole_width/2 -(surface_pivot_length)/2 + handle_hole_end_offset,
-                0,
-                -surface_pivot_height/2])
-        cube([handle_hole_width, 1000, handle_hole_height], center = true);
 
+        // Shape of handle
+        translate([
+                500,
+                0,
+                handle_shape_fit_thickness
+                - surface_pivot_height/2
+                - surface_pivot_keel_thickness_surface
+                - surface_pivot_keel_thickness_slope
+                - pad ])
+        rotate([270,0,90])
+        linear_extrude( height = 1000 ) {
+            polygon( points = [
+                    [0,0],
+                    [surface_pivot_keel_diameter/2, handle_shape_fit_thickness],
+                    [-surface_pivot_keel_diameter/2, handle_shape_fit_thickness],
+                ]);
+        }
+
+        
     }
-    // Room for feet
-    translate([
-            (-surface_pivot_length/2+surface_pivot_thickness/2)/2,
-            surface_pivot_keel_diameter/2-handle_feet_width/2,
-            -handle_feet_thickness/2 - surface_pivot_height/2 - surface_pivot_keel_thickness_surface - surface_pivot_keel_thickness_slope])
-    cube([surface_pivot_length/2-surface_pivot_thickness/2, handle_feet_width, handle_feet_thickness], center = true);
+        
 }
 
 module handle_pivot() {
@@ -163,10 +181,12 @@ module handle_pivot() {
     mirror([1,0,0]) handle_pivot_end_full();
 }
 
-//translate([0,50,0])
-//surface_pivot();
+translate([0,50,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope])
+surface_pivot();
 
-//translate([0,-50,0])
-handle_pivot_end_full();
+translate([0,-50,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope])
+rotate([0,180,0])
+handle_pivot();
 
-// anchor();
+translate([0,0,anchor_thickness/2+1])
+anchor();
