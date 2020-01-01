@@ -5,17 +5,17 @@
 // * A "grabber" which is mounted to a flat surface
 // * Another grabber, which is mounted to a type2 connector
 
-anchor_thickness = 10;
+anchor_thickness = 8;
 anchor_width = 60;
 anchor_length = 70;
-anchor_arm_width = 10;
+anchor_arm_width = 8;
 anchor_wire_diameter = 6;
 anchor_wire_hole_offset = 5; // From edge of hole to end of anchor.
 
 surface_pivot_length = 30;
 surface_pivot_height = 14;
 surface_pivot_thickness = 10;
-surface_pivot_keel_diameter = 22;
+surface_pivot_keel_diameter = 30;
 surface_pivot_keel_thickness_surface = 2;
 surface_pivot_keel_thickness_slope = 2;
 
@@ -26,6 +26,12 @@ screw_counter_sunk_diameter = 8;
 // Calculated fields
 screw_hole_radius = screw_hole_diameter / 2.0;
 screw_counter_sunk_radius = screw_counter_sunk_diameter / 2.0;
+
+handle_hole_width = 6;
+handle_hole_height = 1.8;
+handle_hole_end_offset = 2;
+handle_feet_thickness = 1.5;
+handle_feet_width = 3;
 
 pad = 0.05;
 $fn = 50;
@@ -50,9 +56,12 @@ module half_anchor() {
 
 module anchor() {
     difference() {
-        translate([0,0,-anchor_thickness/2]) {
-            half_anchor();
-            mirror([0,1,0]) half_anchor();
+        minkowski() {
+            translate([0,0,-anchor_thickness/2]) {
+                half_anchor();
+                mirror([0,1,0]) half_anchor();
+            }
+            sphere(1);
         }
         // hole for wire
         translate([anchor_wire_diameter/2+anchor_wire_hole_offset,0,0])
@@ -112,7 +121,6 @@ module surface_pivot_end_full() {
             surface_pivot_end();
             mirror([0,0,1]) surface_pivot_end();
         }
-            
         // Substract a screw hole
         translate([-(surface_pivot_length-surface_pivot_thickness)/2,0,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope+pad])
         screw_hole();
@@ -124,7 +132,41 @@ module surface_pivot() {
     mirror([1,0,0]) surface_pivot_end_full();
 }
 
-translate([0,50,0])
-surface_pivot();
 
-anchor();
+module handle_pivot_end() {
+    surface_pivot_end();
+}
+
+module handle_pivot_end_full() {
+    difference() {
+        union() {
+            handle_pivot_end();
+            mirror([0,0,1]) handle_pivot_end();
+        }
+        // Room for hole
+        translate([handle_hole_width/2 -(surface_pivot_length)/2 + handle_hole_end_offset,
+                0,
+                -surface_pivot_height/2])
+        cube([handle_hole_width, 1000, handle_hole_height], center = true);
+
+    }
+    // Room for feet
+    translate([
+            (-surface_pivot_length/2+surface_pivot_thickness/2)/2,
+            surface_pivot_keel_diameter/2-handle_feet_width/2,
+            -handle_feet_thickness/2 - surface_pivot_height/2 - surface_pivot_keel_thickness_surface - surface_pivot_keel_thickness_slope])
+    cube([surface_pivot_length/2-surface_pivot_thickness/2, handle_feet_width, handle_feet_thickness], center = true);
+}
+
+module handle_pivot() {
+    handle_pivot_end_full();
+    mirror([1,0,0]) handle_pivot_end_full();
+}
+
+//translate([0,50,0])
+//surface_pivot();
+
+//translate([0,-50,0])
+handle_pivot_end_full();
+
+// anchor();
