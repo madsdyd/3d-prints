@@ -1,7 +1,7 @@
 // Thingy to hold a cable to a wall or other surface.
 // Meant to be sturdy, to support "thick" cables.
 
-cable_diameter = 17;
+cable_diameter = 17 + 1;
 
 holder_thickness = 4;
 
@@ -21,6 +21,7 @@ screw_hole_radius = screw_hole_diameter / 2.0;
 screw_counter_sunk_radius = screw_counter_sunk_diameter / 2.0;
 
 pad = 0.05;
+$fn = 50;
 
 // Its basically a block
 
