@@ -6,14 +6,14 @@
 // * Another grabber, which is mounted to a type2 connector
 
 anchor_thickness = 8;
-anchor_width = 60;
+anchor_width = 70;
 anchor_length = 70;
 anchor_arm_width = 8;
 anchor_wire_diameter = 6;
 anchor_wire_hole_offset = 5; // From edge of hole to end of anchor.
 
 surface_pivot_length = 30;
-surface_pivot_height = 14;
+surface_pivot_height = 12;
 surface_pivot_thickness = 10;
 surface_pivot_keel_diameter = 30;
 surface_pivot_keel_thickness_surface = 3;
@@ -181,12 +181,24 @@ module handle_pivot() {
     mirror([1,0,0]) handle_pivot_end_full();
 }
 
-translate([0,50,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope])
-surface_pivot();
 
-translate([0,-50,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope])
-rotate([0,180,0])
-handle_pivot();
+// Surface pivot
+if (true) {
+    translate([10,30,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope])
+    surface_pivot();
+}
 
-translate([0,0,anchor_thickness/2+1])
-anchor();
+
+// Handle pivot - if ever print, make round support towards handle
+if (true) {
+    translate([10,-30,surface_pivot_height/2+surface_pivot_keel_thickness_surface+surface_pivot_keel_thickness_slope])
+    rotate([0,180,0])
+    handle_pivot();
+}
+
+
+// Anchor
+if (true) {
+    translate([0,0,anchor_thickness/2+1])
+    anchor();
+}
