@@ -18,10 +18,10 @@ cutout_offset = 4; // Amount of part not getting a cutout
 
 // Alternative measures
 thickness_plate = 18;    // Thickness across the part that holds the class plate
-thickness_support = 10;  // Thickness of the support
-width = 45;              // Total width of the part
-width_plate = 22;        // Width of cutout for plate
-width_support = 15;      // Width of part for support
+thickness_support = 8;  // Thickness of the support
+width = 35;              // Total width of the part
+width_plate = 18;        // Width of cutout for plate
+width_support = 12;      // Width of part for support
 width_transition = width - width_plate - width_support;
 thickness_transition = thickness_plate - thickness_support;
 corner_radius = 1;       // Add roundness to the corners.
@@ -86,6 +86,6 @@ module alternative(length, padding) {
 }
     
 
-alternative(20, cutout_offset);
+alternative(10, cutout_offset);
 
 // main();
