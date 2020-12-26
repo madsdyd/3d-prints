@@ -12,15 +12,15 @@ solid_width = 21;
 
 // shelf thickness, + padding
 shelf_thickness = 4 + 0.1;
-cutout_width = 18;
+cutout_width = 20;
 cutout_offset = 4; // Amount of part not getting a cutout
 
 
 // Alternative measures
-thickness_plate = 20;    // Thickness across the part that holds the class plate
+thickness_plate = 18;    // Thickness across the part that holds the class plate
 thickness_support = 10;  // Thickness of the support
 width = 45;              // Total width of the part
-width_plate = 20;        // Width of cutout for plate
+width_plate = 22;        // Width of cutout for plate
 width_support = 15;      // Width of part for support
 width_transition = width - width_plate - width_support;
 thickness_transition = thickness_plate - thickness_support;
@@ -57,10 +57,10 @@ module alt_base_shape(length) {
         polygon(points = [
                 [corner_radius,0], // p0
                 [corner_radius, thickness_plate / 2.0 - corner_radius], // p1
-                [corner_radius + width_plate / 2.0, thickness_plate / 2.0 - corner_radius], // p2
-                [corner_radius + width_plate / 2.0 + width_transition / 2.0, thickness_support / 2.0 - corner_radius], // p3
-                [width / 2.0 - corner_radius, thickness_support / 2.0 - corner_radius],
-                [width / 2.0 - corner_radius, 0]
+                [corner_radius + width_plate, thickness_plate / 2.0 - corner_radius], // p2
+                [corner_radius + width_plate + width_transition, thickness_support / 2.0 - corner_radius], // p3
+                [width - corner_radius, thickness_support / 2.0 - corner_radius],
+                [width - corner_radius, 0]
             ]);
     }
 }
@@ -79,8 +79,8 @@ module alternative(length, padding) {
                 cylinder(r = corner_radius);
             }
         }
-        translate([0,0,-padding]) {
-            cube(size=[cutout_width, shelf_thickness, length], center=true);
+        translate([cutout_width/2.0-0.01,0,-padding]) {
+            #cube(size=[cutout_width, shelf_thickness, length], center=true);
         }
     } 
 }
