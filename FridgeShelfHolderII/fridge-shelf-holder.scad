@@ -11,7 +11,7 @@ solid_width = 21;
 //fillet = 1;
 
 // shelf thickness, + padding
-shelf_thickness = 4 + 0.1;
+shelf_thickness = 4 + 0.5;
 cutout_width = 20;
 cutout_offset = 4; // Amount of part not getting a cutout
 
@@ -80,12 +80,20 @@ module alternative(length, padding) {
             }
         }
         translate([cutout_width/2.0-0.01,0,-padding]) {
-            #cube(size=[cutout_width, shelf_thickness, length], center=true);
+            cube(size=[cutout_width, shelf_thickness, length], center=true);
         }
     } 
 }
     
+// Corner piece
+special_size = 20;
+difference() {
+    
+    alternative(special_size, cutout_offset);
+    translate([25+width-width_support+1.4,0,-11])
+    cube(size=[50, thickness_support + 2, special_size], center=true);
 
-alternative(10, cutout_offset);
+
+}
 
 // main();
