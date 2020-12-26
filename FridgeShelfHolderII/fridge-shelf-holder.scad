@@ -12,6 +12,8 @@ solid_width = 21;
 
 // shelf thickness, + padding
 shelf_thickness = 4 + 0.1;
+cutout_width = 18;
+cutout_offset = 4; // Amount of part not getting a cutout
 
 
 // Alternative measures
@@ -19,7 +21,7 @@ thickness_plate = 20;    // Thickness across the part that holds the class plate
 thickness_support = 10;  // Thickness of the support
 width = 45;              // Total width of the part
 width_plate = 20;        // Width of cutout for plate
-width_support = 20;      // Width of part for support
+width_support = 15;      // Width of part for support
 width_transition = width - width_plate - width_support;
 thickness_transition = thickness_plate - thickness_support;
 corner_radius = 1;       // Add roundness to the corners.
@@ -65,18 +67,25 @@ module alt_base_shape(length) {
 
 $fn = 50;
 module alternative(length, padding) {
-    minkowski() { // Basic shape, without cutout
-        union() {
-            alt_base_shape(length);
-            mirror([0,1,0]) {
-                alt_base_shape(length);
+    difference() {
+        translate([0,0,-corner_radius/2.0]) {
+            minkowski() { // Basic shape, without cutout
+                union() {
+                    alt_base_shape(length-corner_radius);
+                    mirror([0,1,0]) {
+                        alt_base_shape(length-corner_radius);
+                    }
+                }
+                cylinder(r = corner_radius);
             }
         }
-        cylinder(r = corner_radius);
-    }
+        translate([0,0,-padding]) {
+            cube(size=[cutout_width, shelf_thickness, length], center=true);
+        }
+    } 
 }
     
 
-alternative(20, 10);
+alternative(20, cutout_offset);
 
 // main();
