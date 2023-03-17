@@ -6,9 +6,9 @@
 // Variables
 
 // The full diameter of the axel
-axel_diameter = 10;
+axel_diameter = 14;
 // The distance from the cutout flat side to the other side of the axel (the width of the "D")
-axel_diameter_flat = 8;
+axel_diameter_flat = 12;
 // The lenght of the part of the axel that the reflector mounts on
 axel_length = 55;
 
@@ -18,9 +18,9 @@ tacho_reflector_diameter = 30;
 tacho_reflector_length = 100;
 
 // Screw diameter
-screw_diameter = 4;
+screw_diameter = 3.6;
 // Screw head diameter -- also used for hex nut cutput
-screw_head_diameter = 8;
+screw_head_diameter = 7;
 // Screw cutout length. This should really be calculated...
 screw_cutout_length = 20;
 
@@ -107,4 +107,4 @@ module main() {
 }
 
 main();
-// TODO: Get measurements. Test print. Fit. Split in two.
+// TODO: Test print. Fit. Split in two.
