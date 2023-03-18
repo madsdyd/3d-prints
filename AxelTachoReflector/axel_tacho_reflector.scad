@@ -5,10 +5,11 @@
 
 // Variables
 
-// The full diameter of the axel
-axel_diameter = 14;
+// The full diameter of the axel. Org. measurement 14.
+axel_diameter = 13;
 // The distance from the cutout flat side to the other side of the axel (the width of the "D")
-axel_diameter_flat = 12;
+// Org. measurement 12.
+axel_diameter_flat = 11;
 // The lenght of the part of the axel that the reflector mounts on
 axel_length = 55;
 
@@ -25,16 +26,19 @@ screw_head_diameter = 7;
 screw_cutout_length = 20;
 
 // There are two sets of screws. Offset from ends.
-screw_offset = 15;
+// Org. 15
+screw_offset = 5;
 
 // Consts
 
+// Inner radius adjustment. This seems to work with 0.25
+inner_hole_adjustment = 0.25;
 // Space -- for making space around the screw
-space = 0.25;
+space = 0.0;
 // Pad -- for padding stuff
 pad = 0.05;
 // Neato circles.
-$fn = 50;
+$fn = 100;
 
 
 // Calculated values
@@ -46,8 +50,8 @@ screw_head_radius = screw_head_diameter / 2.0;
 // The axel is used to "cut out" the axel from the techo cylinder
 module axel() {
     difference() {
-        cylinder(r = axel_radius, h = tacho_reflector_length + 2*pad, center = true);
-        translate([axel_diameter_flat + pad,0,0]) {
+        cylinder(r = axel_radius + inner_hole_adjustment, h = tacho_reflector_length + 2*pad, center = true);
+        translate([axel_diameter_flat + pad + inner_hole_adjustment,0,0]) {
             cube([2*axel_radius + 2*pad, 2*axel_radius + 2*pad, tacho_reflector_length + 4*pad], center = true);
         }
     }
@@ -61,7 +65,7 @@ module reflector() {
 // This is used to cut holes from the reflector.
 module screw_hole() {
     rotate([0,90,0]) {
-        cylinder(r = screw_radius, h = screw_cutout_length*2, center = true);
+        cylinder(r = screw_radius + space, h = screw_cutout_length*2, center = true);
         translate([0,0,screw_cutout_length/2.0+25]) {
             cylinder(r = screw_head_radius, h = 50, center = true);
         }
@@ -98,7 +102,7 @@ module screw_holes() {
 module main() {
     difference() {
         reflector();
-
+        // TODO: Remember these!
         screw_holes();
         translate([0,0,tacho_reflector_length + 2*pad - axel_length]) {
             axel();
@@ -106,5 +110,14 @@ module main() {
     }    
 }
 
-main();
+difference() {
+
+    main();
+    // Temporary main cut, to not have to print full length initially
+    translate([0,0,-10]) {
+        cylinder(r=100, h=100, center=true);
+    }
+}
+
+    
 // TODO: Test print. Fit. Split in two.

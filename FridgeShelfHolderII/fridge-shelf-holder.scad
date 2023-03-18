@@ -80,20 +80,23 @@ module alternative(length, padding) {
             }
         }
         translate([cutout_width/2.0-0.01,0,-padding]) {
-            cube(size=[cutout_width, shelf_thickness, length], center=true);
+#            cube(size=[cutout_width, shelf_thickness, length+0.1], center=true);
         }
     } 
 }
     
 // Corner piece
-special_size = 20;
-difference() {
-    
-    alternative(special_size, cutout_offset);
-    translate([25+width-width_support+1.4,0,-11])
-    cube(size=[50, thickness_support + 2, special_size], center=true);
-
-
+module corner() {
+    special_size = 20;
+    difference() {
+        alternative(special_size, cutout_offset);
+        translate([25+width-width_support+1.4,0,-11])
+        cube(size=[50, thickness_support + 2, special_size], center=true);       
+    }
 }
+
+alternative(40, 0);
+
+
 
 // main();
