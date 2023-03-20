@@ -6,10 +6,15 @@
 // Variables
 
 // The full diameter of the axel. Org. measurement 14.
-axel_diameter = 13;
+
+// 14/12 + 0.5 - too big  (Real: 14.5 / 12.25)
+// 13/11 + 0.25 - too small (Real: 13.1 / 11.1)
+// 13.5/11.5 + 0.25 - fit (Real: 13.55 / 11.6)
+
+axel_diameter = 13.5;
 // The distance from the cutout flat side to the other side of the axel (the width of the "D")
 // Org. measurement 12.
-axel_diameter_flat = 11;
+axel_diameter_flat = 11.5;
 // The lenght of the part of the axel that the reflector mounts on
 axel_length = 55;
 
@@ -28,6 +33,9 @@ screw_cutout_length = 20;
 // There are two sets of screws. Offset from ends.
 // Org. 15
 screw_offset = 5;
+
+// And, the cutout between the two halves.
+cutout_width = 1;
 
 // Consts
 
@@ -110,9 +118,15 @@ module main() {
     }    
 }
 
+// Two modules, left and right
 difference() {
 
-    main();
+    // Temp center cutout. Each half can then be hidden / something.
+    difference() {
+        main();
+        cube([cutout_width,1000,1000], center=true);        
+    }
+
     // Temporary main cut, to not have to print full length initially
     translate([0,0,-10]) {
         cylinder(r=100, h=100, center=true);
