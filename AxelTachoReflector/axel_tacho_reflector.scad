@@ -26,9 +26,10 @@ tacho_reflector_length = 100;
 // Screw diameter
 screw_diameter = 3.6;
 // Screw head diameter -- also used for hex nut cutput
-screw_head_diameter = 7;
+screw_head_diameter = 6;
 // Screw cutout length. This should really be calculated...
 screw_cutout_length = 20;
+screw_hex_cutout_offset = 3;
 
 // There are two sets of screws. Offset from ends.
 // Org. 15
@@ -77,8 +78,9 @@ module screw_hole() {
         translate([0,0,screw_cutout_length/2.0+25]) {
             cylinder(r = screw_head_radius, h = 50, center = true);
         }
-        translate([0,0,-(screw_cutout_length/2.0+25)]) {
-            cylinder(r = screw_head_radius, h = 50, center = true);
+        // Hex cutout
+        translate([0,0,-(screw_cutout_length/2.0+25-screw_hex_cutout_offset)]) {
+            cylinder(r = screw_head_radius, h = 50, center = true, $fn = 6);
         }
     }
     
@@ -118,15 +120,30 @@ module main() {
     }    
 }
 
-// Two modules, left and right
-difference() {
-
+module bolt() {
     // Temp center cutout. Each half can then be hidden / something.
     difference() {
         main();
-        cube([cutout_width,1000,1000], center=true);        
-    }
+        translate([cutout_width/2.0-200,0,0]) cube([400,400,400], center=true);        
+    }    
+}
+module nut() {
+    // Temp center cutout. Each half can then be hidden / something.
+    difference() {
+        main();
+        translate([-cutout_width/2.0+200,0,0]) cube([400,400,400], center=true);        
+    }    
+}
 
+
+// Two modules, left and right
+difference() {
+
+    union() {
+        //bolt();
+        nut();
+
+    }
     // Temporary main cut, to not have to print full length initially
     translate([0,0,-10]) {
         cylinder(r=100, h=100, center=true);
@@ -134,4 +151,4 @@ difference() {
 }
 
     
-// TODO: Test print. Fit. Split in two.
+// TODO: Adjust nut and bolt offset.
