@@ -68,7 +68,7 @@ module sensor_cap() {
         // I have to adjust this, because I need about 0.5 diameter more. 6 => 6.25 == 1.042 %
         // We provide turns, not height here... 
         scale([1.0416666, 1.0416666, 1])
-        nut(cap_thread, turns=sensor_cap_inner_height * 3, Douter=sensor_cap_outer_diameter);
+        nut(cap_thread, turns=sensor_cap_inner_height * 3, Douter=sensor_cap_outer_diameter*0.96);
         // A cube that intersects the height we want
         cube([sensor_cap_outer_diameter + 2*pad,
                 sensor_cap_outer_diameter + 2*pad,
@@ -134,7 +134,8 @@ module cable_cap() {
 
 // finger_screw();
 
-// sensor_cap();
+sensor_cap();
+translate([15,15,0])
 cable_cap();
 
 
