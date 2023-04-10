@@ -31,8 +31,10 @@ sensor_cap_outer_diameter = 14;
 // Cable
 // How deep the cable cab should be.
 cable_cap_inner_height = 10;
+cable_cap_turns = 8; // Fits 1 diameter pitch.
 // The walls of the cable cap.
-cable_cap_wall_thicknes = 1.2;
+cable_cap_inner_cutout_diameter = 8 + 1;
+cable_cap_nut_height = 7;
 
 pad = 0.05;
 
@@ -63,7 +65,9 @@ module finger_screw() {
 module sensor_cap() {
 
     intersection() {
+        // I have to adjust this, because I need about 0.5 diameter more. 6 => 6.25 == 1.042 %
         // We provide turns, not height here... 
+        scale([1.0416666, 1.0416666, 1])
         nut(cap_thread, turns=sensor_cap_inner_height * 3, Douter=sensor_cap_outer_diameter);
         // A cube that intersects the height we want
         cube([sensor_cap_outer_diameter + 2*pad,
@@ -102,10 +106,36 @@ module sensor_cap() {
     
 }
 
+module cable_cap() {
+    difference() {
+        // The bolt
+        // I have to adjust this, because I need about 0.5 diameter less. 6 => 5.75 == 0.95833 %
+        // scale([0.9583333, 0.9583333, 1]) // Slightly too smal
+        scale([0.97, 0.97, 1]) 
+        bolt(cap_thread, turns=cable_cap_turns);
+        // Cutout for center thing from cable
+        cylinder(h = cable_cap_inner_height * 3, r = cable_cap_inner_cutout_diameter / 2.0, center = true);
+    }
+    // Add a nut and fingerscrew below.
+    // Add a nut to work with
+/*    translate([0,0,-cable_cap_nut_height])
+    rotate([0,0,30]) {
+            cylinder(h=cable_cap_nut_height, r=nut_hex_radius, $fn=6);
+        }
+
+        */
+    // Add a fingerscrew, but cut out the center, to not destroy the thread.
+    translate([0,0,-finger_screw_thickness])
+    finger_screw();
+
+    
+}
+
 
 // finger_screw();
 
-sensor_cap();
+// sensor_cap();
+cable_cap();
 
 
 
