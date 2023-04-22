@@ -28,12 +28,13 @@ screw_diameter = 3.6;
 // Screw head diameter -- also used for hex nut cutput
 screw_head_diameter = 6;
 // Screw cutout length. This should really be calculated...
-screw_cutout_length = 20;
-screw_hex_cutout_offset = 3;
+screw_cutout_length = 15;
+screw_hex_cutout_offset = 0;
 
 // There are two sets of screws. Offset from ends.
 // Org. 15
-screw_offset = 5;
+screw_offset_1 = 5;
+screw_offset_2 = 38;
 
 // And, the cutout between the two halves.
 cutout_width = 1;
@@ -76,11 +77,11 @@ module screw_hole() {
     rotate([0,90,0]) {
         cylinder(r = screw_radius + space, h = screw_cutout_length*2, center = true);
         translate([0,0,screw_cutout_length/2.0+25]) {
-            cylinder(r = screw_head_radius, h = 50, center = true);
+            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true);
         }
         // Hex cutout
         translate([0,0,-(screw_cutout_length/2.0+25-screw_hex_cutout_offset)]) {
-            cylinder(r = screw_head_radius, h = 50, center = true, $fn = 6);
+            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true, $fn = 6);
         }
     }
     
@@ -89,22 +90,22 @@ module screw_hole() {
 module screw_holes() {
     translate([0,
             screw_radius + axel_radius + 1.2,
-            tacho_reflector_length / 2.0 - screw_offset]) {
+            tacho_reflector_length / 2.0 - screw_offset_1]) {
         screw_hole();
     }
     translate([0,
             screw_radius + axel_radius + 1.2,
-            -(tacho_reflector_length / 2.0 - screw_offset)]) {
+            tacho_reflector_length / 2.0 - screw_offset_2]) {
         screw_hole();
     }
     translate([0,
             -(screw_radius + axel_radius + 1.2),
-            tacho_reflector_length / 2.0 - screw_offset]) {
+            tacho_reflector_length / 2.0 - screw_offset_1]) {
         screw_hole();
     }
     translate([0,
             -(screw_radius + axel_radius + 1.2),
-            -(tacho_reflector_length / 2.0 - screw_offset)]) {
+            tacho_reflector_length / 2.0 - screw_offset_2]) {
         screw_hole();
     }
 }
@@ -140,14 +141,14 @@ module nut() {
 difference() {
 
     union() {
-        //bolt();
+        bolt();
         nut();
 
     }
     // Temporary main cut, to not have to print full length initially
-    translate([0,0,-10]) {
-        cylinder(r=100, h=100, center=true);
-    }
+    //translate([0,0,-10]) {
+    //    cylinder(r=100, h=100, center=true);
+    //}
 }
 
     
