@@ -2,3 +2,5 @@
 *.fcstd1
 *~
 ideer.txt
+*.pdf
+.gitignore
