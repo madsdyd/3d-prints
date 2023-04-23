@@ -56,6 +56,34 @@ screw_radius = screw_diameter / 2.0;
 screw_head_radius = screw_head_diameter / 2.0;
 module_screw_support_full_width = module_screw_support_thickness + screw_diameter;
 
+////////////////////////////////////////////////////////////////////////////////
+// GENERAL
+
+
+// Create a screw cutout of a given length
+// Center is center of cutout. Translate for only nut or head.
+$fn=50;
+module screw_hole(hole_length) {
+    rotate([0,90,0]) {
+        // Room for screw
+        cylinder(r = screw_radius + space, h = hole_length*2, center = true);
+        // Screw head cutout
+        translate([0,0,hole_length/2.0+screw_head_thickness/2.0]) {
+            cylinder(r1=screw_radius + space, r2 = screw_head_radius + inner_hole_adjustment, h = screw_head_thickness, center = true);
+        }
+        // Extension of head cutout
+        translate([0,0,hole_length/2.0+25+screw_head_thickness-pad]) {
+            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true);
+        }
+        // Hex nut cutout
+        translate([0,0,-(hole_length/2.0+25)]) {
+            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true, $fn = 6);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// MODULE HOLDER
 
 module pcb() {
     cube([module_width, module_pcb_thickness, module_height]);
@@ -86,28 +114,8 @@ module support() {
     }
 }
 
-// Create a screw cutout of a given length
-// Center is center of cutout. Translate for only nut or head.
-$fn=50;
-module screw_hole(hole_length) {
-    rotate([0,90,0]) {
-        // Room for screw
-        cylinder(r = screw_radius + space, h = hole_length*2, center = true);
-        // Screw head cutout
-        translate([0,0,hole_length/2.0+screw_head_thickness/2.0]) {
-            cylinder(r1=screw_radius + space, r2 = screw_head_radius + inner_hole_adjustment, h = screw_head_thickness, center = true);
-        }
-        // Extension of head cutout
-        translate([0,0,hole_length/2.0+25+screw_head_thickness-pad]) {
-            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true);
-        }
-        // Hex nut cutout
-        translate([0,0,-(hole_length/2.0+25)]) {
-            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true, $fn = 6);
-        }
-    }
-}
 
+// The part of the module holder that constitues the nut support.
 module support_nut_support() {
     difference() {
         cube([module_screw_support_length, module_screw_support_full_width, module_screw_support_full_width], center = true);
@@ -118,7 +126,7 @@ module support_nut_support() {
     
 }
 
-
+// The final module holder module ;-) 
 module cam_module_holder() {
 
     // Translate ready to mount for screw
@@ -127,6 +135,60 @@ module cam_module_holder() {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// HEPHESTOS ROLLER HOLDER ATTACHMENT
 
-cam_module_holder();
+// Original arm -- GPL from Bq.
+module hephestos_arm() {
+    mirror([ 0, 1, 0 ])    {
+	difference()	{
+	    union()	    {
+
+		//enganche con marco
+		difference()		{
+		    union()		    {
+			minkowski()			{
+			    cylinder(h=8, r=6, $fn=100, center=true);
+			    translate([20,3.5,8])cube(size=[40,7,8], center=true);
+			}
+
+			//Cuerpo spooler
+			linear_extrude(height = 10)
+			polygon(points=[	[-2.5,12.4], /*pico enganche superior*/
+				[43,-5.35], /*pico encganche inferior*/
+				[-130,-50],
+				[-130,-40] ]);
+
+			//base soporte
+			translate([-130,-42,5])cylinder(h=10, r=12, $fn=100, center=true);
+		    }
+		    translate([20,3.5,10])cube(size=[41,7,25], center=true);
+		    translate([26.1,9.5,10])cube(size=[40,7.5,25], center=true);
+		    translate([0,0,18])cube(size=[100,50,16], center=true);
+		    translate([-130,-42,-1])cylinder(h=30, r=1.8, $fn=100, center=true);
+		}
+		translate([-130,-42,17.5])cylinder(h=35, r=10, $fn=100, center=true);
+	    }//Fin union()
+	}
+
+    }
+}
+
+module cam_arm() {
+    difference() {
+        hephestos_arm();
+        translate([-110,38.5,10/2.0-screw_head_thickness])
+        rotate([0,270,0])
+        screw_hole(10);
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// MAIN
+
 // screw_hole(module_screw_support_length);
+
+
+// cam_module_holder();
+cam_arm();
