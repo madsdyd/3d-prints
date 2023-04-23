@@ -20,7 +20,7 @@ module_support_min_material = 3;
 module_pcb_thickness = 0.75 + 0.25 + 0.25; // need some slack
 
 // Support for arm on module
-module_arm_length = 20;
+module_arm_length = 0;
 module_support_base_depth = 3;
 module_support_base_height =3;
 
@@ -115,4 +115,4 @@ module support_nut_support() {
 
 // Translate ready to mount for screw
 translate([-module_support_base_length,-0.5*module_support_base_depth,0]) support();
-translate([0.5*module_screw_support_length-pad,0,0.5*module_screw_support_full_width]) support_nut_support();
+// translate([0.5*module_screw_support_length-pad,0,0.5*module_screw_support_full_width]) support_nut_support();
