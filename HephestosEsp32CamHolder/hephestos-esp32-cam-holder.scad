@@ -1,7 +1,14 @@
 // Holder to espcam thing
-// Two major parts, a case and an arm
-// The arm is made to attached to the hephestos arm and the case attachs to the arm
-// The case is "totally open" by design, to allow air, 
+// A number of parts
+// Module holder (module support) -- totally op
+// Flexible segments -- different versions wrt. attachments
+// A modified hephestos arm
+
+// The elements go together to form a multi segmented arm that can be adjusted
+
+
+////////////////////////////////////////
+// MODULE HOLDER
 
 // The physical dimensions of the esp32 cam module
 
@@ -28,7 +35,21 @@ module_screw_support_thickness = 7;
 module_screw_support_length = 8;
 
 
+////////////////////////////////////////
+// FLEXIBLE SEGMENTS
 
+// Length of each segment
+segment_length = 100;
+// the thickness of the segment
+segment_thickness = 4;
+// The length/height of the attachment parts in each end
+// Will also be the height of the segment.
+segment_fastener_platform_width = 8;
+// Extra platform width on arm, to allow for rotation
+segment_platform_extra = 4;
+
+////////////////////////////////////////
+// SCREW MODULE STUFF
 
 // Screw stuff
 // Screw diameter
@@ -183,6 +204,59 @@ module cam_arm() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// FLEX ARMS
+
+module fastener_platform(screw) {
+    // A fastener
+    difference() {
+        cube([segment_fastener_platform_width, segment_thickness, segment_fastener_platform_width],
+            center = true);
+        if (screw) {
+            translate([0,screw_head_thickness,0])
+            rotate([0,0,270])
+            screw_hole(segment_thickness);
+        } else {
+            translate([0,nut_thickness,0])
+            rotate([0,0,90])
+            screw_hole(segment_thickness);
+        }
+    }
+}
+
+// Segment
+module segment(a_screw,b_screw) {
+    // A platform
+    translate([segment_length/2.0-segment_fastener_platform_width/2.0-pad,-segment_thickness/2.0,0])
+    fastener_platform(a_screw);
+
+    // Add some extras to both ends, to be able to turn stuff freely
+    translate([segment_length/2.0-segment_fastener_platform_width-segment_platform_extra/2.0+pad,-segment_thickness/2.0,0])
+    cube([segment_platform_extra,segment_thickness,segment_fastener_platform_width], center=true);
+    
+    translate([-segment_length/2.0+segment_fastener_platform_width+segment_platform_extra/2.0-pad,segment_thickness/2.0,0])
+    cube([segment_platform_extra,segment_thickness,segment_fastener_platform_width], center=true);
+
+
+    
+    // Use a hull for the arm. This is 1 mm offset
+    hull() {
+        translate([segment_length/2.0-segment_fastener_platform_width-segment_platform_extra-0.5+2*pad,-segment_thickness/2.0,0])
+        cube([1,segment_thickness,segment_fastener_platform_width], center=true);
+        
+        translate([-segment_length/2.0+segment_fastener_platform_width+segment_platform_extra+0.5-2*pad,segment_thickness/2.0,0])
+        cube([1,segment_thickness,segment_fastener_platform_width], center=true);
+
+    }
+    
+    // B platform
+    translate([-segment_length/2.0+segment_fastener_platform_width/2.0-pad,segment_thickness/2.0,0])
+    rotate([0,0,180])
+    fastener_platform(b_screw);
+    
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // MAIN
@@ -191,4 +265,18 @@ module cam_arm() {
 
 
 // cam_module_holder();
-cam_arm();
+// cam_arm();
+// For near module holder, we need screw, screw
+segment(true,true);
+
+// And, a number of normals
+translate([0,10,0]) segment(false, true);
+translate([0,20,0]) segment(false, true);
+translate([0,30,0]) segment(false, true);
+
+// And, finally, we need nut, nut near the arm
+translate([0,40,0]) segment(false, false);
+
+// segment(true,true);
+// segment(false,false);
+
