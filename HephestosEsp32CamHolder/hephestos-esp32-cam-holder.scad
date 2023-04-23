@@ -6,10 +6,10 @@
 // The physical dimensions of the esp32 cam module
 
 // When "ESP32-CAM" can be read naturally. Camera side is front.
-module_width = 27;
+module_width = 27 + 0.8; // Extra gap for cutout needed.
 module_height = 40; // Only used for cutout
 // Tolerance is like gap for this
-module_tolerance = 0.3;
+module_tolerance = 0.3; // I forgot to use it :-/
 
 // The support for the corners. Must match distance from camerasupport to pcb
 module_support_height = 8; 
@@ -17,7 +17,7 @@ module_support_height = 8;
 module_support_width = 4;
 // The opposite of support cutout. Quite confusing
 module_support_min_material = 3;
-module_pcb_thickness = 0.75 + 0.25; // need some slack
+module_pcb_thickness = 0.75 + 0.25 + 0.25; // need some slack
 
 // Support for arm on module
 module_arm_length = 20;
