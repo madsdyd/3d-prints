@@ -6,7 +6,7 @@
 // The physical dimensions of the esp32 cam module
 
 // When "ESP32-CAM" can be read naturally. Camera side is front.
-module_width = 27 + 0.8; // Extra gap for cutout needed.
+module_width = 27 + 0.7; // Extra gap for cutout needed.
 module_height = 40; // Only used for cutout
 // Tolerance is like gap for this
 module_tolerance = 0.3; // I forgot to use it :-/
@@ -17,10 +17,10 @@ module_support_height = 8;
 module_support_width = 4;
 // The opposite of support cutout. Quite confusing
 module_support_min_material = 3;
-module_pcb_thickness = 0.75 + 0.25 + 0.25; // need some slack
+module_pcb_thickness = 0.75 + 0.25 + 0.20; // need some slack
 
 // Support for arm on module
-module_arm_length = 0;
+module_arm_length = 20;
 module_support_base_depth = 3;
 module_support_base_height =3;
 
@@ -37,10 +37,9 @@ screw_diameter = 3.6;
 screw_head_diameter = 6;
 // Screw cutout length. This should really be calculated...
 screw_cutout_length = 15;
-screw_hex_cutout_offset = 0;
 nut_thickness = 2;
 space = 0.0;
-
+screw_head_thickness = 2;
 
 
 
@@ -87,15 +86,23 @@ module support() {
     }
 }
 
+// Create a screw cutout of a given length
+// Center is center of cutout. Translate for only nut or head.
 $fn=50;
 module screw_hole(hole_length) {
     rotate([0,90,0]) {
+        // Room for screw
         cylinder(r = screw_radius + space, h = hole_length*2, center = true);
-        translate([0,0,hole_length/2.0+25]) {
+        // Screw head cutout
+        translate([0,0,hole_length/2.0+screw_head_thickness/2.0]) {
+            cylinder(r1=screw_radius + space, r2 = screw_head_radius + inner_hole_adjustment, h = screw_head_thickness, center = true);
+        }
+        // Extension of head cutout
+        translate([0,0,hole_length/2.0+25+screw_head_thickness-pad]) {
             cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true);
         }
-        // Hex cutout
-        translate([0,0,-(hole_length/2.0+25-screw_hex_cutout_offset)]) {
+        // Hex nut cutout
+        translate([0,0,-(hole_length/2.0+25)]) {
             cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true, $fn = 6);
         }
     }
@@ -112,7 +119,14 @@ module support_nut_support() {
 }
 
 
+module cam_module_holder() {
 
-// Translate ready to mount for screw
-translate([-module_support_base_length,-0.5*module_support_base_depth,0]) support();
-// translate([0.5*module_screw_support_length-pad,0,0.5*module_screw_support_full_width]) support_nut_support();
+    // Translate ready to mount for screw
+    translate([-module_support_base_length,-0.5*module_support_base_depth,0]) support();
+    translate([0.5*module_screw_support_length-pad,0,0.5*module_screw_support_full_width]) support_nut_support();
+
+}
+
+
+cam_module_holder();
+// screw_hole(module_screw_support_length);
