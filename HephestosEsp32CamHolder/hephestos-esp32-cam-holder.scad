@@ -29,10 +29,13 @@ module_pcb_thickness = 0.75 + 0.25 + 0.20; // need some slack
 // Support for arm on module
 module_arm_length = 20;
 module_support_base_depth = 3;
-module_support_base_height =3;
+module_support_base_height = 3;
 
-module_screw_support_thickness = 7;
-module_screw_support_length = 8;
+module_screw_support_height = 19;
+module_screw_support_width = 8;
+module_screw_support_length = 4;
+// Offset from top
+module_screw_support_offset = 5.5;
 
 
 ////////////////////////////////////////
@@ -75,7 +78,6 @@ inner_hole_adjustment = 0.25;
 module_support_base_length = module_width + 2*module_support_min_material + module_arm_length;
 screw_radius = screw_diameter / 2.0;
 screw_head_radius = screw_head_diameter / 2.0;
-module_screw_support_full_width = module_screw_support_thickness + screw_diameter;
 
 ////////////////////////////////////////////////////////////////////////////////
 // GENERAL
@@ -137,11 +139,12 @@ module support() {
 
 
 // The part of the module holder that constitues the nut support.
-module support_nut_support() {
+module support_screw_support() {
+    translate([0,0,module_screw_support_height/2.0])
     difference() {
-        cube([module_screw_support_length, module_screw_support_full_width, module_screw_support_full_width], center = true);
-        translate([nut_thickness+pad,0,0.125*module_screw_support_full_width])
-        rotate([30,0,0])
+        cube([module_screw_support_length, module_screw_support_width, module_screw_support_height], center = true);
+        translate([nut_thickness+pad,0,module_screw_support_offset])
+        rotate([0,0,180])
         screw_hole(module_screw_support_length);
     }
     
@@ -152,7 +155,7 @@ module cam_module_holder() {
 
     // Translate ready to mount for screw
     translate([-module_support_base_length,-0.5*module_support_base_depth,0]) support();
-    translate([0.5*module_screw_support_length-pad,0,0.5*module_screw_support_full_width]) support_nut_support();
+    translate([0.5*module_screw_support_length-pad,0,0]) support_screw_support();
 
 }
 
@@ -226,6 +229,7 @@ module fastener_platform(screw) {
 
 // Segment
 module segment(a_screw,b_screw) {
+    translate([0,0,segment_fastener_platform_width/2.0]) {
     // A platform
     translate([segment_length/2.0-segment_fastener_platform_width/2.0-pad,-segment_thickness/2.0,0])
     fastener_platform(a_screw);
@@ -253,7 +257,7 @@ module segment(a_screw,b_screw) {
     translate([-segment_length/2.0+segment_fastener_platform_width/2.0-pad,segment_thickness/2.0,0])
     rotate([0,0,180])
     fastener_platform(b_screw);
-    
+    }
 }
 
 
@@ -263,19 +267,27 @@ module segment(a_screw,b_screw) {
 
 // screw_hole(module_screw_support_length);
 
+// The module holder
+cam_module_holder();
 
-// cam_module_holder();
-// cam_arm();
-// For near module holder, we need screw, screw
-segment(true,true);
+// Modified Hephestos arm
+// translate([0,-40,0]) cam_arm();
+
+// Modules
 
 // And, a number of normals
 translate([0,10,0]) segment(false, true);
-translate([0,20,0]) segment(false, true);
-translate([0,30,0]) segment(false, true);
+// translate([0,20,0]) segment(false, true);
+// translate([0,30,0]) segment(false, true);
+// translate([0,40,0]) segment(false, true);
+// translate([0,50,0]) segment(false, true);
 
+
+// These are not actually used:
+// For near module holder, we need screw, screw
+// segment(true,true);
 // And, finally, we need nut, nut near the arm
-translate([0,40,0]) segment(false, false);
+// translate([0,40,0]) segment(false, false);
 
 // segment(true,true);
 // segment(false,false);
