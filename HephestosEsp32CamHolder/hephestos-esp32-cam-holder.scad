@@ -143,7 +143,7 @@ module support_screw_support() {
     translate([0,0,module_screw_support_height/2.0])
     difference() {
         cube([module_screw_support_length, module_screw_support_width, module_screw_support_height], center = true);
-        translate([nut_thickness+pad,0,module_screw_support_offset])
+        translate([-nut_thickness-pad,0,module_screw_support_offset])
         rotate([0,0,180])
         screw_hole(module_screw_support_length);
     }
@@ -276,7 +276,7 @@ cam_module_holder();
 // Modules
 
 // And, a number of normals
-translate([0,10,0]) segment(false, true);
+// translate([0,10,0]) segment(false, true);
 // translate([0,20,0]) segment(false, true);
 // translate([0,30,0]) segment(false, true);
 // translate([0,40,0]) segment(false, true);
