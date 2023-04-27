@@ -65,6 +65,20 @@ nut_thickness = 2;
 space = 0.0;
 screw_head_thickness = 2;
 
+////////////////////////////////////////
+// SHELF ARM
+shelf_arm_length = 60;
+shelf_arm_thickness = 4;
+shelf_arm_width =  8;
+shelf_arm_screw_offset = 30;
+
+////////////////////////////////////////
+// Angle arm
+angle_arm_a_length = 20;
+angle_arm_b_length = 30;
+angle_arm_thickness = 4;
+angle_arm_width = 8;
+
 
 
 pad = 0.05;
@@ -208,7 +222,51 @@ module cam_arm() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// FLEX ARMS
+// Shelf and angle arm
+module shelf_arm() {
+    translate([0,0,shelf_arm_thickness/2.0])
+    rotate([180,0,0])
+    difference() {
+        cube([shelf_arm_length,shelf_arm_width,shelf_arm_thickness], center = true);
+        translate([shelf_arm_length/2.0-screw_head_diameter/2.0-1,0,screw_head_thickness])
+        rotate([0,90,0])
+        screw_hole(shelf_arm_thickness);
+        translate([shelf_arm_length/2.0-screw_head_diameter/2.0-shelf_arm_screw_offset,0,screw_head_thickness])
+        rotate([0,90,0])
+        screw_hole(shelf_arm_thickness);
+
+
+
+        translate([-shelf_arm_length/2.0+screw_head_diameter/2.0+1,0,nut_thickness])
+        rotate([0,270,0])
+        screw_hole(shelf_arm_thickness);
+    }
+}
+
+module angle_arm() {
+    translate([0,pad,0])
+    mirror([1,1,0])
+    difference() {
+        cube([angle_arm_a_length,angle_arm_thickness, angle_arm_width]);
+        translate([angle_arm_a_length-screw_head_diameter/2.0-1,0,angle_arm_width/2.0])
+        rotate([0,0,90])
+        screw_hole(angle_arm_thickness);
+    }
+    translate([-angle_arm_thickness,0,0])
+    difference() {
+        cube([angle_arm_b_length,angle_arm_thickness, angle_arm_width]);
+        translate([angle_arm_b_length-screw_head_diameter/2.0-1,0,angle_arm_width/2.0])
+        rotate([0,0,90])
+        screw_hole(angle_arm_thickness);
+    }
+
+    
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// SEGMENTS
 
 module fastener_platform(screw) {
     // A fastener
@@ -268,10 +326,16 @@ module segment(a_screw,b_screw) {
 // screw_hole(module_screw_support_length);
 
 // The module holder
-cam_module_holder();
+// cam_module_holder();
 
 // Modified Hephestos arm
 // translate([0,-40,0]) cam_arm();
+
+// Shelf arm
+translate([0,20,0]) shelf_arm();
+
+// angle arm
+angle_arm();
 
 // Modules
 
