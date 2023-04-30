@@ -37,6 +37,17 @@ module_screw_support_length = 4;
 // Offset from top
 module_screw_support_offset = 5.5;
 
+cam_base_thickness = 2;
+cam_base_diameter = 8 + 0.25;
+cam_base_support_width = 4;
+cam_base_support_height = 2;
+cam_base_support_thickness = 2;
+
+// CALCULATED
+cam_base_radius = cam_base_diameter / 2.0;
+cam_base_width  = cam_base_diameter + cam_base_support_width * 2;
+cam_base_height = cam_base_diameter + cam_base_support_height * 2;
+cam_base_total_thickness = cam_base_thickness + cam_base_support_thickness;
 
 ////////////////////////////////////////
 // FLEXIBLE SEGMENTS
@@ -172,6 +183,35 @@ module cam_module_holder() {
     translate([0.5*module_screw_support_length-pad,0,0]) support_screw_support();
 
 }
+
+// And, an additonal holder, to keep the camera in place
+module cam_module_cam_holder() {
+    translate([0,0,cam_base_total_thickness])
+    rotate([180,0,0])
+    difference() {
+        // "All"
+        translate([0,0,cam_base_total_thickness/2.0])
+        cube([cam_base_width, cam_base_height, cam_base_total_thickness], center = true);
+
+        // Square cutout in bottom
+        translate([0,0,cam_base_thickness/2.0-pad])
+        cube([cam_base_width - cam_base_support_width *2,
+                cam_base_height - cam_base_support_height *2,
+                cam_base_thickness], center = true);
+
+        // Camera optics cutout
+        cylinder(r = cam_base_radius, h = cam_base_total_thickness*3, center=true);
+
+        // Cutouts for rubber bands
+        translate([-cam_base_width/2.0+cam_base_support_width/2.0,0,cam_base_total_thickness])
+        rotate([90,0,0])
+        cylinder(r = 1.2, h = cam_base_height * 2, center = true);
+        translate([+cam_base_width/2.0-cam_base_support_width/2.0,0,cam_base_total_thickness])
+        rotate([90,0,0])
+        cylinder(r = 1.2, h = cam_base_height * 2, center = true);
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // HEPHESTOS ROLLER HOLDER ATTACHMENT
@@ -327,15 +367,16 @@ module segment(a_screw,b_screw) {
 
 // The module holder
 // cam_module_holder();
+cam_module_cam_holder();
 
 // Modified Hephestos arm
 // translate([0,-40,0]) cam_arm();
 
 // Shelf arm
-translate([0,20,0]) shelf_arm();
+// translate([0,20,0]) shelf_arm();
 
 // angle arm
-angle_arm();
+// angle_arm();
 
 // Modules
 
