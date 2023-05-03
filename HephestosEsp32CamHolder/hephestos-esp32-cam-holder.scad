@@ -38,7 +38,7 @@ module_screw_support_length = 4;
 module_screw_support_offset = 5.5;
 
 cam_base_thickness = 2;
-cam_base_diameter = 8 + 0.25;
+cam_base_diameter = 8 + 1;
 cam_base_support_width = 4;
 cam_base_support_height = 2;
 cam_base_support_thickness = 2;
@@ -366,26 +366,26 @@ module segment(a_screw,b_screw) {
 // screw_hole(module_screw_support_length);
 
 // The module holder
-// cam_module_holder();
-cam_module_cam_holder();
+cam_module_holder();
+translate([-35,-20,0]) cam_module_cam_holder();
 
 // Modified Hephestos arm
 // translate([0,-40,0]) cam_arm();
 
 // Shelf arm
-// translate([0,20,0]) shelf_arm();
+translate([0,20,0]) shelf_arm();
 
 // angle arm
-// angle_arm();
+translate([20,0,0]) angle_arm();
 
 // Modules
 
 // And, a number of normals
-// translate([0,10,0]) segment(false, true);
-// translate([0,20,0]) segment(false, true);
-// translate([0,30,0]) segment(false, true);
-// translate([0,40,0]) segment(false, true);
+translate([0,30,0]) segment(false, true);
+translate([0,40,0]) segment(false, true);
 // translate([0,50,0]) segment(false, true);
+// translate([0,60,0]) segment(false, true);
+// translate([0,70,0]) segment(false, true);
 
 
 // These are not actually used:
