@@ -13,7 +13,7 @@ fan_hole_diameter = 3.6;
 
 // The following four determines the amount of support for the back hole.
 // Offsets are from button left
-fan_x_offset = 14;
+fan_x_offset = 20;
 fan_y_offset = 4;
 
 // Extra space
@@ -36,6 +36,11 @@ box_wall_thickness = 1.2;
 
 // Wall to support the filters.
 box_inner_wall_thickness = 0.8;
+
+// Switch cutout is assumed round
+switch_radius = 3;
+// From upper left corner
+switch_offset = 10;
 
 pad = 0.05;
 $fn=120;
@@ -79,6 +84,10 @@ module fan_support() {
 
 // Box is front, with no lid
 module box() {
+
+    difference() {
+        union() {
+
     // Frame
     difference() {
         cube([box_width, box_thickness, box_height]);
@@ -95,10 +104,7 @@ module box() {
     translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
     fan_support();
 
-
-    
     // Support for carbon filters
-
     // Move to center of fan
     translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
     // Center "flanges"
@@ -107,13 +113,16 @@ module box() {
     for(y = [0,1])
     translate([(x+y)*fan_width*0.5+(x+y)*1,0,(x-y)*fan_width*0.5+(x-y)*1])
     rotate([0,90*(x+y),0])
-    cube([box_inner_wall_thickness, fan_hole_distance_half, inner_box_thickness], center=true);
+    cube([box_inner_wall_thickness, inner_box_thickness, fan_hole_distance_half], center=true);
 
-
+}
+    
     // Cutout for switch
+    translate([switch_offset,0,box_height-switch_offset])
+    rotate([90,0,0])
+    cylinder(r = 3, h = box_wall_thickness * 4, center=true);
+}   
 
-    
-    
 }
 
 module foo() {
