@@ -48,6 +48,9 @@ switch_radius = 3;
 switch_offset_x = 11;
 switch_offset_y = 11;
 
+// Lid tolerance: This is how much smaller the lid is "all around"
+lid_tolerance = 0.4;
+
 ////////////////////////////////////////
 // FASTENER SUPPORT
 
@@ -151,6 +154,18 @@ module fan_support(diam) {
     cylinder(r = diam, h = inner_box_thickness, center = true);
 }
 
+module box_screw_holes(length, offset) {
+    // Cut out four screw holes
+    for(x = [-1,1])
+    for(y = [-1,1])
+    // Cut out a screw hole
+    translate([x*(inner_box_width / 2.0 - fastener_support - 1.4142* screw_head_radius-2*pad),
+            offset,
+            y*(inner_box_height / 2.0 - fastener_support - 1.4142*screw_head_radius-2*pad)])
+    rotate([45,0,90])
+    screw_hole(length);
+}
+
             
 // Box is front, with no lid
 module box() {
@@ -213,21 +228,9 @@ module box() {
                 difference() {
                     cube([inner_box_width + 2*pad, box_fastener_support_thickness + 2*pad, inner_box_height + 2*pad], center=true);
 
-                    // Cut out four screw holes
-                    for(x = [-1,1])
-                    for(y = [-1,1])
-                    // Cut out a screw hole
-                    translate([x*(inner_box_width / 2.0 - fastener_support - 1.4142* screw_head_radius-2*pad),
-                            nut_thickness,
-                            y*(inner_box_height / 2.0 - fastener_support - 1.4142*screw_head_radius-2*pad)])
-                    rotate([45,0,90])
-                    screw_hole(box_fastener_support_thickness);
+                    box_screw_holes(box_fastener_support_thickness, nut_thickness);
                 }
-                
-
             }
-
-            
         }
     }
 }
@@ -269,13 +272,34 @@ module filter_holder() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// LID
+
+module lid() {
+    translate([0,0,box_wall_thickness/2.0])
+    rotate([90,0,0])
+    difference() {
+        cube([inner_box_width-2*lid_tolerance,
+                box_wall_thickness,
+                inner_box_height-2*lid_tolerance], center=true);
+        // TODO: Might be too thin, needs stuff in the corners. Will do, if need another print
+        // TODO: Can also print something that grabs the fan supports.
+        box_screw_holes(box_wall_thickness, -screw_head_thickness);
+
+    }
+
+}
+
+
 // Test
 // air_cutout();
 
+// Filter holder
 translate([-20-fan_width,0,0]) filter_holder();
-
-
 
 // The actual box
 box();
+
+// The lid
+translate([0, box_height, 0]) lid();
 
