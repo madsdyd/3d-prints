@@ -42,6 +42,33 @@ switch_radius = 3;
 // From upper left corner
 switch_offset = 10;
 
+////////////////////////////////////////
+// FASTENER SUPPORT
+
+// Minimum support that fastener must have. Offset from sides, really.
+fastener_support = 2;
+
+box_fastener_support_thickness = 5;
+
+////////////////////////////////////////
+// SCREW MODULE STUFF
+
+// Screw stuff
+// Screw diameter
+screw_diameter = 3.6;
+// Screw head diameter -- also used for hex nut cutout
+screw_head_diameter = 6;
+// Screw cutout length. This should really be calculated...
+screw_cutout_length = 15;
+nut_thickness = 2;
+space = 0.0;
+screw_head_thickness = 2;
+
+screw_radius = screw_diameter / 2.0;
+screw_head_radius = screw_head_diameter / 2.0;
+
+
+
 pad = 0.05;
 $fn=120;
 
@@ -49,7 +76,7 @@ $fn=120;
 // CALCULATED
 inner_box_width     = fan_width + fan_x_offset + box_x_space;
 inner_box_height    = fan_height + fan_y_offset + box_y_space;
-inner_box_thickness = fan_thickness + carbon_filter_thickness * carbon_filter_number + carbon_filter_gap_filler_thickness;
+inner_box_thickness = fan_thickness + ( carbon_filter_thickness + carbon_filter_gap_filler_thickness) * carbon_filter_number;
 box_width     = 2 * box_wall_thickness + inner_box_width;
 box_height    = 2 * box_wall_thickness + inner_box_height;
 box_thickness = 2 * box_wall_thickness + inner_box_thickness;
@@ -58,6 +85,40 @@ fan_center_x = box_wall_thickness + fan_x_offset + fan_width / 2;
 fan_center_y = box_wall_thickness + fan_y_offset + fan_height / 2;
 fan_window_radius = fan_window_diameter / 2.0;
 fan_hole_distance_half = fan_hole_distance / 2.0;
+
+// This is calculated by the screw radius and support
+fastener_support_side = (screw_radius + fastener_support) * ( 1.4142 + 2);
+
+////////////////////////////////////////////////////////////////////////////////
+// GENERAL
+
+
+// Create a screw cutout of a given length
+// Center is center of cutout. Translate for only nut or head.
+module screw_hole(hole_length) {
+    rotate([0,90,0]) {
+        // Room for screw
+        cylinder(r = screw_radius + space, h = hole_length*2, center = true);
+        // Screw head cutout
+        translate([0,0,hole_length/2.0+screw_head_thickness/2.0]) {
+            cylinder(r1=screw_radius + space, r2 = screw_head_radius + inner_hole_adjustment, h = screw_head_thickness, center = true);
+        }
+        // Extension of head cutout
+        translate([0,0,hole_length/2.0+25+screw_head_thickness-pad]) {
+            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true
+);
+        }
+        // Hex nut cutout
+        translate([0,0,-(hole_length/2.0+25)]) {
+            cylinder(r = screw_head_radius + inner_hole_adjustment, h = 50, center = true
+, $fn = 6);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BOX
+
 
 module air_cutout() {
     difference() {
@@ -88,58 +149,74 @@ module box() {
     difference() {
         union() {
 
-    // Frame
-    difference() {
-        cube([box_width, box_thickness, box_height]);
-        translate([box_wall_thickness,box_wall_thickness,box_wall_thickness])
-        cube([inner_box_width, inner_box_thickness + box_wall_thickness + pad, inner_box_height]);
+            // Frame
+            difference() {
+                cube([box_width, box_thickness, box_height]);
+                translate([box_wall_thickness,box_wall_thickness,box_wall_thickness])
+                cube([inner_box_width, inner_box_thickness + box_wall_thickness + pad, inner_box_height]);
 
-        // Fan cutout
-        translate([fan_center_x,box_wall_thickness/2.0,fan_center_y])
-        air_cutout();
-    }
+                // Fan cutout
+                translate([fan_center_x,box_wall_thickness/2.0,fan_center_y])
+                air_cutout();
+            }
+
+            
+            // Support for fan.
+            translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
+            fan_support();
+
+            // TODO: Remove this / move it to a seperate filter holder.
+            // Support for carbon filters
+            // Move to center of fan
+            translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
+            // Center "flanges"
+            translate([-fan_width*0.5-1,0,0])
+            for(x = [0,1])
+            for(y = [0,1])
+            translate([(x+y)*fan_width*0.5+(x+y)*1,0,(x-y)*fan_width*0.5+(x-y)*1])
+            rotate([0,90*(x+y),0])
+            cube([box_inner_wall_thickness, inner_box_thickness, fan_hole_distance_half], center=true);
+
+        }
+        
+        // Cutout for switch
+        translate([switch_offset,0,box_height-switch_offset])
+        rotate([90,0,0])
+        cylinder(r = 3, h = box_wall_thickness * 4, center=true);
+    }   
+
+    // Fastenersupport corners
 
     
-    // Support for fan.
-    translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
-    fan_support();
+    // Translate into place
+    translate([box_wall_thickness,
+            inner_box_thickness
+            -box_fastener_support_thickness/2.0
+            +box_wall_thickness,
+            box_wall_thickness])
+    // Only use inner part of corners
+    intersection() {
+        // Four corners
+        for(x = [0,1])
+        for(y = [0,1])
+        translate([(x)*inner_box_width,0,(y)*inner_box_height])
+        // A single corner
+        rotate([90,0,0])
+        difference() {
+            cylinder(r = 1.4142*screw_radius + screw_diameter + fastener_support,
+                h=box_fastener_support_thickness, center = true);
+            cylinder(r = 1.4142*screw_radius,
+                h = box_fastener_support_thickness + pad, center = true);
+        }
 
-    // Support for carbon filters
-    // Move to center of fan
-    translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
-    // Center "flanges"
-    translate([-fan_width*0.5-1,0,0])
-    for(x = [0,1])
-    for(y = [0,1])
-    translate([(x+y)*fan_width*0.5+(x+y)*1,0,(x-y)*fan_width*0.5+(x-y)*1])
-    rotate([0,90*(x+y),0])
-    cube([box_inner_wall_thickness, inner_box_thickness, fan_hole_distance_half], center=true);
+        // Matching the inner box
+        translate([inner_box_width / 2.0 + pad, 0, inner_box_height / 2.0 + pad])
+        cube([inner_box_width + 2*pad, box_fastener_support_thickness + 2*pad, inner_box_height + 2*pad], center=true);
 
-}
+        
+    }
     
-    // Cutout for switch
-    translate([switch_offset,0,box_height-switch_offset])
-    rotate([90,0,0])
-    cylinder(r = 3, h = box_wall_thickness * 4, center=true);
-}   
-
 }
-
-module foo() {
-    translate([fan_center_x,carbon_filter_thickness/2.0+box_wall_thickness,fan_center_y])
-    difference() {
-        cube([fan_width+2*box_inner_wall_thickness,
-                carbon_filter_thickness,
-                fan_height+2*box_inner_wall_thickness], center=true);
-        cube([fan_width,
-                carbon_filter_thickness+pad,
-                fan_height], center=true);
-    }
-
-
-
-    }
-
 
 box();
 // air_cutout();
