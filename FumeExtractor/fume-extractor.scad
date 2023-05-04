@@ -229,9 +229,9 @@ module box() {
                 for(y = [-1,1])
                 // Cut out a screw hole
                 translate([x*(inner_box_width / 2.0 - fastener_support - 1.4142* screw_head_radius-2*pad),
-                        -nut_thickness,
+                        nut_thickness,
                         y*(inner_box_height / 2.0 - fastener_support - 1.4142*screw_head_radius-2*pad)])
-                rotate([0,0,90])
+                rotate([45,0,90])
                 screw_hole(box_fastener_support_thickness);
             }
             
