@@ -295,11 +295,11 @@ module lid() {
 // air_cutout();
 
 // Filter holder
-translate([-20-fan_width,0,0]) filter_holder();
+translate([-fan_width*0.60,0,0]) filter_holder();
 
 // The actual box
 box();
 
 // The lid
-translate([0, box_height, 0]) lid();
+translate([0, box_height*0.60, 0]) lid();
 
