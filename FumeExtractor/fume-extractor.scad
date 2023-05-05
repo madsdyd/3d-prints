@@ -43,11 +43,18 @@ box_wall_thickness = 1.2;
 box_inner_wall_thickness = 0.8;
 
 // Switch cutout is assumed round
-switch_radius = 3;
+switch_radius = 3 + 0.5;
+// Support for switch. This is the "blue part"
+switch_width = 7 + 0.5;
+switch_height = 13 + 0.5;
+switch_depth = 9 - 2;
+switch_support = 1.6;
 // From upper left corner
-switch_offset_x = 11;
-switch_offset_y = 11;
-
+switch_offset_x = 10;
+switch_offset_y = 10;
+// The wall thickness is substracted from this to make only part of the switch stick out
+switch_offset_z = 6;
+switch_support_depth = switch_depth + switch_offset_z - box_wall_thickness;
 // Lid tolerance: This is how much smaller the lid is "all around"
 lid_tolerance = 0.4;
 
@@ -166,10 +173,28 @@ module box_screw_holes(length, offset) {
     screw_hole(length);
 }
 
+module switch_support() {
+    // Switch support inside box
+    
+    difference() {
+        cube([switch_width + 2*switch_support,
+                switch_support_depth,
+                switch_height + 2*switch_support], center = true);
+        
+        // Cutout for switch (repeated, sort of)
+        rotate([90,0,0])
+        cylinder(r = 3, h = switch_support_depth + 10*pad, center=true);
+        // Cutout for blue part of switch
+        translate([0,switch_support_depth/2.0-switch_depth/2.0+pad,0])
+        cube([switch_width, switch_depth, switch_height], center = true);
+        
+    }
+}
+
             
 // Box is front, with no lid
 module box() {
-    rotate([90,0,0]) {
+    rotate([0,0,0]) {
         difference() {
             union() {
 
@@ -192,12 +217,19 @@ module box() {
 
             }
             
-            // Cutout for switch
+            // Cutout for switch threaded part
             translate([switch_offset_x,0,box_height-switch_offset_y])
             rotate([90,0,0])
             cylinder(r = 3, h = box_wall_thickness * 4, center=true);
         }   
 
+        translate([
+                switch_offset_x,
+                switch_support_depth/2.0 + box_wall_thickness - pad,
+                box_height-switch_offset_y])
+        switch_support();
+        
+        
         ////////////////////////////////////////
         // Fastenersupport corners
         
@@ -293,13 +325,15 @@ module lid() {
 
 // Test
 // air_cutout();
+// switch_support();
 
 // Filter holder
-translate([-fan_width*0.60,0,0]) filter_holder();
+// translate([-fan_width*0.60,0,0]) filter_holder();
 
 // The actual box
 box();
 
+
 // The lid
-translate([0, box_height*0.60, 0]) lid();
+// translate([0, box_height*0.60, 0]) lid();
 
