@@ -5,6 +5,7 @@
 fan_width = 80;
 fan_height = fan_width; // Assumed in model.
 fan_thickness = 25;
+fan_support_thickness = 3;
 
 // Distance between support holes
 fan_hole_distance = 71;
@@ -26,8 +27,8 @@ box_y_space = 4;
 carbon_filter_thickness = 8;
 carbon_filter_number = 2;
 
-// Extra size to allow filter to be slightly larger than the fan.
-carbon_filter_extra = 2;
+// Extra size to allow filter to be slightly larger than the fan. Added once to top and bottom
+carbon_filter_extra = 1;
 
 // And this is to stop the carbon filters from beeing sucked into the fan
 carbon_filter_gap_filler_thickness = 1;
@@ -37,10 +38,10 @@ fan_window_diameter = 78;
 fan_window_bar_width = 3;
 
 // Thickness of the walls of the box
-box_wall_thickness = 1.2;
+box_wall_thickness = 1.6;
 
 // Wall to support the filters.
-box_inner_wall_thickness = 0.8;
+box_inner_wall_thickness = 1.2;
 
 // Switch cutout is assumed round
 switch_radius = 3 + 0.5;
@@ -135,6 +136,57 @@ module screw_hole(hole_length) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// FILTER AND FAN HOLDER
+
+// Support for the filters
+filter_width = fan_width + carbon_filter_extra;
+filter_height = fan_height + carbon_filter_extra;
+module filter_support() {
+    // Center "flanges"
+    translate([-(filter_width+box_inner_wall_thickness)*0.5,
+            carbon_filter_thickness/2.0-carbon_filter_gap_filler_thickness/2.0,
+            0])
+    for(x = [0,1])
+    for(y = [0,1])
+    translate([(x+y)*(filter_width+box_inner_wall_thickness-pad)*0.5,
+            0,
+            (x-y)*(filter_height+box_inner_wall_thickness-pad)*0.5])
+    rotate([0,90*(x+y),0])
+    cube([box_inner_wall_thickness, carbon_filter_thickness, fan_hole_distance/4.0], center=true);
+    
+}
+
+module filter_and_fan_support(h) {
+    // Center "flanges"
+    translate([-(filter_width+box_inner_wall_thickness)*0.5,
+            0,
+            0])
+    for(x = [0,1])
+    for(y = [0,1])
+    translate([(x+y)*(filter_width+box_inner_wall_thickness-pad)*0.5,
+            0,
+            (x-y)*(filter_height+box_inner_wall_thickness-pad)*0.5])
+    rotate([0,90*(x+y),0])
+    cube([box_inner_wall_thickness, h, fan_hole_distance/4.0], center=true);
+    
+}
+    // Move to center of fan
+//    translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
+
+module filter_holder() {
+    rotate([90,0,0])
+    translate([0,carbon_filter_gap_filler_thickness/2.0,filter_height/2.0]) {
+        difference() {
+            cube([filter_width,
+                    carbon_filter_gap_filler_thickness,
+                    filter_height], center=true);
+            air_cutout();
+            fan_support(fan_hole_diameter_outside/2.0);        
+        }
+        filter_support();
+    }
+}
+////////////////////////////////////////////////////////////////////////////////
 // BOX
 
 
@@ -183,7 +235,7 @@ module switch_support() {
         
         // Cutout for switch (repeated, sort of)
         rotate([90,0,0])
-        cylinder(r = 3, h = switch_support_depth + 10*pad, center=true);
+        cylinder(r = switch_radius, h = switch_support_depth + 10*pad, center=true);
         // Cutout for blue part of switch
         translate([0,switch_support_depth/2.0-switch_depth/2.0+pad,0])
         cube([switch_width, switch_depth, switch_height], center = true);
@@ -210,24 +262,30 @@ module box() {
                 }
 
                 
-                // Support for fan.
-                translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
-                fan_support(fan_hole_diameter/2.0);
-
-
+                // Support for filter, gap and fan, inside box. Similar will be made on lid
+                h = carbon_filter_thickness
+                    + carbon_filter_gap_filler_thickness
+                    + fan_support_thickness; 
+                translate([fan_center_x,
+                        h/2.0 + box_wall_thickness - pad,
+                        fan_center_y])
+                // fan_support(fan_hole_diameter/2.0);
+                filter_and_fan_support(h);
             }
             
             // Cutout for switch threaded part
             translate([switch_offset_x,0,box_height-switch_offset_y])
             rotate([90,0,0])
-            cylinder(r = 3, h = box_wall_thickness * 4, center=true);
+            cylinder(r = switch_radius, h = box_wall_thickness * 4, center=true);
         }   
 
+        // And inside box switch support
         translate([
                 switch_offset_x,
                 switch_support_depth/2.0 + box_wall_thickness - pad,
                 box_height-switch_offset_y])
         switch_support();
+
         
         
         ////////////////////////////////////////
@@ -237,7 +295,8 @@ module box() {
         translate([box_wall_thickness,
                 inner_box_thickness
                 -box_fastener_support_thickness/2.0
-                +box_wall_thickness,
+                +box_wall_thickness
+                -screw_head_thickness, // To allow for "thicker lid" at this point.
                 box_wall_thickness])
         // Only use inner part of corners
         intersection() {
@@ -256,9 +315,9 @@ module box() {
             }
 
             // Matching the inner box for intersection.
-            translate([inner_box_width / 2.0 + pad, 0, inner_box_height / 2.0 + pad]) {
+            translate([inner_box_width / 2.0 + 0.5*pad, 0, inner_box_height / 2.0 + 0.5*pad]) {
                 difference() {
-                    cube([inner_box_width + 2*pad, box_fastener_support_thickness + 2*pad, inner_box_height + 2*pad], center=true);
+                    cube([inner_box_width + 0*pad, box_fastener_support_thickness + 1*pad, inner_box_height + 1*pad], center=true);
 
                     box_screw_holes(box_fastener_support_thickness, nut_thickness);
                 }
@@ -267,42 +326,6 @@ module box() {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// FILTER HOLDER
-
-// Support for the filters
-filter_width = fan_width + carbon_filter_extra;
-filter_height = fan_height + carbon_filter_extra;
-module filter_support() {
-    // Center "flanges"
-    translate([-(filter_width+box_inner_wall_thickness)*0.5,
-            carbon_filter_thickness/2.0-carbon_filter_gap_filler_thickness/2.0,
-            0])
-    for(x = [0,1])
-    for(y = [0,1])
-    translate([(x+y)*(filter_width+box_inner_wall_thickness-pad)*0.5,
-            0,
-            (x-y)*(filter_height+box_inner_wall_thickness-pad)*0.5])
-    rotate([0,90*(x+y),0])
-    cube([box_inner_wall_thickness, carbon_filter_thickness, fan_hole_distance/4.0], center=true);
-    
-}
-    // Move to center of fan
-//    translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
-
-module filter_holder() {
-    rotate([90,0,0])
-    translate([0,carbon_filter_gap_filler_thickness/2.0,filter_height/2.0]) {
-        difference() {
-            cube([filter_width,
-                    carbon_filter_gap_filler_thickness,
-                    filter_height], center=true);
-            air_cutout();
-            fan_support(fan_hole_diameter_outside/2.0);        
-        }
-        filter_support();
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // LID
