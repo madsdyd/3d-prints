@@ -31,7 +31,7 @@ carbon_filter_number = 2;
 carbon_filter_extra = 1;
 
 // And this is to stop the carbon filters from beeing sucked into the fan
-carbon_filter_gap_filler_thickness = 1;
+carbon_filter_gap_filler_thickness = 2;
 
 // The diameter of the cutout for the carbon filter
 fan_window_diameter = 78;
@@ -195,7 +195,7 @@ module filter_holder() {
                 cube([filter_width,
                     carbon_filter_gap_filler_thickness,
                     filter_height], center = true);
-                air_cutout();
+                air_cutout(box_wall_thickness);
                 fan_support(fan_hole_diameter_outside / 2.0);
             }
             filter_support();
@@ -205,9 +205,11 @@ module filter_holder() {
 module filter_gap_filler() {
     translate([0, 0, carbon_filter_gap_filler_thickness / 2.0 ]) {
         difference() {
-            cylinder(r = filter_width / 2.0, h = carbon_filter_gap_filler_thickness, center = true);
-            rotate([90,0,0])
-            air_cutout();
+            cube([filter_width,
+                filter_height, carbon_filter_gap_filler_thickness], center = true);
+//            cylinder(r = filter_width / 2.0, h = carbon_filter_gap_filler_thickness, center = true);
+              rotate([90,0,0])
+            air_cutout(carbon_filter_gap_filler_thickness);
         }
     }
 }
@@ -216,17 +218,17 @@ module filter_gap_filler() {
 // BOX
 
 
-module air_cutout() {
+module air_cutout(thickness) {
     difference() {
         // Cylinder base.
         rotate([90, 0, 0])
-            cylinder(r = fan_window_radius, h = box_wall_thickness + pad, center = true, $fn = 120);
+            cylinder(r = fan_window_radius, h = thickness + pad, center = true, $fn = 120);
 
         // Cutout for air
         rotate([0, 0, 0])
             for (i = [0: 4]) {
                 rotate([0, 60 * i, 0])
-                    cube([fan_width, box_wall_thickness + 2 * pad, fan_window_bar_width], center = true);
+                    cube([fan_width, thickness + 2 * pad, fan_window_bar_width], center = true);
             }
     }
 }
@@ -296,7 +298,7 @@ module box() {
 
                     // Fan cutout
                     translate([fan_center_x, box_wall_thickness / 2.0, fan_center_y])
-                        air_cutout();
+                        air_cutout(box_wall_thickness);
                 }
 
 
@@ -490,7 +492,7 @@ module lid() {
 
             // Fan/air holes
             translate([fan_center_x, box_wall_thickness / 2.0, fan_center_y])
-                air_cutout();
+                air_cutout(box_wall_thickness);
 
 
         }
@@ -508,7 +510,7 @@ module lid() {
 
 
 // Test
-// air_cutout();
+// air_cutout(box_wall_thickness);
 // switch_support();
 
 // Filter gap filler
