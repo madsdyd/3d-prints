@@ -43,6 +43,9 @@ box_wall_thickness = 1.6;
 // Wall to support the filters.
 box_inner_wall_thickness = 1.2;
 
+////////////////////////////////////////
+// SWITCH variables
+
 // Switch cutout is assumed round
 switch_radius = 3 + 0.5;
 // Support for switch. This is the "blue part"
@@ -56,8 +59,18 @@ switch_offset_y = 10;
 // The wall thickness is substracted from this to make only part of the switch stick out
 switch_offset_z = 6;
 switch_support_depth = switch_depth + switch_offset_z - box_wall_thickness;
+
+////////////////////////////////////////
+// WIRE hole variables
+wire_hole_radius = 4;
+wire_hole_offset_x = 18;
+wire_hole_offset_y = 7.5; // From bottom left, in the lidt.
+
+
 // Lid tolerance: This is how much smaller the lid is "all around"
 lid_tolerance = 0.4;
+
+
 
 ////////////////////////////////////////
 // FASTENER SUPPORT
@@ -454,13 +467,17 @@ module lid() {
             }
 
 
-        // TODO: Fan/air holes
+        // Fan/air holes
         translate([fan_center_x, box_wall_thickness / 2.0, fan_center_y])
         air_cutout();
 
+        // Wire hole
+        translate([wire_hole_offset_x, 0, box_height - wire_hole_offset_y])
+            rotate([90, 0, 0])
+                cylinder(r = wire_hole_radius, h = box_wall_thickness * 4, center = true);
+
     }
 
-    // TODO: support for filters
     // Support for filter, gap and fan, inside lid. Similar in box
     h = carbon_filter_thickness
         + fan_support_thickness;
@@ -482,7 +499,7 @@ module lid() {
 
 // The actual box
 // box();
-// rounded_box();
+// srounded_box();
 
 // The lid
 translate([0, box_height * 0.60, 0]); lid();
