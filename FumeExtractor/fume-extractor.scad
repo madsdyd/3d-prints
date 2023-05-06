@@ -89,7 +89,7 @@ screw_head_radius = screw_head_diameter / 2.0;
 
 
 pad = 0.05;
-$fn=120;
+$fn=30;
 
 ////////////////////////////////////////
 // CALCULATED
@@ -194,7 +194,7 @@ module air_cutout() {
     difference() {
         // Cylinder base.
         rotate([90,0,0])
-        cylinder(r = fan_window_radius, h = box_wall_thickness+pad, center=true);
+        cylinder(r = fan_window_radius, h = box_wall_thickness+pad, center=true,$fn=120);
         
         // Cutout for air
         rotate([0,0,0])
@@ -326,6 +326,92 @@ module box() {
     }
 }
 
+// Create a "thingy" to round with
+box_rounder_radius = box_wall_thickness;
+module box_rounder(length) {
+    translate([box_rounder_radius/2.0,box_rounder_radius/2.0,0])
+    difference() {
+        translate([-box_rounder_radius/2.0,-box_rounder_radius/2.0,0])
+        cube([box_rounder_radius+pad,box_rounder_radius+pad,length+pad], center=true);
+        cylinder(h = length, r = box_rounder_radius, center=true);
+    }
+}
+
+module corner_rounder() {
+    translate([box_rounder_radius/2.0,box_rounder_radius/2.0,box_rounder_radius/2.0])
+    difference() {
+        translate([-box_rounder_radius/2.0,-box_rounder_radius/2.0,-box_rounder_radius/2.0])
+        cube([box_rounder_radius+pad,box_rounder_radius+pad,box_rounder_radius+pad], center=true);
+        sphere(r=box_rounder_radius);
+        }
+}
+
+module outside_rounder() {
+    box_rounder(box_width+box_height+box_thickness);
+}
+
+module placed_outside_rounder(x, y, z, x_rot, y_rot, z_rot) {
+    translate([x * (box_width/2.0-box_rounder_radius/2.0),
+            y * (box_thickness/2.0-box_rounder_radius/2.0),
+            z * (box_height/2.0-box_rounder_radius/2.0)
+        ])
+    rotate([x_rot*90, y_rot*90, z_rot*90])
+    outside_rounder();
+}
+
+module placed_outside_corner(x, y, z, x_rot, y_rot, z_rot) {
+    translate([x * (box_width/2.0-box_rounder_radius/2.0),
+            y * (box_thickness/2.0-box_rounder_radius/2.0),
+            z * (box_height/2.0-box_rounder_radius/2.0)
+        ])
+    rotate([x_rot*90, y_rot*90, z_rot*90])
+    corner_rounder();
+}
+
+
+module rounded_box() {
+    translate([box_width/2.0,box_thickness/2.0,box_height/2.0])
+
+    difference() {
+        translate([-box_width/2.0,-box_thickness/2.0,-box_height/2.0])
+        box();
+
+        // Vertical corners
+        placed_outside_rounder(-1,-1, 0, 0, 0, 0);
+        placed_outside_rounder( 1,-1, 0, 0, 0, 1);
+        placed_outside_rounder( 1, 1, 0, 0, 0, 2);
+        placed_outside_rounder(-1, 1, 0, 0, 0, 3);
+
+        // Top corners
+        placed_outside_rounder(-1,-1, 1, 1, 1, 0);
+        placed_outside_rounder( 1,-1, 1, 1, 1, 1);
+        placed_outside_rounder( 1, 1, 1, 1, 1, 2);
+        placed_outside_rounder(-1, 1, 1, 1, 1, 3);
+
+        // bottom corners
+        placed_outside_rounder(-1,-1, -1, 1, 0, 0);
+        placed_outside_rounder( 1,-1, -1, 1, 0, 1);
+        placed_outside_rounder( 1, 1, -1, 1, 0, 2);
+        placed_outside_rounder(-1, 1, -1, 1, 0, 3);
+
+
+        
+        // CORNERS
+        placed_outside_corner(-1,-1,-1, 0, 0, 0);
+        placed_outside_corner( 1,-1,-1, 0, 0, 1);
+        placed_outside_corner( 1, 1,-1, 0, 0, 2);
+        placed_outside_corner(-1, 1,-1, 0, 0, 3);
+
+        // Top corners
+        placed_outside_corner(-1,-1, 1, 1, 1, 1);
+        placed_outside_corner( 1,-1, 1, 1, 1, 2);
+        placed_outside_corner( 1, 1, 1, 1, 1, 3);
+        placed_outside_corner(-1, 1, 1, 1, 1, 4);
+        
+    }
+     
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // LID
@@ -354,8 +440,8 @@ module lid() {
 // translate([-fan_width*0.60,0,0]) filter_holder();
 
 // The actual box
-box();
-
+// box();
+rounded_box();
 
 // The lid
 // translate([0, box_height*0.60, 0]) lid();
