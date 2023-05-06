@@ -62,9 +62,9 @@ switch_support_depth = switch_depth + switch_offset_z - box_wall_thickness;
 
 ////////////////////////////////////////
 // WIRE hole variables
-wire_hole_radius = 4;
-wire_hole_offset_x = 18;
-wire_hole_offset_y = 7.5; // From bottom left, in the lidt.
+wire_hole_radius = 6.2; // 11.5 diameter plug
+wire_hole_offset_x = 7.6;
+wire_hole_offset_y = 20; // From bottom left, in the lidt.
 
 
 // Lid tolerance: This is how much smaller the lid is "all around"
@@ -456,14 +456,23 @@ module lid() {
                     cube([inner_box_width - 2 * lid_tolerance,
                         box_wall_thickness,
                             inner_box_height - 2 * lid_tolerance], center = true);
-
-                    translate([0, screw_head_thickness - pad, 0])
+                    // Support for the extra thickness. 0.5 is substracted here to make backside flush.
+                    translate([0, screw_head_thickness - pad -0.5, 0])
                         box_screw_support(screw_head_thickness);
 
                 }
                 // Screw holes
                 rotate([180, 0, 0])
                     box_screw_holes(box_wall_thickness + screw_head_thickness, - 1.5 * screw_head_thickness + 2 * pad);
+
+                // Wire plug hole
+                translate([wire_hole_offset_x - (inner_box_width/2.0 - lid_tolerance),
+                    0,
+                            inner_box_height/2.0 - lid_tolerance - wire_hole_offset_y])
+                    rotate([90, 0, 0])
+                        cylinder(r = wire_hole_radius, h = box_wall_thickness * 4, center = true);
+
+
             }
 
 
@@ -471,10 +480,6 @@ module lid() {
         translate([fan_center_x, box_wall_thickness / 2.0, fan_center_y])
         air_cutout();
 
-        // Wire hole
-        translate([wire_hole_offset_x, 0, box_height - wire_hole_offset_y])
-            rotate([90, 0, 0])
-                cylinder(r = wire_hole_radius, h = box_wall_thickness * 4, center = true);
 
     }
 
