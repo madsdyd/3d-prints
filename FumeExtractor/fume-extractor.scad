@@ -187,7 +187,7 @@ module filter_and_fan_support(h) {
 }
 // Move to center of fan
 //    translate([fan_center_x,inner_box_thickness/2.0+box_wall_thickness,fan_center_y])
-
+// Not used anymore
 module filter_holder() {
     rotate([90, 0, 0])
         translate([0, carbon_filter_gap_filler_thickness / 2.0, filter_height / 2.0]) {
@@ -201,6 +201,17 @@ module filter_holder() {
             filter_support();
         }
 }
+
+module filter_gap_filler() {
+    translate([0, 0, carbon_filter_gap_filler_thickness / 2.0 ]) {
+        difference() {
+            cylinder(r = filter_width / 2.0, h = carbon_filter_gap_filler_thickness, center = true);
+            rotate([90,0,0])
+            air_cutout();
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BOX
 
@@ -500,13 +511,13 @@ module lid() {
 // air_cutout();
 // switch_support();
 
-// Filter holder
-// translate([-fan_width*0.60,0,0]) filter_holder();
+// Filter gap filler
+translate([-fan_width*0.60,0,0]) filter_gap_filler();
 
 // The actual box
 // box();
 // srounded_box();
 
 // The lid
-translate([0, box_height * 0.60, 0]); lid();
+// translate([0, box_height * 0.60, 0]); lid();
 
