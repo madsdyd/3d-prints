@@ -249,7 +249,7 @@ module box_screw_support(length) {
         0,
             y * (inner_box_height / 2.0 - fastener_support - 1.4142 * screw_head_radius - 2 * pad)])
         rotate([90, 0, 0])
-            cylinder(r = screw_head_radius + fastener_support, h = length, center=true);
+            cylinder(r = screw_head_radius + fastener_support, h = length, center = true);
 }
 
 module switch_support() {
@@ -447,41 +447,42 @@ module rounded_box() {
 module lid() {
     rotate([0, 0, 0])
 
-    difference() {
-        // Move to same coordinates as the box / filter support, etc.
-        translate([box_width / 2.0, box_wall_thickness / 2.0, box_height / 2.0])
-            // This is in "center" coordinates
-            difference() {
-                union() {
-                    cube([inner_box_width - 2 * lid_tolerance,
-                        box_wall_thickness,
-                            inner_box_height - 2 * lid_tolerance], center = true);
-                    // Support for the extra thickness. 0.5 is substracted here to make backside flush.
-                    translate([0, screw_head_thickness - pad -0.5, 0])
-                        box_screw_support(screw_head_thickness);
+        difference() {
+            // Move to same coordinates as the box / filter support, etc.
+            translate([box_width / 2.0, box_wall_thickness / 2.0, box_height / 2.0])
+                // This is in "center" coordinates
+                difference() {
+                    union() {
+                        cube([inner_box_width - 2 * lid_tolerance,
+                            box_wall_thickness,
+                                inner_box_height - 2 * lid_tolerance], center = true);
+                        // Support for the extra thickness. 0.5 is substracted here to make backside flush.
+                        translate([0, screw_head_thickness - pad - 0.5, 0])
+                            box_screw_support(screw_head_thickness);
+
+                    }
+                    // Screw holes
+                    rotate([180, 0, 0])
+                        box_screw_holes(box_wall_thickness + screw_head_thickness, - 1.5 * screw_head_thickness + 2 *
+                            pad);
+
+                    // Wire plug hole
+                    translate([wire_hole_offset_x - (inner_box_width / 2.0 - lid_tolerance),
+                        0,
+                                    inner_box_height / 2.0 - lid_tolerance - wire_hole_offset_y])
+                        rotate([90, 0, 0])
+                            cylinder(r = wire_hole_radius, h = box_wall_thickness * 4, center = true);
+
 
                 }
-                // Screw holes
-                rotate([180, 0, 0])
-                    box_screw_holes(box_wall_thickness + screw_head_thickness, - 1.5 * screw_head_thickness + 2 * pad);
-
-                // Wire plug hole
-                translate([wire_hole_offset_x - (inner_box_width/2.0 - lid_tolerance),
-                    0,
-                            inner_box_height/2.0 - lid_tolerance - wire_hole_offset_y])
-                    rotate([90, 0, 0])
-                        cylinder(r = wire_hole_radius, h = box_wall_thickness * 4, center = true);
 
 
-            }
+            // Fan/air holes
+            translate([fan_center_x, box_wall_thickness / 2.0, fan_center_y])
+                air_cutout();
 
 
-        // Fan/air holes
-        translate([fan_center_x, box_wall_thickness / 2.0, fan_center_y])
-        air_cutout();
-
-
-    }
+        }
 
     // Support for filter, gap and fan, inside lid. Similar in box
     h = carbon_filter_thickness
