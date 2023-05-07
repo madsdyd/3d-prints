@@ -518,8 +518,9 @@ translate([-fan_width*0.60,0,0]) filter_gap_filler();
 
 // The actual box
 // box();
-// srounded_box();
+rotate([90,0,0])
+rounded_box();
 
 // The lid
-// translate([0, box_height * 0.60, 0]); lid();
+translate([0, box_height, 0]) rotate([90,0,0]) lid();
 
