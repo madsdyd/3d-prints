@@ -3,9 +3,9 @@
 box_width = 45;
 box_depth = 36; // 32 + 2 * 2
 santa_bottom_depth = 32;
-box_height = 12;
+box_height = 14;
 box_wall_thickness = 2;
-box_front_radius = 20;
+box_front_radius = 11;
 box_side_wall_thickness = 4;
 
 
@@ -13,6 +13,7 @@ box_fastener_support_thickness = 5;
 box_fastener_support_width = 8;
 // LID
 lid_overlap= 3; // Minus the sidewall overlap. Sigh.
+lid_tolerance = 0.25;
 
 
 ////////////////////////////////////////
@@ -139,11 +140,38 @@ module box() {
     translate([-box_width/2.0+box_wall_thickness+lid_overlap/2.0,
             box_depth/2.0-box_wall_thickness/2.0,
             0])
-    # cube([lid_overlap,box_wall_thickness,box_height-pad,],center=true);
+    cube([lid_overlap,box_wall_thickness,box_height-pad,],center=true);
     
     front();
     
 }
 
 
+module lid() {
+
+    lid_width_e = box_width-2*box_wall_thickness-2*lid_tolerance-lid_overlap;
+
+    cube([lid_width_e,
+            box_wall_thickness,
+            box_height-2*box_wall_thickness-2*lid_tolerance], center = true);
+    translate([-lid_width_e/2.0+0.5*lid_overlap,-box_wall_thickness-lid_tolerance/2.0+pad,0])
+    cube([lid_overlap,
+            box_wall_thickness + lid_tolerance,
+            box_height-2*box_wall_thickness-2*lid_tolerance], center = true);
+    translate([-lid_width_e/2.0+lid_tolerance,
+            -box_wall_thickness-lid_tolerance+pad,
+            -box_side_wall_thickness/2.0+box_wall_thickness/2.0])
+    cube([lid_overlap*2-2*lid_tolerance,
+            box_wall_thickness,
+            box_height-box_wall_thickness-box_side_wall_thickness-2*lid_tolerance], center = true);
+    
+}
+
+
+translate([0,0,box_height/2.0])
 box();
+
+
+// translate([-box_width-10,0,box_height/2.0])
+translate([lid_overlap/2.0,box_depth/2.0-0.5*box_wall_thickness,box_height/2.0])
+#lid();
