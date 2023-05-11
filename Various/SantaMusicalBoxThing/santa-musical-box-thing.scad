@@ -13,7 +13,7 @@ box_fastener_support_thickness = 5;
 box_fastener_support_width = 8;
 // LID
 lid_overlap= 3; // Minus the sidewall overlap. Sigh.
-lid_tolerance = 0.25;
+lid_tolerance = 1;
 
 
 ////////////////////////////////////////
@@ -151,27 +151,41 @@ module lid() {
 
     lid_width_e = box_width-2*box_wall_thickness-2*lid_tolerance-lid_overlap;
 
-    cube([lid_width_e,
-            box_wall_thickness,
-            box_height-2*box_wall_thickness-2*lid_tolerance], center = true);
-    translate([-lid_width_e/2.0+0.5*lid_overlap,-box_wall_thickness-lid_tolerance/2.0+pad,0])
-    cube([lid_overlap,
-            box_wall_thickness + lid_tolerance,
-            box_height-2*box_wall_thickness-2*lid_tolerance], center = true);
-    translate([-lid_width_e/2.0+lid_tolerance,
-            -box_wall_thickness-lid_tolerance+pad,
-            -box_side_wall_thickness/2.0+box_wall_thickness/2.0])
-    cube([lid_overlap*2-2*lid_tolerance,
-            box_wall_thickness,
-            box_height-box_wall_thickness-box_side_wall_thickness-2*lid_tolerance], center = true);
+    difference() {
+        union() {
+            cube([lid_width_e,
+                    box_wall_thickness,
+                    box_height-2*box_wall_thickness-2*lid_tolerance], center = true);
+
+            // Tounge
+            translate([-lid_width_e/2.0+0.5*lid_overlap,-box_wall_thickness-lid_tolerance/2.0+pad,0])
+            cube([lid_overlap,
+                    box_wall_thickness + lid_tolerance,
+                    box_height-2*box_wall_thickness-2*lid_tolerance], center = true);
+            translate([-lid_width_e/2.0+lid_tolerance/2.0,
+                    -box_wall_thickness-lid_tolerance+pad,
+                    -box_side_wall_thickness/2.0+box_wall_thickness/2.0])
+            cube([lid_overlap*2-lid_tolerance,
+                box_wall_thickness,
+                box_height-box_wall_thickness-box_side_wall_thickness-2*lid_tolerance], center = true);
+    }
+
+    // Screw hole
+    translate([box_width/2.0-box_wall_thickness-box_fastener_support_width/2.0-lid_overlap/2.0,
+     -screw_head_thickness,0])
+    rotate([0,0,90])
+    screw_hole(box_wall_thickness);
+    
     
 }
+}
+
+// THE BOX
+translate([0,0,box_height/2.0]) box();
 
 
-translate([0,0,box_height/2.0])
-box();
-
-
-// translate([-box_width-10,0,box_height/2.0])
-translate([lid_overlap/2.0,box_depth/2.0-0.5*box_wall_thickness,box_height/2.0])
-#lid();
+// THE LID
+translate([lid_overlap/2.0+lid_tolerance,box_depth,box_wall_thickness/2.0])
+rotate([270,0,0])
+// translate([lid_overlap/2.0,box_depth/2.0-0.5*box_wall_thickness,box_height/2.0])
+lid();
